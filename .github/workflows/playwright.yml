@@ -1,0 +1,31 @@
+name: Run Playwright flow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browser
+        run: npx playwright install chromium
+
+      - name: Run login flow
+        env:
+          ONEXBET_USERNAME: ${{ secrets.ONEXBET_USERNAME }}
+          ONEXBET_PASSWORD: ${{ secrets.ONEXBET_PASSWORD }}
+          ONEXBET_SURNAME: ${{ secrets.ONEXBET_SURNAME }}
+        run: npm run login
