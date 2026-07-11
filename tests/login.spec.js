@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
 import path from 'path';
 import { test, expect } from '@playwright/test';
 
@@ -6,6 +6,7 @@ const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
 const accountVerificationUrl = /\/en\/user\/accountverify(?:[/?#]|$)/;
 const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
+const failuresLogPath = path.resolve(process.cwd(), 'logs', 'failed-accounts.log');
 
 function parseCsvLine(line) {
   const values = [];
@@ -91,6 +92,14 @@ function getAccountsToProcess() {
   ];
 }
 
+function logFailure(account, error) {
+  const timestamp = new Date().toISOString();
+  const message = `[${timestamp}] ${account.username} | ${error.message}\n`;
+
+  mkdirSync(path.dirname(failuresLogPath), { recursive: true });
+  appendFileSync(failuresLogPath, message, 'utf8');
+}
+
 async function runAccountFlow(page, account, index, total) {
   const { username, password, surname } = account;
 
@@ -123,6 +132,28 @@ async function runAccountFlow(page, account, index, total) {
 
   await expect(submitButton).toBeVisible();
   await submitButton.click();
+
+  await page.waitForURL(
+    (url) => !url.toString().includes('/user/login'),
+    { timeout: 10_000 }
+  ).catch(() => {});
+
+  const currentUrl = page.url();
+  const loginFormStillVisible = await loginInput.isVisible().catch(() => false);
+
+  if (currentUrl.includes('/user/login') && loginFormStillVisible) {
+    const loginErrorHint = await page
+      .locator('text=/incorrect|invalid|wrong|password|login/i')
+      .first()
+      .textContent()
+      .catch(() => '');
+
+    throw new Error(
+      loginErrorHint
+        ? `Login failed: ${loginErrorHint.trim()}`
+        : 'Login failed; the credentials may be invalid or the site rejected the login attempt.'
+    );
+  }
 
   await page.waitForURL(accountVerificationUrl, { timeout: 10_000 }).catch(() => {});
 
@@ -187,7 +218,10 @@ async function runAccountFlow(page, account, index, total) {
 }
 
 test('sign in to 1xBet', async ({ browser }) => {
+  test.setTimeout(0);
+
   const accounts = getAccountsToProcess();
+  console.log(`Loaded ${accounts.length} account(s) from accounts.csv`);
 
   if (!accounts.length) {
     throw new Error('No accounts available. Add rows to accounts.csv or set environment variables.');
@@ -199,13 +233,18 @@ test('sign in to 1xBet', async ({ browser }) => {
 
     try {
       await runAccountFlow(page, account, index, accounts.length);
+    } catch (error) {
+      console.error(
+        `[${index + 1}/${accounts.length}] Failed for ${account.username}: ${error.message}`
+      );
+      logFailure(account, error);
     } finally {
-      if (index < accounts.length - 1) {
+      if (index < accounts.length - 1 && !page.isClosed()) {
         await page.waitForTimeout(2_000);
       }
 
-      await page.close();
-      await context.close();
+      await page.close().catch(() => {});
+      await context.close().catch(() => {});
     }
   }
 });

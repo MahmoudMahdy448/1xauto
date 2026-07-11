@@ -6,7 +6,7 @@ dotenv.config({ override: true });
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 60_000,
+  timeout: 0,
   use: {
     headless: false,
     screenshot: 'only-on-failure',

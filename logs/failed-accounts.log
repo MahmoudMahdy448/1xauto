@@ -1,0 +1,54 @@
+[2026-07-11T19:14:20.026Z] asyutacc14jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-11T19:17:35.038Z] asyutacc13jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-11T19:18:30.486Z] asyutacc14jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-11T19:19:08.410Z] asyutacc15jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-11T19:19:30.234Z] asyutacc16jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-11T19:39:35.248Z] asyutacc9jul@gmail.com | Login failed: Select a login option
