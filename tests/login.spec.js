@@ -1,17 +1,102 @@
+import { existsSync, readFileSync } from 'fs';
+import path from 'path';
 import { test, expect } from '@playwright/test';
 
 const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
 const accountVerificationUrl = /\/en\/user\/accountverify(?:[/?#]|$)/;
+const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
 
-test('sign in to 1xBet', async ({ page }) => {
-  const username = process.env.ONEXBET_USERNAME;
-  const password = process.env.ONEXBET_PASSWORD;
-  const surname = process.env.ONEXBET_SURNAME;
+function parseCsvLine(line) {
+  const values = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+
+    if (character === '"') {
+      const nextCharacter = line[index + 1];
+
+      if (inQuotes && nextCharacter === '"') {
+        current += '"';
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (character === ',' && !inQuotes) {
+      values.push(current.trim());
+      current = '';
+    } else {
+      current += character;
+    }
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function parseCsv(text) {
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (!lines.length) {
+    return [];
+  }
+
+  const headers = parseCsvLine(lines[0]).map((header) => header.toLowerCase());
+
+  return lines.slice(1).map((line) => {
+    const values = parseCsvLine(line);
+
+    return headers.reduce((row, header, index) => {
+      row[header] = values[index] || '';
+      return row;
+    }, {});
+  });
+}
+
+function loadAccounts() {
+  if (!existsSync(accountsFilePath)) {
+    return [];
+  }
+
+  const csvText = readFileSync(accountsFilePath, 'utf8');
+  const rows = parseCsv(csvText);
+
+  return rows
+    .map((row) => ({
+      username: row.username || '',
+      password: row.password || '',
+      surname: row.surname || ''
+    }))
+    .filter((account) => account.username && account.password);
+}
+
+function getAccountsToProcess() {
+  const accountsFromCsv = loadAccounts();
+
+  if (accountsFromCsv.length > 0) {
+    return accountsFromCsv;
+  }
+
+  return [
+    {
+      username: process.env.ONEXBET_USERNAME || '',
+      password: process.env.ONEXBET_PASSWORD || '',
+      surname: process.env.ONEXBET_SURNAME || ''
+    }
+  ];
+}
+
+async function runAccountFlow(page, account, index, total) {
+  const { username, password, surname } = account;
 
   if (!username || !password) {
     throw new Error(
-      'Set ONEXBET_USERNAME and ONEXBET_PASSWORD in your environment or .env file.'
+      'Set ONEXBET_USERNAME and ONEXBET_PASSWORD in your environment or .env file, or add rows to accounts.csv.'
     );
   }
 
@@ -20,6 +105,8 @@ test('sign in to 1xBet', async ({ page }) => {
       'ONEXBET_PASSWORD and ONEXBET_SURNAME must contain different values.'
     );
   }
+
+  console.log(`[${index + 1}/${total}] Signing in with ${username}`);
 
   await page.goto(loginUrl, { waitUntil: 'domcontentloaded' });
 
@@ -58,6 +145,7 @@ test('sign in to 1xBet', async ({ page }) => {
     await surnameInput.fill(surname);
     await expect(verificationSubmit).toBeEnabled();
     await verificationSubmit.click();
+    await page.waitForTimeout(2_000);
   }
 
   await page.goto(rechargeUrl, { waitUntil: 'domcontentloaded' });
@@ -96,6 +184,28 @@ test('sign in to 1xBet', async ({ page }) => {
       height: Math.ceil(modalBox.y + modalBox.height)
     }
   });
+}
 
-  // The flow intentionally stops before entering payment details or confirming a deposit.
+test('sign in to 1xBet', async ({ browser }) => {
+  const accounts = getAccountsToProcess();
+
+  if (!accounts.length) {
+    throw new Error('No accounts available. Add rows to accounts.csv or set environment variables.');
+  }
+
+  for (const [index, account] of accounts.entries()) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+
+    try {
+      await runAccountFlow(page, account, index, accounts.length);
+    } finally {
+      if (index < accounts.length - 1) {
+        await page.waitForTimeout(2_000);
+      }
+
+      await page.close();
+      await context.close();
+    }
+  }
 });
