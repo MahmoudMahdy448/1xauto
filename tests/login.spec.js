@@ -227,7 +227,23 @@ test('sign in to 1xBet', async ({ browser }) => {
     throw new Error('No accounts available. Add rows to accounts.csv or set environment variables.');
   }
 
+  const startIndexEnv = process.env.START_INDEX;
+  let startIndex = 1;
+  if (startIndexEnv) {
+    startIndex = parseInt(startIndexEnv, 10);
+    if (isNaN(startIndex) || startIndex < 1) {
+      throw new Error(`Invalid START_INDEX: "${startIndexEnv}". It must be a positive integer starting from 1.`);
+    }
+    console.log(`START_INDEX is set. Starting execution from record ${startIndex}`);
+    if (startIndex > accounts.length) {
+      console.warn(`Warning: START_INDEX (${startIndex}) is greater than the total number of accounts (${accounts.length}). No accounts will be processed.`);
+    }
+  }
+
   for (const [index, account] of accounts.entries()) {
+    if (index + 1 < startIndex) {
+      continue;
+    }
     const context = await browser.newContext();
     const page = await context.newPage();
 

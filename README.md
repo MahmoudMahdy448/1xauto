@@ -14,6 +14,23 @@ This Playwright flow opens the official 1xBet login page, signs in with one or m
 5. Optionally create an `accounts.csv` file in the project root for batch processing. The script reads rows from it automatically if present.
 6. Run `npm run login`.
 
+### Resuming or Starting from a Specific Record
+
+To start or resume execution from a specific record (1-based record index, where 1 is the first record), set the `START_INDEX` environment variable before running the script:
+
+- **Windows PowerShell:**
+  ```powershell
+  $env:START_INDEX=50; npm run login
+  ```
+- **Windows Command Prompt:**
+  ```cmd
+  set START_INDEX=50 && npm run login
+  ```
+- **macOS / Linux:**
+  ```bash
+  START_INDEX=50 npm run login
+  ```
+
 The `.env` file is ignored by Git and must not be committed.
 
 ## Account Input Options
