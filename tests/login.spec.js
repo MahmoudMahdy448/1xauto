@@ -7,6 +7,7 @@ const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
 const accountVerificationUrl = /\/en\/user\/accountverify(?:[/?#]|$)/;
 const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
 const failuresLogPath = path.resolve(process.cwd(), 'logs', 'failed-accounts.log');
+const screenshotCounts = new Map();
 
 function parseCsvLine(line) {
   const values = [];
@@ -204,10 +205,85 @@ async function runAccountFlow(page, account, index, total) {
     throw new Error('Could not determine the Vodafone payment window position.');
   }
 
-  const screenshotTimestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const copyBtn = paymentFrame.locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]');
+
+  // Wait for the copy button to be visible
+  await expect(copyBtn.first()).toBeVisible({ timeout: 20_000 });
+
+  const copyButtonsCount = await copyBtn.count();
+  let extractedNumber = '';
+
+  for (let i = 0; i < copyButtonsCount; i++) {
+    const btn = copyBtn.nth(i);
+
+    // Try to get data-clipboard-text attribute
+    const clipboardText = await btn.getAttribute('data-clipboard-text').catch(() => null);
+    let match = clipboardText ? clipboardText.match(/01\d{9}/) : null;
+    if (match) {
+      extractedNumber = match[0];
+      break;
+    }
+
+    // Try to get data-text attribute
+    const dataText = await btn.getAttribute('data-text').catch(() => null);
+    match = dataText ? dataText.match(/01\d{9}/) : null;
+    if (match) {
+      extractedNumber = match[0];
+      break;
+    }
+
+    // Try to get text content of the button itself
+    const btnText = await btn.textContent().catch(() => '');
+    match = btnText ? btnText.match(/01\d{9}/) : null;
+    if (match) {
+      extractedNumber = match[0];
+      break;
+    }
+
+    // Try to get text content of parent
+    const parentText = await btn.evaluate(node => node.parentElement ? node.parentElement.textContent : '').catch(() => '');
+    match = parentText ? parentText.match(/01\d{9}/) : null;
+    if (match) {
+      extractedNumber = match[0];
+      break;
+    }
+  }
+
+  // Fallback to the whole modal container text if still not found
+  if (!extractedNumber) {
+    const modalText = await paymentModal.textContent().catch(() => '');
+    const match = modalText ? modalText.match(/01\d{9}/) : null;
+    if (match) {
+      extractedNumber = match[0];
+    }
+  }
+
+  let finalScreenshotPath;
+  if (extractedNumber) {
+    console.log(`Extracted mobile number: ${extractedNumber}`);
+    
+    // Track duplicates across the entire batch run
+    let count = screenshotCounts.get(extractedNumber) || 0;
+    count += 1;
+    screenshotCounts.set(extractedNumber, count);
+
+    let currentCount = count;
+    do {
+      const filename = currentCount === 1 ? `${extractedNumber}.png` : `${extractedNumber}(${currentCount}).png`;
+      finalScreenshotPath = path.join('screenshots', filename);
+      currentCount++;
+    } while (existsSync(finalScreenshotPath));
+  } else {
+    console.warn('Warning: Egyptian mobile number matching (01\\d{9}) not found in the payment modal.');
+    const screenshotTimestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    finalScreenshotPath = path.join('screenshots', `vodafone-deposit-${screenshotTimestamp}.png`);
+  }
+
+  // Ensure the directory exists
+  mkdirSync(path.dirname(finalScreenshotPath), { recursive: true });
 
   await page.screenshot({
-    path: `screenshots/vodafone-deposit-${screenshotTimestamp}.png`,
+    path: finalScreenshotPath,
     clip: {
       x: 0,
       y: 0,
@@ -215,10 +291,12 @@ async function runAccountFlow(page, account, index, total) {
       height: Math.ceil(modalBox.y + modalBox.height)
     }
   });
+  console.log(`Screenshot saved to: ${finalScreenshotPath}`);
 }
 
 test('sign in to 1xBet', async ({ browser }) => {
   test.setTimeout(0);
+  screenshotCounts.clear();
 
   const accounts = getAccountsToProcess();
   console.log(`Loaded ${accounts.length} account(s) from accounts.csv`);
