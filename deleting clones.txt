@@ -1,0 +1,5 @@
+Preview (safe):
+Get-ChildItem | Where-Object { $_.Name -match '\(\d+\)' } | Select-Object Name
+
+Delete duplicates:
+Get-ChildItem | Where-Object { $_.Name -match '\(\d+\)' } | Remove-Item
