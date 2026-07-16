@@ -1,6 +1,7 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import { test, expect } from '@playwright/test';
+import * as XLSX from 'xlsx';
 
 const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
@@ -8,6 +9,7 @@ const accountVerificationUrl = /\/en\/user\/accountverify(?:[/?#]|$)/;
 const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
 const failuresLogPath = path.resolve(process.cwd(), 'logs', 'failed-accounts.log');
 const screenshotCounts = new Map();
+const uniqueNumbers = new Set();
 
 function parseCsvLine(line) {
   const values = [];
@@ -261,6 +263,7 @@ async function runAccountFlow(page, account, index, total) {
   let finalScreenshotPath;
   if (extractedNumber) {
     console.log(`Extracted mobile number: ${extractedNumber}`);
+    uniqueNumbers.add(extractedNumber);
     
     // Track duplicates across the entire batch run
     let count = screenshotCounts.get(extractedNumber) || 0;
@@ -297,6 +300,7 @@ async function runAccountFlow(page, account, index, total) {
 test('sign in to 1xBet', async ({ browser }) => {
   test.setTimeout(0);
   screenshotCounts.clear();
+  uniqueNumbers.clear();
 
   const accounts = getAccountsToProcess();
   console.log(`Loaded ${accounts.length} account(s) from accounts.csv`);
@@ -340,5 +344,17 @@ test('sign in to 1xBet', async ({ browser }) => {
       await page.close().catch(() => {});
       await context.close().catch(() => {});
     }
+  }
+
+  if (uniqueNumbers.size > 0) {
+    const excelData = [...uniqueNumbers].map((num) => ({ Phone: num }));
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Numbers');
+    const excelPath = path.resolve(process.cwd(), 'extracted_numbers.xlsx');
+    XLSX.writeFile(workbook, excelPath);
+    console.log(`Excel file saved to: ${excelPath} (${uniqueNumbers.size} unique numbers)`);
+  } else {
+    console.warn('No numbers were extracted. Excel file was not created.');
   }
 });

@@ -52,3 +52,233 @@ Call log:
 [2m  - waiting for locator('input#username')[22m
 
 [2026-07-11T19:39:35.248Z] asyutacc9jul@gmail.com | Login failed: Select a login option
+[2026-07-11T22:53:47.564Z] asyutacc14jul@gmail.com | page.goto: Target page, context or browser has been closed
+[2026-07-11T23:06:49.255Z] asyutacc11jul@gmail.com | Login failed: Select a login option
+[2026-07-12T02:27:58.927Z] asyutacc16jul@gmail.com | page.goto: Target page, context or browser has been closed
+[2026-07-12T02:29:08.769Z] asyutacc13jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-12T02:29:10.605Z] asyutacc14jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-12T02:29:17.834Z] asyutacc15jul@gmail.com | page.goto: Target page, context or browser has been closed
+[2026-07-12T17:43:32.900Z] alexandriaaccjul73@gmail.com | Login failed: Select a login option
+[2026-07-12T18:43:38.300Z] cairoaccjul7117@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-12T22:08:34.780Z] asyutacc12jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-12T23:11:45.992Z] suezgovernorateaccjul7206@gmail.com | Login failed: Select a login option
+[2026-07-12T23:13:32.056Z] suezgovernorateaccjul7208@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-12T23:17:53.004Z] sharqiaaccjul7213@gmail.com | Login failed: Select a login option
+[2026-07-12T23:21:48.792Z] sharqiaaccjul7217@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-12T23:22:28.434Z] sharqiaaccjul7218@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-12T23:23:19.112Z] sharqiaaccjul7219@gmail.com | Login failed: Select a login option
+[2026-07-13T00:20:37.974Z] alexandriaaccjul72@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-13T00:21:21.408Z] asyutacc13jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-13T00:21:57.760Z] asyutacc14jul@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-13T00:45:15.215Z] asyutaccjul717@gmail.com | Login failed: Select a login option
+[2026-07-13T00:53:08.321Z] benisuefaccjul731@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "to.be.visible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-14T23:04:02.594Z] alexandriaaccjul78@gmail.com | Login failed: Select a login option
+[2026-07-14T23:47:27.149Z] damiettaaccjul789@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-14T23:48:04.901Z] damiettaaccjul790@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-14T23:49:34.977Z] alexandriaaccjul71@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-14T23:51:08.705Z] alexandriaaccjul73@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-14T23:51:43.611Z] alexandriaaccjul74@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-15T00:43:00.908Z] dakahliaaccjul786@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:43:55.144Z] dakahliaaccjul788@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:44:20.976Z] damiettaaccjul789@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:44:50.463Z] damiettaaccjul790@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:45:47.464Z] damiettaaccjul792@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:46:15.409Z] damiettaaccjul793@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:46:48.506Z] damiettaaccjul794@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-15T00:47:19.543Z] damiettaaccjul795@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:48:49.664Z] ismailiaaccjul798@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:49:17.610Z] ismailiaaccjul799@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T00:49:45.978Z] ismailiaaccjul7100@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T03:00:52.155Z] qenaaccjul7159@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T03:03:57.807Z] qenaaccjul7160@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T03:04:28.097Z] qenaaccjul7161@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T03:04:59.802Z] redseaalbahralahmaraccjul7162@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T03:07:28.704Z] redseaalbahralahmaraccjul7166@gmail.com | ENOSPC: no space left on device, write
+[2026-07-15T03:15:17.345Z] redseaalbahralahmaraccjul7167@gmail.com | locator.click: Target page, context or browser has been closed
+[2026-07-15T11:29:14.308Z] alexandriaaccjul76@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-15T11:31:42.865Z] alexandriaaccjul79@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+

@@ -4,3 +4,4 @@ test-results/
 .env
 accounts.csv
 screenshots/
+extracted_numbers.xlsx
