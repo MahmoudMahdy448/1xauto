@@ -282,3 +282,18 @@ Call log:
 [2m  - Expect "toBeVisible" with timeout 30000ms[22m
 [2m  - waiting for locator('input#username')[22m
 
+[2026-07-16T00:34:20.026Z] beheiraaccjul756@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()
+Expected: visible
+Timeout: 20000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 20000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()[22m
+
+[2026-07-16T01:39:30.058Z] redseaalbahralahmaraccjul7167@gmail.com | Login failed: Select a login option
+[2026-07-16T01:51:00.814Z] portsaidaccjul7185@gmail.com | Login failed: Select a login option
+[2026-07-16T01:52:20.126Z] portsaidaccjul7187@gmail.com | Login failed: Select a login option
+[2026-07-16T01:54:06.056Z] northsinaishimalsinaaccjul7190@gmail.com | Login failed: Select a login option
