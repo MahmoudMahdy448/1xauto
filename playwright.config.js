@@ -8,7 +8,7 @@ export default defineConfig({
   testDir: './tests',
   timeout: 0,
   use: {
-    headless: false,
+    headless: process.env.HEADLESS === 'true',
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     viewport: { width: 1440, height: 960 }
