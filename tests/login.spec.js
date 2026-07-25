@@ -72,7 +72,7 @@ function loadAccounts() {
 
   return rows
     .map((row) => ({
-      username: row.username || '',
+      username: row.username || row.email || '',
       password: row.password || '',
       surname: row.surname || ''
     }))

@@ -1905,3 +1905,1222 @@ Call log:
 [2026-07-20T00:28:59.062Z] southsinaiganubsinaaccjul7273@gmail.com | ENOSPC: no space left on device, write
 [2026-07-20T00:29:12.043Z] southsinaiganubsinaaccjul7274@gmail.com | page.goto: Target page, context or browser has been closed
 [2026-07-20T00:39:36.363Z] kafrelsheikhgovernorateaccjul7150@gmail.com | page.goto: Target page, context or browser has been closed
+[2026-07-21T20:33:45.393Z] alexandriaaccjul711@gmail.com | Login failed: Select a login option
+[2026-07-21T21:09:48.107Z] beheiraaccjul741@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:10:29.506Z] beheiraaccjul742@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:11:05.998Z] beheiraaccjul743@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:21:35.064Z] suezgovernorateaccjul7205@gmail.com | Login failed: Select a login option
+[2026-07-21T21:24:33.359Z] wadielgedidaccjul760@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:25:38.505Z] sharqiaaccjul7210@gmail.com | Login failed: Select a login option
+[2026-07-21T21:37:37.040Z] dakahliaaccjul776@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:37:44.307Z] sharqiaaccjul7225@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:38:18.559Z] sharqiaaccjul7226@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:38:53.620Z] sharqiaaccjul7227@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:40:30.808Z] sharqiaaccjul7229@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:41:06.976Z] elgizaaccjul7230@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:42:21.946Z] dakahliaaccjul781@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:42:44.159Z] elgizaaccjul7232@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:42:57.969Z] dakahliaaccjul782@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:43:18.753Z] elgizaaccjul7233@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:43:34.601Z] dakahliaaccjul783@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:43:53.529Z] elgizaaccjul7234@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:44:44.317Z] dakahliaaccjul784@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-21T21:44:44.465Z] elgizaaccjul7235@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:46:30.100Z] dakahliaaccjul786@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:47:08.143Z] dakahliaaccjul787@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:47:44.909Z] dakahliaaccjul788@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:48:13.279Z] elgizaaccjul7238@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-21T21:48:50.099Z] elgizaaccjul7239@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:49:37.048Z] damiettaaccjul790@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-21T21:49:42.273Z] elgizaaccjul7240@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:50:16.643Z] elgizaaccjul7241@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:50:19.381Z] damiettaaccjul791@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:50:55.217Z] damiettaaccjul792@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:51:20.726Z] elgizaaccjul7242@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-21T21:51:34.874Z] damiettaaccjul793@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:52:41.794Z] elgizaaccjul7243@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-21T21:53:02.352Z] damiettaaccjul795@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:53:48.663Z] damiettaaccjul796@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:54:26.599Z] elgizaaccjul7245@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:54:26.697Z] ismailiaaccjul797@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:54:54.282Z] elgizaaccjul7246@gmail.com | Login failed: Select a login option
+[2026-07-21T21:55:31.620Z] elgizaaccjul7247@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T21:58:12.295Z] ismailiaaccjul7100@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-21T21:58:18.159Z] elminyaaccjul7250@gmail.com | Login failed: Select a login option
+[2026-07-21T22:02:12.519Z] cairoaccjul7104@gmail.com | Login failed: Select a login option
+[2026-07-21T22:02:17.469Z] cairoaccjul7105@gmail.com | page.goto: net::ERR_NETWORK_CHANGED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-21T22:02:37.375Z] elminyaaccjul7255@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:02:51.490Z] cairoaccjul7106@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:03:29.738Z] cairoaccjul7107@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:04:24.522Z] elminyaaccjul7257@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:06:37.876Z] cairoaccjul7111@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:06:46.510Z] elminyaaccjul7260@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:07:13.077Z] cairoaccjul7112@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:07:54.879Z] cairoaccjul7113@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:08:25.244Z] cairoaccjul7114@gmail.com | Login failed: Select a login option
+[2026-07-21T22:09:58.602Z] cairoaccjul7116@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-21T22:14:35.622Z] cairoaccjul7122@gmail.com | Login failed: Select a login option
+[2026-07-21T22:44:30.741Z] matrouhgovernorateaccjul7173@gmail.com | Login failed: Select a login option
+[2026-07-21T23:07:38.944Z] sharqiaaccjul7218@gmail.com | Login failed: Select a login option
+[2026-07-22T15:54:49.714Z] alexandriaaccjul71@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T15:56:09.007Z] kafrelsheikhgovernorateaccjul7150@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-22T15:57:20.690Z] alexandriaaccjul73@gmail.com | Login failed: Select a login option
+[2026-07-22T15:58:01.223Z] alexandriaaccjul74@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T15:58:05.419Z] qenaaccjul7152@gmail.com | Login failed: Select a login option
+[2026-07-22T15:59:03.978Z] qenaaccjul7153@gmail.com | Login failed: Select a login option
+[2026-07-22T15:59:33.864Z] alexandriaaccjul75@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-22T15:59:42.748Z] qenaaccjul7154@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T15:59:47.822Z] alexandriaaccjul76@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T15:59:59.154Z] qenaaccjul7155@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T16:00:06.162Z] kafrelsheikhgovernorateaccjul7150@gmail.com | page.goto: net::ERR_NETWORK_CHANGED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:08.369Z] kafrelsheikhgovernorateaccjul7151@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:10.555Z] qenaaccjul7152@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:12.732Z] qenaaccjul7153@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:14.902Z] qenaaccjul7154@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:17.078Z] qenaaccjul7155@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:19.283Z] qenaaccjul7156@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T16:00:35.049Z] alexandriaaccjul71@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T16:00:54.318Z] qenaaccjul7157@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T16:01:12.101Z] alexandriaaccjul72@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T22:31:32.321Z] kafrelsheikhgovernorateaccjul7150@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:31:43.233Z] alexandriaaccjul71@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:31:52.245Z] alexandriaaccjul72@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:31:59.957Z] kafrelsheikhgovernorateaccjul7151@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:05.164Z] alexandriaaccjul73@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:18.291Z] alexandriaaccjul74@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:25.965Z] qenaaccjul7152@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:33.032Z] alexandriaaccjul75@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:37.703Z] qenaaccjul7153@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:46.892Z] qenaaccjul7154@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:32:56.375Z] qenaaccjul7155@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:00.987Z] alexandriaaccjul76@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:05.591Z] qenaaccjul7156@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:10.158Z] alexandriaaccjul77@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:16.750Z] qenaaccjul7157@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:19.377Z] alexandriaaccjul78@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:33.983Z] alexandriaaccjul79@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:36.758Z] qenaaccjul7158@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:43.782Z] alexandriaaccjul710@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:45.660Z] qenaaccjul7159@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:53.271Z] qenaaccjul7160@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:33:54.419Z] alexandriaaccjul711@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:34:08.418Z] qenaaccjul7161@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:34:20.677Z] redseaalbahralahmaraccjul7162@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:34:23.213Z] alexandriaaccjul712@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:34:36.115Z] redseaalbahralahmaraccjul7163@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:34:47.162Z] redseaalbahralahmaraccjul7164@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:34:54.929Z] redseaalbahralahmaraccjul7165@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:35:02.315Z] redseaalbahralahmaraccjul7166@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:35:29.448Z] redseaalbahralahmaraccjul7167@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:35:38.735Z] redseaalbahralahmaraccjul7168@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:35:51.794Z] redseaalbahralahmaraccjul7169@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:36:01.336Z] luxoraccjul7170@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:36:08.794Z] luxoraccjul7171@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:36:15.950Z] matrouhgovernorateaccjul7172@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:36:28.845Z] matrouhgovernorateaccjul7173@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:36:44.109Z] matrouhgovernorateaccjul7174@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:36:52.984Z] matrouhgovernorateaccjul7175@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:01.781Z] monufiagovernorateaccjul7176@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:16.765Z] monufiagovernorateaccjul7177@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:23.015Z] aswanaccjul713@gmail.com | page.goto: net::ERR_CONNECTION_RESET at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:26.230Z] monufiagovernorateaccjul7178@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:32.129Z] aswanaccjul714@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:39.488Z] monufiagovernorateaccjul7179@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:48.673Z] aswanaccjul715@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:48.686Z] monufiagovernorateaccjul7180@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:37:59.296Z] monufiagovernorateaccjul7181@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:02.628Z] asyutaccjul716@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:08.419Z] monufiagovernorateaccjul7182@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:12.059Z] asyutaccjul717@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:19.547Z] monufiagovernorateaccjul7183@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:28.585Z] monufiagovernorateaccjul7184@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:37.785Z] portsaidaccjul7185@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:42.263Z] asyutaccjul718@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:46.637Z] portsaidaccjul7186@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:55.469Z] portsaidaccjul7187@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:38:58.142Z] asyutaccjul719@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:03.168Z] northsinaishimalsinaaccjul7188@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:13.495Z] asyutaccjul720@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:30.962Z] northsinaishimalsinaaccjul7189@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:39.883Z] northsinaishimalsinaaccjul7190@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:45.477Z] asyutaccjul721@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:51.093Z] northsinaishimalsinaaccjul7191@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:54.128Z] asyutaccjul722@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:39:59.889Z] sohagaccjul7192@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:02.961Z] asyutaccjul723@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:08.798Z] sohagaccjul7193@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:19.775Z] sohagaccjul7194@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:31.023Z] asyutaccjul724@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:39.221Z] asyutaccjul725@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:40.671Z] sohagaccjul7195@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:50.141Z] asyutaccjul726@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:40:50.273Z] sohagaccjul7196@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:00.296Z] sohagaccjul7197@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:01.178Z] asyutaccjul727@gmail.com | page.goto: net::ERR_CONNECTION_RESET at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:11.460Z] asyutaccjul728@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:17.944Z] sohagaccjul7198@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:31.293Z] asyutaccjul729@gmail.com | page.goto: net::ERR_CONNECTION_RESET at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:34.595Z] sohagaccjul7199@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:40.848Z] asyutaccjul730@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:43.947Z] sohagaccjul7200@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:41:55.804Z] benisuefaccjul731@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:42:02.466Z] sohagaccjul7201@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:42:05.931Z] benisuefaccjul732@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:42:16.448Z] sohagaccjul7202@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:42:22.528Z] benisuefaccjul733@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:42:28.551Z] sohagaccjul7203@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:42:55.814Z] sohagaccjul7204@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:03.503Z] suezgovernorateaccjul7205@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:10.799Z] benisuefaccjul734@gmail.com | page.goto: net::ERR_CONNECTION_RESET at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:12.390Z] suezgovernorateaccjul7206@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:20.326Z] benisuefaccjul735@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:23.701Z] suezgovernorateaccjul7207@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:33.599Z] benisuefaccjul736@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:35.093Z] suezgovernorateaccjul7208@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:43:51.680Z] sharqiaaccjul7209@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:01.771Z] sharqiaaccjul7210@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:02.993Z] benisuefaccjul737@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:11.050Z] sharqiaaccjul7211@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:12.496Z] benisuefaccjul738@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:18.131Z] sharqiaaccjul7212@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:21.709Z] benisuefaccjul739@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:31.537Z] sharqiaaccjul7213@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:50.096Z] benisuefaccjul740@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:59.427Z] beheiraaccjul741@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:44:59.822Z] sharqiaaccjul7214@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:15.090Z] beheiraaccjul742@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:17.738Z] sharqiaaccjul7215@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:25.668Z] beheiraaccjul743@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:34.484Z] beheiraaccjul744@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:35.149Z] sharqiaaccjul7216@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:49.504Z] beheiraaccjul745@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:49.994Z] sharqiaaccjul7217@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:45:58.992Z] sharqiaaccjul7218@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:05.943Z] beheiraaccjul746@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:10.271Z] sharqiaaccjul7219@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:19.565Z] sharqiaaccjul7220@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:21.755Z] beheiraaccjul747@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:39.566Z] beheiraaccjul748@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:48.729Z] beheiraaccjul749@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:46:52.409Z] sharqiaaccjul7221@gmail.com | page.goto: net::ERR_TIMED_OUT at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:03.754Z] sharqiaaccjul7222@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:08.845Z] beheiraaccjul750@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:17.663Z] sharqiaaccjul7223@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:26.051Z] beheiraaccjul751@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:28.484Z] sharqiaaccjul7224@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:41.036Z] beheiraaccjul752@gmail.com | page.goto: net::ERR_CONNECTION_CLOSED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:55.385Z] beheiraaccjul753@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:47:56.803Z] sharqiaaccjul7225@gmail.com | page.goto: net::ERR_SOCKET_NOT_CONNECTED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-22T22:49:19.608Z] sharqiaaccjul7227@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-22T22:49:48.107Z] beheiraaccjul755@gmail.com | page.waitForTimeout: Target page, context or browser has been closed
+[2026-07-23T00:24:15.152Z] cairoaccjul7102@gmail.com | ENOSPC: no space left on device, write
+[2026-07-23T00:24:17.729Z] elminyaaccjul7252@gmail.com | ENOSPC: no space left on device, write
+[2026-07-23T00:24:53.652Z] cairoaccjul7103@gmail.com | ENOSPC: no space left on device, write
+[2026-07-23T03:26:51.108Z] elminyaaccjul7253@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-23T03:26:59.356Z] cairoaccjul7104@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('input#username-password')
+Expected: visible
+Received: undefined
+
+[2026-07-23T15:43:24.940Z] alexandriaaccjul712@gmail.com | page.goto: net::ERR_CONNECTION_TIMED_OUT at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-23T15:43:48.188Z] aswanaccjul713@gmail.com | page.goto: net::ERR_CONNECTION_TIMED_OUT at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-23T15:44:11.479Z] aswanaccjul714@gmail.com | page.goto: net::ERR_CONNECTION_TIMED_OUT at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-23T15:57:03.879Z] benisuefaccjul736@gmail.com | Login failed: Select a login option
