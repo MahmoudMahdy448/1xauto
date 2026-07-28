@@ -3124,3 +3124,731 @@ Call log:
 [2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
 
 [2026-07-23T15:57:03.879Z] benisuefaccjul736@gmail.com | Login failed: Select a login option
+[2026-07-23T17:05:04.738Z] cairoaccjul7120@gmail.com | Login failed: Select a login option
+[2026-07-23T17:19:19.448Z] qalyubiaaccjul7138@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()
+Expected: visible
+Timeout: 20000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 20000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()[22m
+
+[2026-07-23T17:34:52.960Z] qenaaccjul7159@gmail.com | ENOSPC: no space left on device, write
+[2026-07-23T17:35:39.200Z] qenaaccjul7160@gmail.com | ENOSPC: no space left on device, write
+[2026-07-23T17:37:09.492Z] redseaalbahralahmaraccjul7163@gmail.com | ENOSPC: no space left on device, write
+[2026-07-23T17:37:34.552Z] redseaalbahralahmaraccjul7164@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T11:41:50.998Z] redseaalbahralahmaraccjul7165@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-24T12:38:11.713Z] benisuefaccjul732@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T12:41:56.820Z] benisuefaccjul736@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-24T12:42:45.410Z] benisuefaccjul737@gmail.com | Login failed: Select a login option
+[2026-07-24T12:44:03.333Z] benisuefaccjul738@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-24T12:44:40.967Z] benisuefaccjul739@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T12:45:21.369Z] benisuefaccjul740@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T12:46:09.148Z] beheiraaccjul741@gmail.com | Login failed: Select a login option
+[2026-07-24T12:46:45.614Z] beheiraaccjul742@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T12:47:26.090Z] beheiraaccjul743@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T12:48:13.555Z] beheiraaccjul744@gmail.com | Login failed: Select a login option
+[2026-07-24T12:48:56.142Z] beheiraaccjul745@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T12:50:32.483Z] beheiraaccjul746@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-24T12:55:29.423Z] beheiraaccjul751@gmail.com | Login failed: Select a login option
+[2026-07-24T12:56:04.970Z] beheiraaccjul752@gmail.com | Login failed: Select a login option
+[2026-07-24T12:56:33.527Z] beheiraaccjul753@gmail.com | Login failed: Select a login option
+[2026-07-24T12:59:50.225Z] wadielgedidaccjul757@gmail.com | Login failed: Select a login option
+[2026-07-24T13:08:21.673Z] gharbiaaccjul768@gmail.com | Login failed: Select a login option
+[2026-07-24T13:25:46.471Z] damiettaaccjul791@gmail.com | Login failed: Select a login option
+[2026-07-24T13:49:50.971Z] cairoaccjul7127@gmail.com | Login failed: Select a login option
+[2026-07-24T17:20:53.509Z] cairoaccjul7112@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()
+Expected: visible
+Received: undefined
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 20000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()[22m
+
+[2026-07-24T18:13:00.620Z] sharqiaaccjul7218@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T18:20:24.869Z] dakahliaaccjul785@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T18:52:01.409Z] elgizaaccjul7243@gmail.com | page.screenshot: Protocol error (Page.captureScreenshot): Unable to capture screenshot
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+[2026-07-24T18:53:44.219Z] elgizaaccjul7245@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T18:54:30.623Z] cairoaccjul7111@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-24T19:06:48.352Z] elfaiyumaccjul7265@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()
+Expected: visible
+Timeout: 20000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 20000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()[22m
+
+[2026-07-24T19:11:32.091Z] southsinaiganubsinaaccjul7273@gmail.com | page.goto: net::ERR_NETWORK_IO_SUSPENDED at https://eg1xbet.com/en/office/recharge
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-24T20:20:33.311Z] southsinaiganubsinaaccjul7274@gmail.com | page.goto: Page crashed
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-24T20:20:36.216Z] beheiraaccjul743@gmail.com | locator.click: Target page, context or browser has been closed
+[2026-07-24T20:21:20.505Z] monufiagovernorateaccjul7180@gmail.com | page.goto: Target page, context or browser has been closed
+[2026-07-24T20:53:43.645Z] asyutaccjul726@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-24T20:53:43.892Z] redseaalbahralahmaraccjul7166@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Received: undefined
+
+[2026-07-24T20:54:45.127Z] ismailiaaccjul797@gmail.com | Login failed: Select a login option
+[2026-07-24T21:11:52.331Z] elgizaaccjul7234@gmail.com | locator.click: Target page, context or browser has been closed
+[2026-07-24T21:20:05.576Z] cairoaccjul7124@gmail.com | Login failed: Select a login option
+[2026-07-24T21:20:33.085Z] cairoaccjul7125@gmail.com | Login failed: Select a login option
+[2026-07-24T21:47:52.512Z] kafrelsheikhgovernorateaccjul7146@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T21:48:35.550Z] kafrelsheikhgovernorateaccjul7147@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T21:49:18.538Z] kafrelsheikhgovernorateaccjul7148@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T21:59:26.536Z] kafrelsheikhgovernorateaccjul7149@gmail.com | locator.fill: Target page, context or browser has been closed
+[2026-07-24T22:26:26.292Z] alexandriaaccjul79@gmail.com | Login failed: Select a login option
+[2026-07-24T22:58:47.958Z] beheiraaccjul744@gmail.com | Login failed: Select a login option
+[2026-07-24T23:03:34.155Z] beheiraaccjul749@gmail.com | Login failed: Select a login option
+[2026-07-24T23:13:50.106Z] wadielgedidaccjul760@gmail.com | Login failed: Select a login option
+[2026-07-24T23:51:41.623Z] ismailiaaccjul7100@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T23:52:26.171Z] ismailiaaccjul7101@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T23:53:17.007Z] cairoaccjul7102@gmail.com | ENOSPC: no space left on device, write
+[2026-07-24T23:57:26.636Z] cairoaccjul7103@gmail.com | locator.click: Target page, context or browser has been closed
+Call log:
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+[2m    - locator resolved to <div id="vodafone_1" data-agent="bt3" data-index="380" data-type="mobile" data-method="vodafone" data-icon="vodafone_bt" data-restrictionmessage="" data-restrictionmessage_link="" data-rawmethod="vodafone_egypt_webdefault" class="payment-cell payment_item r_1 vodafone_bt EG EG  payment-cell--recommended ">…</div>[22m
+[2m  - attempting click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+
+[2026-07-25T00:45:44.280Z] kafrelsheikhgovernorateaccjul7149@gmail.com | Login failed: Select a login option
+[2026-07-25T00:46:30.462Z] kafrelsheikhgovernorateaccjul7150@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T00:47:24.018Z] kafrelsheikhgovernorateaccjul7151@gmail.com | Login failed: Select a login option
+[2026-07-25T00:47:59.436Z] qenaaccjul7152@gmail.com | Login failed: Select a login option
+[2026-07-25T00:49:12.509Z] qenaaccjul7153@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container')
+Expected: visible
+Received: hidden
+Timeout:  15000ms
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 15000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container')[22m
+[2m    30 × locator resolved to <div id="payment_modal_container" class="modal-payment__container modal-payment-container"></div>[22m
+[2m       - unexpected value "hidden"[22m
+
+[2026-07-25T00:51:37.500Z] qenaaccjul7154@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T00:55:30.069Z] kafrelsheikhgovernorateaccjul7151@gmail.com | Login failed: Select a login option
+[2026-07-25T00:56:01.423Z] qenaaccjul7152@gmail.com | Login failed: Select a login option
+[2026-07-25T00:57:22.409Z] qenaaccjul7154@gmail.com | Login failed: Select a login option
+[2026-07-25T01:29:39.215Z] redseaalbahralahmaraccjul7164@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-25T01:30:28.218Z] redseaalbahralahmaraccjul7165@gmail.com | page.waitForTimeout: Target page, context or browser has been closed
+[2026-07-25T02:47:36.516Z] elgizaaccjul7244@gmail.com | page.goto: net::ERR_NETWORK_IO_SUSPENDED at https://eg1xbet.com/en/office/recharge
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-25T02:47:36.493Z] benisuefaccjul735@gmail.com | page.goto: net::ERR_NETWORK_IO_SUSPENDED at https://eg1xbet.com/en/office/recharge
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-25T02:47:36.493Z] matrouhgovernorateaccjul7172@gmail.com | page.goto: net::ERR_NETWORK_IO_SUSPENDED at https://eg1xbet.com/en/office/recharge
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-25T02:47:40.047Z] cairoaccjul7105@gmail.com | page.goto: net::ERR_NETWORK_IO_SUSPENDED at https://eg1xbet.com/en/office/recharge
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-25T03:00:52.788Z] benisuefaccjul736@gmail.com | page.screenshot: Target crashed 
+Call log:
+[2m  - taking page screenshot[22m
+[2m  - waiting for fonts to load...[22m
+[2m  - fonts loaded[22m
+
+[2026-07-25T03:01:03.374Z] matrouhgovernorateaccjul7173@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container')
+Expected: visible
+Received: hidden
+Timeout:  15000ms
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 15000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container')[22m
+[2m    10 × locator resolved to <div id="payment_modal_container" class="modal-payment__container modal-payment-container"></div>[22m
+[2m       - unexpected value "hidden"[22m
+
+[2026-07-25T11:50:43.320Z] qalyubiaaccjul7139@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T11:50:46.490Z] gharbiaaccjul770@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T11:50:46.862Z] alexandriaaccjul71@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T11:50:54.128Z] suezgovernorateaccjul7208@gmail.com | Login failed: Select a login option
+[2026-07-25T11:51:39.843Z] qalyubiaaccjul7140@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T12:02:16.059Z] kafrelsheikhgovernorateaccjul7147@gmail.com | Login failed: Select a login option
+[2026-07-25T12:59:37.700Z] elgizaaccjul7231@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-25T13:00:59.365Z] asyutaccjul716@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-25T13:01:35.652Z] dakahliaaccjul785@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-25T13:01:38.650Z] qenaaccjul7156@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-25T13:10:03.125Z] qenaaccjul7158@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-25T14:11:55.772Z] sharqiaaccjul7227@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()
+Expected: visible
+Timeout: 20000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 20000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()[22m
+
+[2026-07-25T14:34:23.344Z] cairoaccjul7106@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container')
+Expected: visible
+Received: hidden
+Timeout:  15000ms
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 15000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container')[22m
+[2m    31 × locator resolved to <div id="payment_modal_container" class="modal-payment__container modal-payment-container"></div>[22m
+[2m       - unexpected value "hidden"[22m
+
+[2026-07-25T14:38:10.412Z] cairoaccjul7110@gmail.com | Login failed: Select a login option
+[2026-07-25T14:38:11.106Z] elminyaaccjul7256@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T14:42:20.405Z] elminyaaccjul7259@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T14:42:20.423Z] cairoaccjul7113@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T14:42:22.729Z] cairoaccjul7114@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:22.775Z] elminyaaccjul7260@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:24.983Z] cairoaccjul7115@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:25.081Z] elminyaaccjul7261@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:27.279Z] cairoaccjul7116@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:27.432Z] elminyaaccjul7262@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:29.554Z] cairoaccjul7117@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:29.741Z] elfaiyumaccjul7263@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:31.757Z] cairoaccjul7118@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:32.068Z] elfaiyumaccjul7264@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:34.127Z] cairoaccjul7119@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:34.481Z] elfaiyumaccjul7265@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:36.521Z] cairoaccjul7120@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:36.890Z] elfaiyumaccjul7266@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:38.803Z] cairoaccjul7121@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:39.179Z] elfaiyumaccjul7267@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:41.071Z] cairoaccjul7122@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:41.445Z] elfaiyumaccjul7268@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:43.269Z] cairoaccjul7123@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:43.667Z] elfaiyumaccjul7269@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:45.768Z] cairoaccjul7124@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:46.015Z] elfaiyumaccjul7270@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:47.988Z] cairoaccjul7125@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:48.251Z] southsinaiganubsinaaccjul7271@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:50.229Z] cairoaccjul7126@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:50.498Z] southsinaiganubsinaaccjul7272@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:52.437Z] cairoaccjul7127@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:52.823Z] southsinaiganubsinaaccjul7273@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:54.691Z] cairoaccjul7128@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:55.112Z] southsinaiganubsinaaccjul7274@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:57.057Z] cairoaccjul7129@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:57.429Z] southsinaiganubsinaaccjul7275@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:59.278Z] cairoaccjul7130@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:42:59.653Z] southsinaiganubsinaaccjul7276@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:43:01.620Z] cairoaccjul7131@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-07-25T14:43:49.847Z] cairoaccjul7132@gmail.com | Login failed: Select a login option
+[2026-07-25T14:44:38.960Z] qalyubiaaccjul7133@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T14:53:33.645Z] kafrelsheikhgovernorateaccjul7144@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T14:59:35.363Z] qenaaccjul7153@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-25T15:37:45.083Z] monufiagovernorateaccjul7184@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-26T16:56:54.273Z] elgizaaccjul7242@gmail.com | page.goto: net::ERR_NETWORK_IO_SUSPENDED at https://eg1xbet.com/en/office/recharge
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/office/recharge", waiting until "domcontentloaded"[22m
+
+[2026-07-26T16:57:15.042Z] elgizaaccjul7243@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-26T17:33:57.136Z] benisuefaccjul735@gmail.com | Login failed: Select a login option
+[2026-07-27T08:57:07.949Z] northsinaishimalsinaaccjul7191@gmail.com | page.goto: Target page, context or browser has been closed
+[2026-07-27T08:57:29.486Z] beheiraaccjul743@gmail.com | locator.click: Target page, context or browser has been closed
+Call log:
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+[2m    - locator resolved to <div id="vodafone_1" data-agent="bt3" data-index="380" data-type="mobile" data-method="vodafone" data-icon="vodafone_bt" data-restrictionmessage="" data-restrictionmessage_link="" data-rawmethod="vodafone_egypt_webdefault" class="payment-cell payment_item r_1 vodafone_bt EG EG  payment-cell--recommended ">…</div>[22m
+[2m  - attempting click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+
+[2026-07-27T09:06:45.442Z] alexandriaaccjul78@gmail.com | Login failed: Select a login option
+[2026-07-27T09:12:12.370Z] qenaaccjul7160@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#vodafone_1')[22m
+
+[2026-07-27T23:42:15.338Z] northsinaishimalsinaaccjul7189@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('input#username')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 30000ms[22m
+[2m  - waiting for locator('input#username')[22m
+
+[2026-07-28T00:15:13.168Z] sharqiaaccjul7213@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator:  locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#amount')
+Expected: visible
+Received: undefined
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 15000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#amount')[22m
+

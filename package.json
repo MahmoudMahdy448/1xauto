@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "login": "playwright test",
+    "loop": "node run-loop.js",
     "excel": "node scripts/generate-excel.js"
   },
   "devDependencies": {
