@@ -5,3 +5,4 @@ test-results/
 accounts.csv
 screenshots/
 extracted_numbers.xlsx
+.browser-cache/

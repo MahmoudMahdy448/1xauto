@@ -11,6 +11,12 @@ export default defineConfig({
     headless: process.env.HEADLESS === 'true',
     screenshot: 'off',
     trace: 'off',
-    viewport: { width: 1440, height: 960 }
+    viewport: { width: 1440, height: 960 },
+    launchOptions: {
+      args: [
+        `--disk-cache-dir=${process.cwd()}\\.browser-cache`,
+        '--disk-cache-size=1073741824'
+      ]
+    }
   }
 });
