@@ -2,6 +2,15 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.11 — 2026-08-03
+
+Two-phase Azure plan locked in: **Phase A (paid month, $200 credit)** runs the full 276-account batch on a single `Standard_B2ms` (8 GiB, ~$79/mo) with no `LOW_MEMORY` and no sharding; **Phase B (after month)** deallocates the paid VM and falls back to free-tier `B2ats_v2` (1 GiB) VMs with `LOW_MEMORY=true` + 2 GiB swap + `END_INDEX` sharding.
+
+- **New code**: `scripts/vm-setup.sh` RAM auto-detection — detects RAM from `/proc/meminfo`; if `< 2 GiB` adds a 2 GiB swap file and sets `LOW_MEMORY=true` in the cron line; otherwise skips both (full-memory run). Overridable with `LOW_MEMORY=1|0 bash vm-setup.sh`. Cron line still accepts `SHARD_START`/`SHARD_END`/`SHARD_STATE`.
+- **Config**: `.env.example` clarifies `LOW_MEMORY` is ONLY for 1 GiB VMs and auto-set by the provisioning script.
+- Docs: `README_AI.md` → v1.11, `AI_MANIFEST.yaml` `docs_version` → 1.11, `CODEBASE_KNOWLEDGE.md` → v1.8 (§2.5 vm-setup.sh description + env table), `PHASES_TRACKER.md` → v1.9 (P7: two-phase Azure plan recorded).
+- Next action for the operator: provision the B2ms, run `scripts/vm-setup.sh` without shard vars, upload secrets, and confirm the hourly cron completes the full batch + Telegram notifies. After the month: deallocate the B2ms, provision B2ats_v2 shards with `SHARD_*`.
+
 ## v1.10 — 2026-08-03
 
 Sharding landed: `END_INDEX` bounds the batch per run so the 276-account batch can be split across multiple low-RAM VMs (Azure `Standard_B2ats_v2`, 1 GiB). OCI signup is blocked on card verification; Azure work account free tier is now the target runtime.

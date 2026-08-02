@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-# Provision a low-RAM Ubuntu VM (Oracle Always Free A1 or Azure Standard_B2ats_v2, 1 GiB)
-# to run the 1xauto batch via cron. Idempotent — safe to re-run.
+# Provision an Ubuntu VM (Azure Standard_B2ms 8 GiB, Azure B2ats_v2 1 GiB,
+# Oracle Always Free A1, etc.) to run the 1xauto batch via cron. Idempotent.
+#
+# RAM auto-detection: on VMs with < 2 GiB RAM this adds a 2 GiB swap file and
+# enables LOW_MEMORY mode (--single-process Chromium). On bigger VMs (e.g. the
+# paid-month B2ms) neither is applied, so the batch runs with full memory.
+# Override with:  LOW_MEMORY=1 bash vm-setup.sh   (force low-memory mode on)
+#                 LOW_MEMORY=0 bash vm-setup.sh   (force low-memory mode off)
 #
 # Sharding: set SHARD_START, SHARD_END and SHARD_STATE before running so this VM
 # only processes its slice of the batch and keeps its own state file:
@@ -30,15 +36,30 @@ log "Updating apt and installing prerequisites..."
 apt-get update -y
 apt-get install -y curl git unzip ca-certificates gnupg
 
-log "Adding swap (2 GiB) for low-RAM instances (B2ats_v2 = 1 GiB)..."
-if ! swapon --show | grep -q '/swapfile'; then
-  fallocate -l 2G /swapfile
-  chmod 600 /swapfile
-  mkswap /swapfile >/dev/null
-  swapon /swapfile
-  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+# --- RAM auto-detection -----------------------------------------------------
+TOTAL_MB=$(awk '/MemTotal/ { printf "%d", $2/1024 }' /proc/meminfo)
+if [[ -n "${LOW_MEMORY:-}" ]]; then
+  ENABLE_LOW_MEMORY="$LOW_MEMORY"
+elif (( TOTAL_MB < 2048 )); then
+  ENABLE_LOW_MEMORY=1
+else
+  ENABLE_LOW_MEMORY=0
 fi
-log "Swap: $(free -h | awk '/^Swap:/ { print $2 }')"
+log "Detected RAM: ${TOTAL_MB} MiB → LOW_MEMORY=${ENABLE_LOW_MEMORY}"
+
+if [[ "$ENABLE_LOW_MEMORY" == "1" ]]; then
+  log "Adding swap (2 GiB) for low-RAM instances (B2ats_v2 = 1 GiB)..."
+  if ! swapon --show | grep -q '/swapfile'; then
+    fallocate -l 2G /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile >/dev/null
+    swapon /swapfile
+    echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  fi
+  log "Swap: $(free -h | awk '/^Swap:/ { print $2 }')"
+else
+  log "RAM ≥ 2 GiB — skipping swap file (not needed)."
+fi
 
 log "Installing Node.js 22 (NodeSource)..."
 if ! command -v node >/dev/null 2>&1; then
@@ -64,7 +85,9 @@ SHARD_ENV=""
 if [[ -n "${SHARD_START:-}" ]]; then SHARD_ENV="$SHARD_ENV START_INDEX=$SHARD_START"; fi
 if [[ -n "${SHARD_END:-}" ]]; then SHARD_ENV="$SHARD_ENV END_INDEX=$SHARD_END"; fi
 if [[ -n "${SHARD_STATE:-}" ]]; then SHARD_ENV="$SHARD_ENV STATE_FILE=$SHARD_STATE"; fi
-CRON_LINE="0 * * * * cd $APP_DIR && LOW_MEMORY=true$SHARD_ENV $(command -v node) $APP_DIR/scripts/scheduled-run.mjs >> $APP_DIR/logs/cron.log 2>&1"
+LOW_MEMORY_ENV=""
+if [[ "$ENABLE_LOW_MEMORY" == "1" ]]; then LOW_MEMORY_ENV="LOW_MEMORY=true"; fi
+CRON_LINE="0 * * * * cd $APP_DIR && $LOW_MEMORY_ENV$SHARD_ENV $(command -v node) $APP_DIR/scripts/scheduled-run.mjs >> $APP_DIR/logs/cron.log 2>&1"
 ( crontab -u "$RUN_USER" -l 2>/dev/null || true; echo "$CRON_LINE" ) | crontab -u "$RUN_USER" -
 log "Cron installed for $RUN_USER: $CRON_LINE"
 
@@ -76,4 +99,8 @@ fi
 
 log "Done. Verify with:  crontab -l -u $RUN_USER"
 log "First live run (after .env + accounts.csv are in place):"
-log "  cd $APP_DIR && ALLOW_LIVE_RUN=true HEADLESS=true LOW_MEMORY=true node scripts/scheduled-run.mjs"
+if [[ "$ENABLE_LOW_MEMORY" == "1" ]]; then
+  log "  cd $APP_DIR && ALLOW_LIVE_RUN=true HEADLESS=true LOW_MEMORY=true node scripts/scheduled-run.mjs"
+else
+  log "  cd $APP_DIR && ALLOW_LIVE_RUN=true HEADLESS=true node scripts/scheduled-run.mjs"
+fi
