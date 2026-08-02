@@ -10,6 +10,7 @@ const lowMemory = process.env.LOW_MEMORY === 'true';
 
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.js',
   timeout: 0,
   use: {
     // CI (playwright.yml) must set HEADLESS=true; local dev stays headed by default.
