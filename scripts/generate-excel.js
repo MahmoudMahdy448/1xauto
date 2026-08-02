@@ -1,10 +1,12 @@
-import { readdirSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 
 const screenshotsDir = path.resolve(process.cwd(), 'screenshots');
 
-const files = readdirSync(screenshotsDir).filter((f) => f.endsWith('.png'));
+const files = existsSync(screenshotsDir)
+  ? readdirSync(screenshotsDir).filter((f) => f.endsWith('.png'))
+  : [];
 
 const numbers = files
   .map((f) => {
