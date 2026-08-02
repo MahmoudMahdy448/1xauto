@@ -7,12 +7,14 @@ import { buildScreenshotPath, extractPhoneNumber, fallbackScreenshotPath } from 
 import { buildSummary } from '../lib/runSummary.js';
 import { parseProxyUrl, maskProxyPassword } from '../lib/proxy.js';
 import { backoffDelay, readMaxRetries, runWithRetry } from '../lib/retry.js';
+import { readState, writeState, resolveStartIndex } from '../lib/state.js';
 
 const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
 const accountVerificationUrl = /\/en\/user\/accountverify(?:[/?#]|$)/;
 const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
 const failuresLogPath = path.resolve(process.cwd(), 'logs', 'failed-accounts.log');
+const stateFilePath = process.env.STATE_FILE || path.resolve(process.cwd(), 'state.json');
 const screenshotCounts = new Map();
 const uniqueNumbers = new Set();
 
@@ -233,6 +235,18 @@ async function runAccountFlowWithRetry(createContext, account, index, total, opt
         if (options.onRetry) {
           options.onRetry({ account, retryOrdinal, error, category, delayMs });
         }
+      },
+      onSuccess: (outcome) => {
+        if (options.onSuccess) {
+          return options.onSuccess({ account, index, total, ...outcome });
+        }
+        return undefined;
+      },
+      onFailure: (outcome) => {
+        if (options.onFailure) {
+          return options.onFailure({ account, index, total, ...outcome });
+        }
+        return undefined;
       }
     }
   );
@@ -256,9 +270,35 @@ test('sign in to 1xBet', async ({ browser }) => {
   const maxRetries = readMaxRetries();
   const runStats = { total: 0, succeeded: 0, failed: 0, retries: 0, categories: {} };
 
+  const batchId = process.env.BATCH_ID || new Date().toISOString();
+  let state = readState(stateFilePath);
+
+  if (process.env.BATCH_ID && state && state.batchId !== process.env.BATCH_ID) {
+    console.log(
+      `BATCH_ID changed (state=${state.batchId} vs env=${process.env.BATCH_ID}); starting fresh at 1`
+    );
+    state = null;
+  }
+
+  const startIndexEnv = process.env.START_INDEX;
+  let explicitStartIndex;
+  if (startIndexEnv) {
+    explicitStartIndex = parseInt(startIndexEnv, 10);
+    if (isNaN(explicitStartIndex) || explicitStartIndex < 1) {
+      throw new Error(`Invalid START_INDEX: "${startIndexEnv}". It must be a positive integer starting from 1.`);
+    }
+  }
+
+  const startIndex = resolveStartIndex(state, explicitStartIndex);
+  console.log(`Start index resolved to ${startIndex} (${state ? `state.lastProcessedIndex=${state.lastProcessedIndex}` : 'no state'}${explicitStartIndex ? `, START_INDEX=${explicitStartIndex}` : ''})`);
+
+  if (startIndex > accounts.length) {
+    console.warn(`Warning: start index (${startIndex}) is greater than the total number of accounts (${accounts.length}). No accounts will be processed.`);
+  }
+
   if (process.env.DRY_RUN === 'true') {
     console.log(
-      `[dry-run] ${accounts.length} account(s) parsed; summary=${JSON.stringify(buildSummary())}; proxy=${proxy ? 'enabled' : 'disabled'}; maxRetries=${maxRetries}`
+      `[dry-run] ${accounts.length} account(s) parsed; summary=${JSON.stringify(buildSummary())}; proxy=${proxy ? 'enabled' : 'disabled'}; maxRetries=${maxRetries}; startIndex=${startIndex}`
     );
     return;
   }
@@ -269,19 +309,19 @@ test('sign in to 1xBet', async ({ browser }) => {
     console.log('Phase: proxy disabled (PROXY_URL unset)');
   }
   console.log(`Phase: retry ladder enabled -> maxRetries=${maxRetries}`);
+  console.log(`Phase: state persistence enabled -> ${stateFilePath}`);
 
-  const startIndexEnv = process.env.START_INDEX;
-  let startIndex = 1;
-  if (startIndexEnv) {
-    startIndex = parseInt(startIndexEnv, 10);
-    if (isNaN(startIndex) || startIndex < 1) {
-      throw new Error(`Invalid START_INDEX: "${startIndexEnv}". It must be a positive integer starting from 1.`);
-    }
-    console.log(`START_INDEX is set. Starting execution from record ${startIndex}`);
-    if (startIndex > accounts.length) {
-      console.warn(`Warning: START_INDEX (${startIndex}) is greater than the total number of accounts (${accounts.length}). No accounts will be processed.`);
-    }
-  }
+  const persistState = (lastProcessedIndex) => {
+    writeState(
+      {
+        batchId,
+        lastProcessedIndex,
+        totalAccounts: accounts.length,
+        updatedAt: new Date().toISOString()
+      },
+      stateFilePath
+    );
+  };
 
   for (const [index, account] of accounts.entries()) {
     if (index + 1 < startIndex) {
@@ -293,7 +333,11 @@ test('sign in to 1xBet', async ({ browser }) => {
       account,
       index,
       accounts.length,
-      { maxRetries }
+      {
+        maxRetries,
+        onSuccess: () => persistState(index + 1),
+        onFailure: () => persistState(index + 1)
+      }
     );
     const elapsedMs = Date.now() - startedAt;
 

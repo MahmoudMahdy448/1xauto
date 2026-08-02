@@ -23,10 +23,26 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      - name: Restore state cache
+        uses: actions/cache@v4
+        with:
+          path: state.json
+          key: batch-state-${{ github.run_id }}
+          restore-keys: |
+            batch-state-
+
       - name: Run login flow
         env:
           HEADLESS: 'true'
           ONEXBET_USERNAME: ${{ secrets.ONEXBET_USERNAME }}
           ONEXBET_PASSWORD: ${{ secrets.ONEXBET_PASSWORD }}
           ONEXBET_SURNAME: ${{ secrets.ONEXBET_SURNAME }}
+          PROXY_URL: ${{ secrets.PROXY_URL }}
+          MAX_RETRIES: ${{ vars.MAX_RETRIES }}
         run: npm run login
+
+      - name: Save state cache
+        uses: actions/cache@v4
+        with:
+          path: state.json
+          key: batch-state-${{ github.run_id }}

@@ -181,3 +181,65 @@ test('runWithRetry: passes attempt-scaled delay to backoffDelay', async () => {
   assert.equal(result.outcome, 'success');
   assert.deepEqual(seenDelays, [0, 1]);
 });
+
+test('runWithRetry: calls onSuccess on success', async () => {
+  const events = [];
+  const result = await runWithRetry(
+    async () => 'ok',
+    {
+      maxRetries: 2,
+      delayFn: noDelay,
+      onSuccess: (outcome) => events.push(outcome)
+    }
+  );
+
+  assert.equal(result.outcome, 'success');
+  assert.equal(events.length, 1);
+  assert.equal(events[0].value, 'ok');
+  assert.equal(events[0].retries, 0);
+});
+
+test('runWithRetry: calls onFailure only after exhausting retries', async () => {
+  const events = [];
+  const result = await runWithRetry(
+    async () => {
+      throw new Error('net::ERR_CONNECTION_CLOSED');
+    },
+    {
+      maxRetries: 3,
+      delayFn: noDelay,
+      onFailure: (outcome) => events.push(outcome)
+    }
+  );
+
+  assert.equal(result.outcome, 'failure');
+  assert.equal(events.length, 1);
+  assert.equal(events[0].category, 'network');
+  assert.equal(events[0].retries, 2);
+});
+
+test('runWithRetry: onSuccess/onFailure receive retries count', async () => {
+  const successEvents = [];
+  const failureEvents = [];
+  let calls = 0;
+
+  await runWithRetry(
+    async () => {
+      calls += 1;
+      if (calls === 1) {
+        throw new Error('net::ERR_CONNECTION_CLOSED');
+      }
+      return 'ok';
+    },
+    {
+      maxRetries: 2,
+      delayFn: noDelay,
+      onSuccess: (outcome) => successEvents.push(outcome),
+      onFailure: (outcome) => failureEvents.push(outcome)
+    }
+  );
+
+  assert.equal(successEvents.length, 1);
+  assert.equal(successEvents[0].retries, 1);
+  assert.equal(failureEvents.length, 0);
+});

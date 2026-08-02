@@ -2,6 +2,20 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.6 — 2026-08-02
+
+P4 (resume state) implemented; C4 verified locally.
+
+- **P4 code**: `lib/state.js` full implementation — `readState` (`null` when missing/invalid JSON), `writeState` (atomic: tmp file → `fsyncSync` → `renameSync`; recursive dir creation), `resolveStartIndex` (explicit `START_INDEX` > `lastProcessedIndex + 1` > 1). File: 17 → 52 lines.
+- `lib/retry.js`: `runWithRetry` gained `onSuccess`/`onFailure` hooks (each `?? (async () => {})`) — called exactly once per account on its final outcome; `onRetry` already existed. Logic stays in `lib/retry.js`. File: 95 → 99 lines.
+- `tests/login.spec.js`: imports `readState`/`writeState`/`resolveStartIndex`; `runAccountFlowWithRetry` forwards `onSuccess`/`onFailure`; test body computes `batchId` (`BATCH_ID` env or ISO timestamp), reads state, resets to `null` on `BATCH_ID` mismatch, resolves start index via `resolveStartIndex`, logs the resolved start index, writes `{ batchId, lastProcessedIndex, totalAccounts, updatedAt }` after every account through the hooks; DRY_RUN log now includes `startIndex`. Spec 337 → 381 lines.
+- `.gitignore` → 9 lines: added `state.json`.
+- `.github/workflows/playwright.yml` → 48 lines: `actions/cache@v4` restore (`key: batch-state-${{ github.run_id }}`, `restore-keys: batch-state-`) before run; `PROXY_URL` secret + `MAX_RETRIES` var env; cache save step (`path: state.json`) after run.
+- Tests: `tests/unit/state.test.js` (66) expanded with atomic-write/resume cases (unique per-call temp dirs fix parallel `node:test` collisions) + `tests/unit/retry.test.js` (245) hook cases. `npm test` 52/52 green.
+- C4 verified manually (DRY_RUN): state `lastProcessedIndex=3` → "Start index resolved to 4"; `START_INDEX=7` overrides state; `BATCH_ID` change → "starting fresh at 1"; no-state → 1. No `.tmp` leftovers.
+- Docs: `CODEBASE_KNOWLEDGE.md` → v1.3 (File Index + function table + §2.4 workflow + Feature 7 resume + §5.3/§8.3/§8.6 notes); `PHASES_TRACKER.md` → v1.4 (P4 Completed, C4 PASS, P2/P3 commit hashes recorded); `README_AI.md` → v1.6 and `AI_MANIFEST.yaml` `docs_version` → 1.6.
+- C1 remains blocked by the GitHub billing lock (§0.4 external blocker — P1 stays In Progress).
+
 ## v1.5 — 2026-08-02
 
 P3 (proxy support + retry ladder) implemented; C3 verified locally.

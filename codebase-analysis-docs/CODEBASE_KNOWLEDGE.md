@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.2
+> **Version**: 1.3
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -158,12 +158,13 @@ accounts.csv  ----+
 
 ### 2.4 GitHub Actions Workflow
 
-- **File**: `.github/workflows/playwright.yml` (31 lines)
+- **File**: `.github/workflows/playwright.yml` (48 lines)
 - **Trigger**: `workflow_dispatch` (manual only)
 - **Runner**: `ubuntu-latest`
-- **Steps**: Checkout -> Node 20 (`npm install`) -> `npx playwright install chromium` -> `npm run login`
-- **Secrets**: `ONEXBET_USERNAME`, `ONEXBET_PASSWORD`, `ONEXBET_SURNAME`
-- **Limitation (broken as analyzed)**: no `HEADLESS: 'true'` in the run step, so Playwright launches **headed** on the headless `ubuntu-latest` runner; and `playwright install` omits `--with-deps`, so Chromium's OS libraries are missing. The job cannot launch Chromium today. It also cannot handle manual CAPTCHAs in CI.
+- **Steps**: Checkout -> Node 20 (`npm install`) -> restore state cache (`actions/cache` key `batch-state-${{ github.run_id }}`, restore-keys `batch-state-`) -> `npx playwright install chromium` -> `npm run login` -> save state cache (`path: state.json`)
+- **Secrets**: `ONEXBET_USERNAME`, `ONEXBET_PASSWORD`, `ONEXBET_SURNAME`, `PROXY_URL`
+- **Vars**: `MAX_RETRIES` (retry ladder tunable)
+- **Limitation (broken as analyzed)**: no `HEADLESS: 'true'` in the run step, so Playwright launches **headed** on the headless `ubuntu-latest` runner; and `playwright install` omits `--with-deps`, so Chromium's OS libraries are missing. The job cannot launch Chromium today. It also cannot handle manual CAPTCHAs in CI. (Both will be fixed in P1/P2 CI env work.)
 
 ---
 
@@ -171,25 +172,25 @@ accounts.csv  ----+
 
 | Priority | Path | Lines | Purpose |
 |----------|------|-------|---------|
-| **+ (core)** | `tests/login.spec.js` | 337 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop with retry ladder, proxy wiring, run stats, Excel generation (pure helpers live in `lib/`) |
+| **+ (core)** | `tests/login.spec.js` | 381 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop with retry ladder, proxy wiring, state persistence (resume), run stats, Excel generation (pure helpers live in `lib/`) |
 | **+ (core)** | `lib/csv.js` | 85 | Pure CSV parsing + account loading: `parseCsvLine`, `parseCsv`, `loadAccounts`, `getAccountsToProcess` |
 | **+ (core)** | `lib/extractor.js` | 26 | Pure helpers: `extractPhoneNumber`, `buildScreenshotPath`, `fallbackScreenshotPath` |
-| **+ (stub)** | `lib/state.js` | 17 | `readState`/`writeState` no-op stubs; `resolveStartIndex` implemented (P4 wires `state.json`) |
-| **+ (core)** | `lib/retry.js` | 95 | Full retry ladder: `classifyError`, `isRetryable`, `readMaxRetries`, `backoffDelay`, `runWithRetry` (P3) |
+| **+ (core)** | `lib/state.js` | 52 | State persistence (P4): `readState`, atomic `writeState` (tmp→fsync→rename), `resolveStartIndex` |
+| **+ (core)** | `lib/retry.js` | 99 | Full retry ladder: `classifyError`, `isRetryable`, `readMaxRetries`, `backoffDelay`, `runWithRetry` (P3 + onSuccess/onFailure hooks P4) |
 | **+ (core)** | `lib/proxy.js` | 47 | Full proxy parsing: `parseProxyUrl` (throws on malformed), `maskProxyPassword` (P3) |
 | **+ (stub)** | `lib/runSummary.js` | 8 | Stub: `buildSummary` returns default counters (P5 fills) |
-| **+ (tests)** | `tests/unit/*.test.js` | 6 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy suites expanded in P3) |
+| **+ (tests)** | `tests/unit/*.test.js` | 6 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy/state suites expanded P3–P4) |
 | **+ (config)** | `playwright.config.js` | 23 | Playwright runner config: test dir, timeout=0, headless toggle (CI must set `HEADLESS=true`), viewport 1440x960, Chromium disk-cache launch args (`.browser-cache`) |
 | **+ (config)** | `package.json` | 19 | Project metadata, npm scripts (`login`, `loop`, `excel`, `test`) |
-| **+ (runner)** | `run-loop.js` | 26 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` |
+| **+ (runner)** | `run-loop.js` | 26 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` (state-driven resume supersedes it after P4 — use plain `npm run login`) |
 | **+ (template)** | `.env.example` | 5 | Template for required env vars + optional `PROXY_URL` + optional `MAX_RETRIES` |
 | **+ (utility)** | `scripts/generate-excel.js` | 30 | Standalone utility: scans `screenshots/` dir for phone-number filenames, generates `extracted_numbers.xlsx` |
-| **+ (CI)** | `.github/workflows/playwright.yml` | 32 | GitHub Actions workflow: installs Chromium `--with-deps`, runs headless |
+| **+ (CI)** | `.github/workflows/playwright.yml` | 48 | GitHub Actions workflow: installs Chromium `--with-deps`, state cache restore/save (`batch-state`), runs headless |
 | **+ (CI)** | `.github/workflows/docs-validation.yml` | 28 | Validates the AI doc set on push/PR (runs `.github/scripts/validate-docs.mjs`) |
 | **+ (docs)** | `README.md` | 74 | Setup instructions, usage, output files |
 | **- (log)** | `logs/failed-accounts.log` | 1300+ | Append-only failure log with timestamps and error details |
 | **- (meta)** | `deleting clones.txt` | 5 | PowerShell snippets for finding/deleting duplicate directories |
-| **- (config)** | `.gitignore` | 8 | Ignores node_modules, .env, accounts.csv, screenshots, test-results, extracted_numbers.xlsx, .browser-cache |
+| **- (config)** | `.gitignore` | 9 | Ignores node_modules, .env, accounts.csv, screenshots, test-results, extracted_numbers.xlsx, .browser-cache, state.json |
 
 *File Index is the live structural map, maintained per phase. Granular line-number references in §4–§5 describe the `dfa181b` analyzed snapshot; re-verify them when the analysis is next refreshed.*
 
@@ -334,17 +335,21 @@ accounts.csv  ----+
 
 ### Feature 7: Batch Processing with Resume Support
 
-**Purpose**: Process a large number of accounts sequentially, with the ability to resume from a specific index.
+**Purpose**: Process a large number of accounts sequentially, with the ability to resume from a specific index — automatically across crashes (P4) or explicitly via `START_INDEX`.
 
 **Technical Details**:
 
-- **Loop**: Sequential `for...of` over accounts (line 325) -- accounts are processed one at a time, not in parallel
-- **Browser isolation**: Each account gets a fresh `browser.newContext()` + `page` (lines 329-330) -- no session leakage
-- **START_INDEX**: Env var (1-based) to skip accounts before that index (lines 312-323)
-- **Cleanup**: Each iteration closes page and context in `finally` block (lines 340-346), with a 2-second delay between accounts (line 341)
-- **Error isolation**: Failures are caught per-account, logged, and the loop continues (lines 334-338)
+- **Loop**: Sequential `for...of` over accounts -- accounts are processed one at a time, not in parallel
+- **Browser isolation**: Each account gets a fresh `browser.newContext()` + `page` -- no session leakage
+- **State file (`state.json`)**: Written **after each account's final outcome** (success or exhausted retries) via the `onSuccess`/`onFailure` hooks. Format: `{ "batchId", "lastProcessedIndex", "totalAccounts", "updatedAt" }`. `lastProcessedIndex` is 1-based (the number of accounts fully processed). A crash loses only the in-flight account.
+- **Resume precedence**: `START_INDEX` env (explicit) > `state.lastProcessedIndex + 1` (from state file) > `1` (fresh). See `resolveStartIndex()` (`lib/state.js:42-52`).
+- **BATCH_ID**: When `BATCH_ID` is provided and differs from the state file's `batchId`, the run starts fresh at index 1 (new batch). When unset, the current run's timestamp becomes the batch ID.
+- **STATE_FILE**: Env var to relocate the state file (default `./state.json`). Atomic writes (tmp -> fsync -> rename) prevent partial/corrupt state on crash.
+- **START_INDEX**: Env var (1-based) to skip accounts before that index; overrides state when present.
+- **Cleanup**: Each iteration closes page and context in `finally` block, with a delay between accounts
+- **Error isolation**: Failures are caught per-account, logged, and the loop continues
 
-**Interactions**: The `screenshotCounts` and `uniqueNumbers` global Maps persist across the entire batch run (cleared at test start, line 302-303).
+**Interactions**: The `screenshotCounts` and `uniqueNumbers` global Maps persist across the entire batch run (cleared at test start). State is persisted through the retry hooks, so it reflects final outcomes only.
 
 ---
 
@@ -432,6 +437,7 @@ accounts.csv  ----+
 - **2-second delay between accounts** -- likely to avoid rate limiting.
 - **30-second timeout** on most locator waits -- conservative to account for slow loads.
 - **Retry ladder (P3)**: each account runs via `runAccountFlowWithRetry`; retryable errors (`network`, `browserClosed`, `disk`, `domTimeout`) retry with exponential backoff up to `MAX_RETRIES` (default 2 = 1 initial + 1 retry); non-retryable errors (`loginRejected`, `validation`, `other`) fail immediately. `logFailure()` runs only after the final attempt.
+- **State persistence (P4)**: `state.json` is written atomically after every account's final outcome via the `onSuccess`/`onFailure` hooks. Crash resilience means the next run resumes at `lastProcessedIndex + 1`, losing only the in-flight account. State file is gitignored.
 - **Disk usage**: Each run generates screenshots (PNG files). The `ENOSPC` errors in the log show this can fill disk on long runs.
 
 ### 5.4 Platform Notes
@@ -472,7 +478,9 @@ accounts.csv  ----+
 | **Payment iframe** | An embedded iframe on the recharge page that hosts payment system UIs (Vodafone, etc.). |
 | **Egyptian mobile number** | An 11-digit number starting with `01` (regex: `01\d{9}`). |
 | **Copy button** | UI element in the payment modal that contains the phone number for copying. |
-| **START_INDEX** | Environment variable to resume batch processing from a specific 1-based record number. |
+| **START_INDEX** | Environment variable to resume batch processing from a specific 1-based record number. Overrides the state file when set. |
+| **STATE_FILE** | Environment variable for the state file path (default `./state.json`). Written atomically after each account. |
+| **BATCH_ID** | Optional batch identifier. When it differs from the state file's `batchId`, the run restarts fresh at index 1. |
 | **Browser context** | Playwright's isolated browser session -- each account gets a fresh one to prevent session leakage. |
 
 ### 7.2 Key Functions and Their Locations
@@ -486,20 +494,21 @@ accounts.csv  ----+
 | `extractPhoneNumber(text)` | `lib/extractor.js` | 5-8 | First `/01\d{9}/` match or `''` |
 | `buildScreenshotPath(number, count, existing)` | `lib/extractor.js` | 10-23 | `01xxxxxxxxx.png`, then `01xxxxxxxxx(n).png`, skipping existing files |
 | `fallbackScreenshotPath(timestamp)` | `lib/extractor.js` | 25-26 | Timestamped fallback path when no number found |
-| `readState() / writeState()` | `lib/state.js` | 1-4 | P4 stubs (no-op) |
-| `resolveStartIndex(state, explicit)` | `lib/state.js` | 6-15 | Explicit wins; else `lastProcessedIndex + 1`; else `1` |
-| `classifyError(err)` | `lib/retry.js` | 8-19 | Categories: `network`/`browserClosed`/`disk`/`domTimeout` (retryable); `loginRejected`/`validation` (not retryable); `other` |
-| `isRetryable(err)` | `lib/retry.js` | 21-23 | True iff `classifyError(err).retryable` |
-| `readMaxRetries(env)` | `lib/retry.js` | 25-38 | `MAX_RETRIES` (default 2, integer >= 1, validated) |
-| `backoffDelay(attempt, opts)` | `lib/retry.js` | 40-48 | `Math.min(2000 * 2**attempt, 15000) + [0,1000)` jitter |
-| `runWithRetry(attemptFn, opts)` | `lib/retry.js` | 56-95 | Generic retry engine: runs `attemptFn` up to `maxRetries`, returns `{ outcome, retries, error, category, value }` |
+| `readState(stateFilePath)` | `lib/state.js` | 13-23 | `null` when missing/invalid JSON; parsed state otherwise |
+| `writeState(state, stateFilePath)` | `lib/state.js` | 25-40 | Atomic write: tmp file -> `fsyncSync` -> `renameSync`; creates dir recursively |
+| `resolveStartIndex(state, explicit)` | `lib/state.js` | 42-52 | Explicit wins; else `lastProcessedIndex + 1`; else `1` |
+| `classifyError(err)` | `lib/retry.js` | 22-29 | Categories: `network`/`browserClosed`/`disk`/`domTimeout` (retryable); `loginRejected`/`validation` (not retryable); `other` |
+| `isRetryable(err)` | `lib/retry.js` | 31-33 | True iff `classifyError(err).retryable` |
+| `readMaxRetries(env)` | `lib/retry.js` | 35-47 | `MAX_RETRIES` (default 2, integer >= 1, validated) |
+| `backoffDelay(attempt, opts)` | `lib/retry.js` | 49-58 | `Math.min(2000 * 2**attempt, 15000) + [0,1000)` jitter |
+| `runWithRetry(attemptFn, opts)` | `lib/retry.js` | 64-99 | Generic retry engine: runs `attemptFn` up to `maxRetries`; calls `onRetry` (per retry), `onSuccess` (final success), `onFailure` (final failure); returns `{ outcome, retries, error, category, value }` |
 | `parseProxyUrl(url)` | `lib/proxy.js` | 2-38 | `null` if unset; `{ server, username?, password? }`; throws on malformed URL/protocol/missing host |
 | `maskProxyPassword(url)` | `lib/proxy.js` | 40-46 | Redact `:pass@` -> `:***@` for safe logging |
 | `buildSummary()` | `lib/runSummary.js` | 1-8 | P5 stub returning default counters |
-| `logFailure(account, error)` | `tests/login.spec.js` | 17-23 | Append failure entry to log file |
-| `runAccountFlow(page, account, index, total)` | `tests/login.spec.js` | 25-204 | **Main flow**: login, verify, recharge, extract, screenshot |
-| `runAccountFlowWithRetry(createContext, account, index, total, opts)` | `tests/login.spec.js` | 209-241 | **Retry controller**: fresh context per attempt, backoff, retry logging, cleanup (P3) |
-| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 243-337 | **Test entry point**: loads accounts, resolves proxy, runs batch loop with retry + run stats, generates Excel (DRY_RUN short-circuit) |
+| `logFailure(account, error)` | `tests/login.spec.js` | 21-27 | Append failure entry to log file |
+| `runAccountFlow(page, account, index, total)` | `tests/login.spec.js` | 29-208 | **Main flow**: login, verify, recharge, extract, screenshot |
+| `runAccountFlowWithRetry(createContext, account, index, total, opts)` | `tests/login.spec.js` | 211-243 | **Retry controller**: fresh context per attempt, backoff, retry logging, forwards `onSuccess`/`onFailure` hooks for state persistence, cleanup (P3/P4) |
+| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 257-381 | **Test entry point**: loads accounts, resolves proxy, resolves start index from state (BATCH_ID/START_INDEX), runs batch loop with retry + run stats, writes state after each account, generates Excel (DRY_RUN short-circuit) |
 | main logic | `scripts/generate-excel.js` | 1-30 | Standalone Excel generator from screenshot filenames |
 | top-level loop | `run-loop.js` | 13-25 | Infinite re-run of `npm run login` with cooldown (see Feature 9) |
 
@@ -579,11 +588,12 @@ The current architecture processes accounts **sequentially**. To add parallelism
 
 ### 8.3 Adding Retry Logic
 
-Implemented in P3 (see §5.3 and §7.2).
+Implemented in P3 (see §5.3 and §7.2). State persistence for resume was added in P4 via the retry outcome hooks.
 
 - Per-account retry is handled by `runAccountFlowWithRetry()` (`tests/login.spec.js`), which delegates the attempt/backoff/classification loop to `runWithRetry()` (`lib/retry.js`).
 - Tune `MAX_RETRIES` (default 2) and the backoff constants (`RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`) in `lib/retry.js`.
 - Extend classification by adding a new pattern entry to `CATEGORY_RULES` in `lib/retry.js`.
+- The `onSuccess`/`onFailure` hooks (`lib/retry.js:68-69`) fire exactly once per account on the final outcome. They are the designated extension points for telemetry, run summaries, and notifications (see reviewer deferral note).
 
 ### 8.4 Modifying the CSV Format
 
@@ -603,7 +613,7 @@ The CSV parser in `parseCsvLine()` (line 14-41) handles standard CSV with double
 | **Selector management** | Inline CSS selectors | Page Object Model pattern |
 | **Rate limiting** | 2-second fixed delay | Adaptive delay, exponential backoff |
 | **Monitoring** | None | Progress bar, completion stats |
-| **Testing** | None (no unit tests) | Unit tests for CSV parser, number extraction |
+| **Testing** | `node:test` unit tests for `lib/*` (`npm test`; retry/proxy/state suites) | E2E coverage, edge-case fixtures |
 
 ### 8.6 Things You Must Know Before Changing Code
 
@@ -613,10 +623,11 @@ The CSV parser in `parseCsvLine()` (line 14-41) handles standard CSV with double
 4. **The `page.screenshot()` clip** uses the viewport width and modal height -- if you change the viewport size, screenshots will change.
 5. **The payment iframe is cross-origin** -- Playwright's `frameLocator` handles this, but be aware that JavaScript evaluation inside the iframe may be restricted.
 6. **No Page Object Model** -- all selectors are inline in `runAccountFlow()`. Any UI change requires editing this 190-line function.
-7. **The `START_INDEX` is off-by-one sensitive** -- it is 1-based for users but the loop uses 0-based indexing internally.
+7. **The `START_INDEX` is off-by-one sensitive** -- it is 1-based for users but the loop uses 0-based indexing internally. State (`lastProcessedIndex`) is the count of fully-processed accounts, so `resolveStartIndex` adds 1.
 8. **The `scripts/generate-excel.js` and the in-test Excel generation are independent** -- they produce the same output but from different inputs (filenames vs. runtime Set).
 9. **The `logs/failed-accounts.log` accumulates across runs** -- never automatically cleaned. Consider rotation.
 10. **The GitHub Actions workflow runs headless** -- it cannot handle manual CAPTCHA/OTP. It only works for accounts that do not trigger security challenges.
+11. **`state.json` is gitignored** and written atomically (tmp -> fsync -> rename) so a crash never leaves corrupt state. `BATCH_ID` mismatch and `START_INDEX` both reset the starting point deliberately.
 
 ---
 
