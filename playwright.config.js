@@ -16,7 +16,8 @@ export default defineConfig({
     launchOptions: {
       args: [
         `--disk-cache-dir=${process.cwd()}\\.browser-cache`,
-        '--disk-cache-size=1073741824'
+        '--disk-cache-size=1073741824',
+        ...(process.env.LOW_MEMORY === 'true' ? ['--single-process', '--disable-gpu', '--no-sandbox'] : [])
       ]
     }
   }

@@ -3,6 +3,7 @@
 # resumes from state.json, and posts the run-summary to Telegram via scripts/notify.js.
 #
 # Install: copy this line into `crontab -e` and adjust the path.
-#   0 * * * * cd /opt/1xauto && /usr/bin/node /opt/1xauto/scripts/scheduled-run.mjs >> /var/log/1xauto-cron.log 2>&1
+# On low-RAM VMs (e.g. Azure B2ats_v2, 1 GiB), add LOW_MEMORY=true:
+#   0 * * * * cd /opt/1xauto && LOW_MEMORY=true /usr/bin/node /opt/1xauto/scripts/scheduled-run.mjs >> /var/log/1xauto-cron.log 2>&1
 #
 # Also install a systemd timer if you prefer that over cron (see roadmap P7).

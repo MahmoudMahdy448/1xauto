@@ -4,7 +4,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const dryRun = process.argv.includes('--dry-run');
-const env = { ...process.env, HEADLESS: 'true', ALLOW_LIVE_RUN: 'true', ...(dryRun ? { DRY_RUN: 'true' } : {}) };
+const lowMemory = process.env.LOW_MEMORY === 'true';
+const env = {
+  ...process.env,
+  HEADLESS: 'true',
+  ALLOW_LIVE_RUN: 'true',
+  ...(dryRun ? { DRY_RUN: 'true' } : {}),
+  ...(lowMemory ? { LOW_MEMORY: 'true' } : {})
+};
 
 console.log(`[scheduled-run] starting batch ${new Date().toISOString()}`);
 

@@ -26,6 +26,16 @@ log "Updating apt and installing prerequisites..."
 apt-get update -y
 apt-get install -y curl git unzip ca-certificates gnupg
 
+log "Adding swap (2 GiB) for low-RAM instances (B2ats_v2 = 1 GiB)..."
+if ! swapon --show | grep -q '/swapfile'; then
+  fallocate -l 2G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile >/dev/null
+  swapon /swapfile
+  echo '/swapfile none swap sw 0 0' >> /etc/fstab
+fi
+log "Swap: $(free -h | awk '/^Swap:/ { print $2 }')"
+
 log "Installing Node.js 22 (NodeSource)..."
 if ! command -v node >/dev/null 2>&1; then
   curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
@@ -46,7 +56,7 @@ log "Installing Chromium + OS deps for Playwright..."
 npx playwright install --with-deps chromium
 
 log "Adding cron job (every 60 min)..."
-CRON_LINE="0 * * * * cd $APP_DIR && $(command -v node) $APP_DIR/scripts/scheduled-run.mjs >> $APP_DIR/logs/cron.log 2>&1"
+CRON_LINE="0 * * * * cd $APP_DIR && LOW_MEMORY=true $(command -v node) $APP_DIR/scripts/scheduled-run.mjs >> $APP_DIR/logs/cron.log 2>&1"
 ( crontab -u "$RUN_USER" -l 2>/dev/null || true; echo "$CRON_LINE" ) | crontab -u "$RUN_USER" -
 log "Cron installed for $RUN_USER: $CRON_LINE"
 
@@ -58,4 +68,4 @@ fi
 
 log "Done. Verify with:  crontab -l -u $RUN_USER"
 log "First live run (after .env + accounts.csv are in place):"
-log "  cd $APP_DIR && ALLOW_LIVE_RUN=true HEADLESS=true node scripts/scheduled-run.mjs"
+log "  cd $APP_DIR && ALLOW_LIVE_RUN=true HEADLESS=true LOW_MEMORY=true node scripts/scheduled-run.mjs"
