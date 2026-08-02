@@ -8,7 +8,7 @@ project:
   name: 1xauto
   package_name: 1xbet-login-flow
   app_version: 0.1.0
-  docs_version: 1.4
+  docs_version: 1.5
   repository: https://github.com/MahmoudMahdy448/1xauto
   analyzed_commit: dfa181b
   budget: "$0/month (no paid cloud dependencies)"

@@ -5,6 +5,8 @@ import * as XLSX from 'xlsx';
 import { getAccountsToProcess } from '../lib/csv.js';
 import { buildScreenshotPath, extractPhoneNumber, fallbackScreenshotPath } from '../lib/extractor.js';
 import { buildSummary } from '../lib/runSummary.js';
+import { parseProxyUrl, maskProxyPassword } from '../lib/proxy.js';
+import { backoffDelay, readMaxRetries, runWithRetry } from '../lib/retry.js';
 
 const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
@@ -204,6 +206,40 @@ async function runAccountFlow(page, account, index, total) {
   console.log(`Screenshot saved to: ${finalScreenshotPath}`);
 }
 
+async function runAccountFlowWithRetry(createContext, account, index, total, options) {
+  const maxRetries = options.maxRetries ?? readMaxRetries();
+  const delayFn = options.delayFn ?? backoffDelay;
+  let retriesUsed = 0;
+
+  const result = await runWithRetry(
+    async () => {
+      const context = await createContext();
+      const page = await context.newPage();
+      try {
+        await runAccountFlow(page, account, index, total);
+      } finally {
+        await page.close().catch(() => {});
+        await context.close().catch(() => {});
+      }
+    },
+    {
+      maxRetries,
+      delayFn,
+      onRetry: ({ retryOrdinal, error, category, delayMs }) => {
+        retriesUsed += 1;
+        console.log(
+          `[${index + 1}/${total}] Retrying ${retryOrdinal}/${maxRetries} for ${account.username} after ${delayMs}ms (${category})`
+        );
+        if (options.onRetry) {
+          options.onRetry({ account, retryOrdinal, error, category, delayMs });
+        }
+      }
+    }
+  );
+
+  return { ...result, retries: retriesUsed };
+}
+
 test('sign in to 1xBet', async ({ browser }) => {
   test.setTimeout(0);
   screenshotCounts.clear();
@@ -216,12 +252,23 @@ test('sign in to 1xBet', async ({ browser }) => {
     throw new Error('No accounts available. Add rows to accounts.csv or set environment variables.');
   }
 
+  const proxy = parseProxyUrl(process.env.PROXY_URL);
+  const maxRetries = readMaxRetries();
+  const runStats = { total: 0, succeeded: 0, failed: 0, retries: 0, categories: {} };
+
   if (process.env.DRY_RUN === 'true') {
     console.log(
-      `[dry-run] ${accounts.length} account(s) parsed; summary=${JSON.stringify(buildSummary())}`
+      `[dry-run] ${accounts.length} account(s) parsed; summary=${JSON.stringify(buildSummary())}; proxy=${proxy ? 'enabled' : 'disabled'}; maxRetries=${maxRetries}`
     );
     return;
   }
+
+  if (proxy) {
+    console.log(`Phase: proxy enabled -> ${maskProxyPassword(process.env.PROXY_URL)}`);
+  } else {
+    console.log('Phase: proxy disabled (PROXY_URL unset)');
+  }
+  console.log(`Phase: retry ladder enabled -> maxRetries=${maxRetries}`);
 
   const startIndexEnv = process.env.START_INDEX;
   let startIndex = 1;
@@ -240,25 +287,41 @@ test('sign in to 1xBet', async ({ browser }) => {
     if (index + 1 < startIndex) {
       continue;
     }
-    const context = await browser.newContext();
-    const page = await context.newPage();
+    const startedAt = Date.now();
+    const result = await runAccountFlowWithRetry(
+      () => browser.newContext(proxy ? { proxy } : {}),
+      account,
+      index,
+      accounts.length,
+      { maxRetries }
+    );
+    const elapsedMs = Date.now() - startedAt;
 
-    try {
-      await runAccountFlow(page, account, index, accounts.length);
-    } catch (error) {
-      console.error(
-        `[${index + 1}/${accounts.length}] Failed for ${account.username}: ${error.message}`
+    runStats.total += 1;
+    runStats.retries += result.retries;
+
+    if (result.outcome === 'success') {
+      runStats.succeeded += 1;
+      console.log(
+        `[${index + 1}/${accounts.length}] Success for ${account.username} (${elapsedMs}ms, retries=${result.retries})`
       );
-      logFailure(account, error);
-    } finally {
-      if (index < accounts.length - 1 && !page.isClosed()) {
-        await page.waitForTimeout(2_000);
-      }
+    } else {
+      runStats.failed += 1;
+      runStats.categories[result.category] = (runStats.categories[result.category] || 0) + 1;
+      console.error(
+        `[${index + 1}/${accounts.length}] Failed for ${account.username}: ${result.error.message}`
+      );
+      logFailure(account, result.error);
+    }
 
-      await page.close().catch(() => {});
-      await context.close().catch(() => {});
+    if (index < accounts.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
     }
   }
+
+  console.log(
+    `Run stats: total=${runStats.total} succeeded=${runStats.succeeded} failed=${runStats.failed} retries=${runStats.retries} categories=${JSON.stringify(runStats.categories)}`
+  );
 
   if (uniqueNumbers.size > 0) {
     const excelData = [...uniqueNumbers].map((num) => ({ Phone: num }));

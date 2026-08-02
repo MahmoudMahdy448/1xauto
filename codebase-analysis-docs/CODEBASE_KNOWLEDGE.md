@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.1
+> **Version**: 1.2
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -171,18 +171,18 @@ accounts.csv  ----+
 
 | Priority | Path | Lines | Purpose |
 |----------|------|-------|---------|
-| **+ (core)** | `tests/login.spec.js` | 274 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop, Excel generation (pure helpers live in `lib/`) |
+| **+ (core)** | `tests/login.spec.js` | 337 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop with retry ladder, proxy wiring, run stats, Excel generation (pure helpers live in `lib/`) |
 | **+ (core)** | `lib/csv.js` | 85 | Pure CSV parsing + account loading: `parseCsvLine`, `parseCsv`, `loadAccounts`, `getAccountsToProcess` |
 | **+ (core)** | `lib/extractor.js` | 26 | Pure helpers: `extractPhoneNumber`, `buildScreenshotPath`, `fallbackScreenshotPath` |
 | **+ (stub)** | `lib/state.js` | 17 | `readState`/`writeState` no-op stubs; `resolveStartIndex` implemented (P4 wires `state.json`) |
-| **+ (stub)** | `lib/retry.js` | 11 | Stubs: `classifyError`, `isRetryable`, `backoffDelay` return defaults (P3 fills) |
-| **+ (stub)** | `lib/proxy.js` | 7 | Stub: `parseProxyUrl` returns `{ server }` (P3 fills) |
+| **+ (core)** | `lib/retry.js` | 95 | Full retry ladder: `classifyError`, `isRetryable`, `readMaxRetries`, `backoffDelay`, `runWithRetry` (P3) |
+| **+ (core)** | `lib/proxy.js` | 47 | Full proxy parsing: `parseProxyUrl` (throws on malformed), `maskProxyPassword` (P3) |
 | **+ (stub)** | `lib/runSummary.js` | 8 | Stub: `buildSummary` returns default counters (P5 fills) |
-| **+ (tests)** | `tests/unit/*.test.js` | 6 | `node:test` unit tests for `lib/*` (run via `npm test`) |
+| **+ (tests)** | `tests/unit/*.test.js` | 6 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy suites expanded in P3) |
 | **+ (config)** | `playwright.config.js` | 23 | Playwright runner config: test dir, timeout=0, headless toggle (CI must set `HEADLESS=true`), viewport 1440x960, Chromium disk-cache launch args (`.browser-cache`) |
 | **+ (config)** | `package.json` | 19 | Project metadata, npm scripts (`login`, `loop`, `excel`, `test`) |
 | **+ (runner)** | `run-loop.js` | 26 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` |
-| **+ (template)** | `.env.example` | 4 | Template for required env vars + optional `PROXY_URL` |
+| **+ (template)** | `.env.example` | 5 | Template for required env vars + optional `PROXY_URL` + optional `MAX_RETRIES` |
 | **+ (utility)** | `scripts/generate-excel.js` | 30 | Standalone utility: scans `screenshots/` dir for phone-number filenames, generates `extracted_numbers.xlsx` |
 | **+ (CI)** | `.github/workflows/playwright.yml` | 32 | GitHub Actions workflow: installs Chromium `--with-deps`, runs headless |
 | **+ (CI)** | `.github/workflows/docs-validation.yml` | 28 | Validates the AI doc set on push/PR (runs `.github/scripts/validate-docs.mjs`) |
@@ -429,9 +429,9 @@ accounts.csv  ----+
 ### 5.3 Performance Characteristics
 
 - **Sequential processing**: One account at a time. No parallelism.
-- **2-second delay between accounts** (line 341) -- likely to avoid rate limiting.
+- **2-second delay between accounts** -- likely to avoid rate limiting.
 - **30-second timeout** on most locator waits -- conservative to account for slow loads.
-- **No retry logic** -- if an account fails, it moves to the next.
+- **Retry ladder (P3)**: each account runs via `runAccountFlowWithRetry`; retryable errors (`network`, `browserClosed`, `disk`, `domTimeout`) retry with exponential backoff up to `MAX_RETRIES` (default 2 = 1 initial + 1 retry); non-retryable errors (`loginRejected`, `validation`, `other`) fail immediately. `logFailure()` runs only after the final attempt.
 - **Disk usage**: Each run generates screenshots (PNG files). The `ENOSPC` errors in the log show this can fill disk on long runs.
 
 ### 5.4 Platform Notes
@@ -453,7 +453,7 @@ accounts.csv  ----+
 | `Login failed: Select a login option` | Site shows alternative login methods (email, phone, social) | Update selectors to handle alternative login UI |
 | `ENOSPC: no space left on device` | Disk full from screenshots | Clean `screenshots/` directory before batch run |
 | `Target page, context or browser has been closed` | User closed browser, browser crash | Run in headed mode, check for OS-level issues |
-| `net::ERR_CONNECTION_CLOSED` | Network issue, IP blocking | Check connectivity, add retry with backoff |
+| `net::ERR_CONNECTION_CLOSED` | Network issue, IP blocking | Auto-retried (network) with backoff; rotate proxy when `PROXY_URL` set and this persists |
 | `getByRole('textbox').toHaveCount(1)` fails | Verification page UI changed | Update selectors for new verification layout |
 | `copy_content_btn` not found | Payment modal rendered without copy buttons | Check modal content structure, update selectors |
 
@@ -488,12 +488,18 @@ accounts.csv  ----+
 | `fallbackScreenshotPath(timestamp)` | `lib/extractor.js` | 25-26 | Timestamped fallback path when no number found |
 | `readState() / writeState()` | `lib/state.js` | 1-4 | P4 stubs (no-op) |
 | `resolveStartIndex(state, explicit)` | `lib/state.js` | 6-15 | Explicit wins; else `lastProcessedIndex + 1`; else `1` |
-| `classifyError / isRetryable / backoffDelay` | `lib/retry.js` | 1-11 | P3 stubs returning defaults |
-| `parseProxyUrl(url)` | `lib/proxy.js` | 1-7 | P3 stub: `{ server }` or `null` |
+| `classifyError(err)` | `lib/retry.js` | 8-19 | Categories: `network`/`browserClosed`/`disk`/`domTimeout` (retryable); `loginRejected`/`validation` (not retryable); `other` |
+| `isRetryable(err)` | `lib/retry.js` | 21-23 | True iff `classifyError(err).retryable` |
+| `readMaxRetries(env)` | `lib/retry.js` | 25-38 | `MAX_RETRIES` (default 2, integer >= 1, validated) |
+| `backoffDelay(attempt, opts)` | `lib/retry.js` | 40-48 | `Math.min(2000 * 2**attempt, 15000) + [0,1000)` jitter |
+| `runWithRetry(attemptFn, opts)` | `lib/retry.js` | 56-95 | Generic retry engine: runs `attemptFn` up to `maxRetries`, returns `{ outcome, retries, error, category, value }` |
+| `parseProxyUrl(url)` | `lib/proxy.js` | 2-38 | `null` if unset; `{ server, username?, password? }`; throws on malformed URL/protocol/missing host |
+| `maskProxyPassword(url)` | `lib/proxy.js` | 40-46 | Redact `:pass@` -> `:***@` for safe logging |
 | `buildSummary()` | `lib/runSummary.js` | 1-8 | P5 stub returning default counters |
 | `logFailure(account, error)` | `tests/login.spec.js` | 17-23 | Append failure entry to log file |
 | `runAccountFlow(page, account, index, total)` | `tests/login.spec.js` | 25-204 | **Main flow**: login, verify, recharge, extract, screenshot |
-| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 207-274 | **Test entry point**: loads accounts, runs batch loop, generates Excel (DRY_RUN short-circuit) |
+| `runAccountFlowWithRetry(createContext, account, index, total, opts)` | `tests/login.spec.js` | 209-241 | **Retry controller**: fresh context per attempt, backoff, retry logging, cleanup (P3) |
+| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 243-337 | **Test entry point**: loads accounts, resolves proxy, runs batch loop with retry + run stats, generates Excel (DRY_RUN short-circuit) |
 | main logic | `scripts/generate-excel.js` | 1-30 | Standalone Excel generator from screenshot filenames |
 | top-level loop | `run-loop.js` | 13-25 | Infinite re-run of `npm run login` with cooldown (see Feature 9) |
 
@@ -501,11 +507,11 @@ accounts.csv  ----+
 
 | Constant | Value | Location |
 |----------|-------|----------|
-| `loginUrl` | `https://eg1xbet.com/en/user/login` | `tests/login.spec.js:9` |
-| `rechargeUrl` | `https://eg1xbet.com/en/office/recharge` | `tests/login.spec.js:10` |
-| `accountVerificationUrl` | `/\/en\/user\/accountverify(?:[/?#]\|$)/` | `tests/login.spec.js:11` |
-| `accountsFilePath` | `path.resolve(process.cwd(), 'accounts.csv')` | `tests/login.spec.js:12` |
-| `failuresLogPath` | `path.resolve(process.cwd(), 'logs', 'failed-accounts.log')` | `tests/login.spec.js:13` |
+| `loginUrl` | `https://eg1xbet.com/en/user/login` | `tests/login.spec.js:11` |
+| `rechargeUrl` | `https://eg1xbet.com/en/office/recharge` | `tests/login.spec.js:12` |
+| `accountVerificationUrl` | `/\/en\/user\/accountverify(?:[/?#]\|$)/` | `tests/login.spec.js:13` |
+| `accountsFilePath` | `path.resolve(process.cwd(), 'accounts.csv')` | `tests/login.spec.js:14` |
+| `failuresLogPath` | `path.resolve(process.cwd(), 'logs', 'failed-accounts.log')` | `tests/login.spec.js:15` |
 
 ### 7.4 CSS/DOM Selectors Used
 
@@ -573,11 +579,11 @@ The current architecture processes accounts **sequentially**. To add parallelism
 
 ### 8.3 Adding Retry Logic
 
-Currently, each account gets one attempt. To add retries:
+Implemented in P3 (see §5.3 and §7.2).
 
-- Wrap `runAccountFlow()` in a retry loop inside the `for...of` block.
-- Log each retry attempt.
-- Consider exponential backoff between retries.
+- Per-account retry is handled by `runAccountFlowWithRetry()` (`tests/login.spec.js`), which delegates the attempt/backoff/classification loop to `runWithRetry()` (`lib/retry.js`).
+- Tune `MAX_RETRIES` (default 2) and the backoff constants (`RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`) in `lib/retry.js`.
+- Extend classification by adding a new pattern entry to `CATEGORY_RULES` in `lib/retry.js`.
 
 ### 8.4 Modifying the CSV Format
 

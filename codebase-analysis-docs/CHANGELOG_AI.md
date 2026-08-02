@@ -2,6 +2,18 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.5 — 2026-08-02
+
+P3 (proxy support + retry ladder) implemented; C3 verified locally.
+
+- **P3 code**: `lib/retry.js` full implementation — `classifyError` (retryable: `network`/`browserClosed`/`disk`/`domTimeout`; non-retryable: `loginRejected`/`validation`/`other`), `isRetryable`, `readMaxRetries` (`MAX_RETRIES` env, default 2, integer ≥ 1 validated), `backoffDelay` (`min(2000·2^attempt, 15000) + [0,1000)` jitter), `runWithRetry` (generic engine returning `{ outcome, retries, error, category, value }`).
+- `lib/proxy.js` full implementation — `parseProxyUrl` (null when unset; `{ server, username?, password? }`; throws on malformed URL / unsupported protocol / missing host), `maskProxyPassword` (`:pass@` → `:***@` for safe logging).
+- `tests/login.spec.js`: new `runAccountFlowWithRetry(createContext, account, index, total, opts)` — fresh browser context per attempt, backoff, retry logging, cleanup, final `logFailure()` only after exhausted attempts; test loop resolves `PROXY_URL` (default-off, redacted host logged when active), reads `MAX_RETRIES`, accumulates run stats (total/succeeded/failed/retries/categories). Spec 274 → 337 lines.
+- `.env.example` → 5 lines: added `# MAX_RETRIES=2 (optional, default 2: 1 initial + 1 retry)`.
+- Tests: `tests/unit/retry.test.js` (183) + `tests/unit/proxy.test.js` (48) expanded to 44 unit tests total. `npm test` 44/44 green. C3 local checks: `DRY_RUN=true` with proxy on/off both green (276 accounts parsed, no navigation); malformed `PROXY_URL` fails fast with a clear error before any navigation.
+- Docs: `CODEBASE_KNOWLEDGE.md` → v1.2 (File Index + function table + §5.3 retry note); `PHASES_TRACKER.md` → v1.3 (P3 Completed, C3 PASS); `README_AI.md` → v1.5 and `AI_MANIFEST.yaml` `docs_version` → 1.5.
+- C1 remains blocked by the GitHub billing lock (§0.4 external blocker — P1 stays In Progress).
+
 ## v1.4 — 2026-08-02
 
 P2 (extract pure helpers + unit tests) implemented; C2 verified locally.
