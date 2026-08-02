@@ -1,6 +1,6 @@
 # AI Context — Reading Order for Coding Agents
 
-> **Version**: 1.1
+> **Version**: 1.2
 > **Last Updated**: 2026-08-02
 > **Applies to**: `1xauto` @ commit `dfa181b`
 > **Status**: Authoritative
@@ -52,3 +52,12 @@ Full context
 - Stop after each completed phase and wait for approval.
 - Never continue after a failed checkpoint.
 - Never break an invariant from PROJECT_CONSTITUTION.md without a new ADR.
+
+## Docs-sync rules (how to keep docs current)
+
+- Update docs in the **same logical commit** as the code they describe.
+- Bump the minor version (e.g. 1.1 → 1.2) in `README_AI.md` and `AI_MANIFEST.yaml` (`docs_version`) whenever any current doc's facts change; bump per-doc versions for docs whose own facts changed.
+- Record each phase's status/commit in `PHASES_TRACKER.md`; log every change in `CHANGELOG_AI.md`.
+- `Repository Commit` / `analyzed_commit` track the analyzed baseline — update them only when analysis is refreshed, not per implementation phase.
+- Keep `codebase-analysis-docs/` to the registered set: new docs must be added to `AI_MANIFEST.yaml`; superseded docs move to `archive/`.
+- CI runs `.github/scripts/validate-docs.mjs` (`.github/workflows/docs-validation.yml`) on any docs/manifest change and fails on: missing version/status headers, stale commit hashes, manifest/README path breakage, undefined ADR references, stray docs, or broken links.

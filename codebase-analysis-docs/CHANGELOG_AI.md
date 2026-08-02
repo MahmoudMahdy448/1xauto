@@ -2,6 +2,16 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.2 — 2026-08-02
+
+P1 implemented + docs-guard scaffolding.
+
+- **P1 (Fix CI runner env)** — `playwright.yml`: browser install step now `npx playwright install --with-deps chromium`; run step sets `HEADLESS: 'true'`. `playwright.config.js`: comment documenting the CI HEADLESS contract. `.env.example`: appended `# PROXY_URL=http://user:pass@host:port (optional)`.
+- Added `.github/scripts/validate-docs.mjs` + `.github/workflows/docs-validation.yml` — a push/PR CI check that enforces: version/status headers, manifest + README path integrity, commit-hash consistency with `analyzed_commit`, ADR references defined in `ADR_LOG.md`, no stray files at the docs root, and valid doc-to-doc links.
+- Added "Docs-sync rules" to `README_AI.md` (v1.1 → v1.2); bumped `AI_MANIFEST.yaml` `docs_version` to 1.2.
+- `PHASES_TRACKER.md` (→ v1.1): Stage 1 (challenge assumptions) and C0 marked Completed; P1 marked In Progress (C1 gate pending push + `workflow_dispatch`).
+- `Repository Commit` headers remain `dfa181b` (analyzed baseline — code moved, analysis did not; Stage 13 line counts remain the `dfa181b` snapshot).
+
 ## v1.1 — 2026-08-02
 
 Added long-lived AI-assisted development scaffolding.

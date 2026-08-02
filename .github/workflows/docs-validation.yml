@@ -1,0 +1,28 @@
+name: Docs validation
+
+on:
+  push:
+    paths:
+      - AI_MANIFEST.yaml
+      - codebase-analysis-docs/**
+      - .github/scripts/validate-docs.mjs
+      - .github/workflows/docs-validation.yml
+  pull_request:
+    paths:
+      - AI_MANIFEST.yaml
+      - codebase-analysis-docs/**
+      - .github/scripts/validate-docs.mjs
+      - .github/workflows/docs-validation.yml
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: node .github/scripts/validate-docs.mjs

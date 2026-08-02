@@ -8,6 +8,7 @@ export default defineConfig({
   testDir: './tests',
   timeout: 0,
   use: {
+    // CI (playwright.yml) must set HEADLESS=true; local dev stays headed by default.
     headless: process.env.HEADLESS === 'true',
     screenshot: 'off',
     trace: 'off',
