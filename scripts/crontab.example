@@ -1,0 +1,8 @@
+# Example crontab for a Linux VM (e.g. Oracle Cloud Always Free, a friend's VPS, WSL).
+# Runs the batch every 60 minutes; each invocation is a clean process (no sleep-loop),
+# resumes from state.json, and posts the run-summary to Telegram via scripts/notify.js.
+#
+# Install: copy this line into `crontab -e` and adjust the path.
+#   */60 * * * * cd /opt/1xauto && /usr/bin/node /opt/1xauto/scripts/scheduled-run.mjs >> /var/log/1xauto-cron.log 2>&1
+#
+# Also install a systemd timer if you prefer that over cron (see roadmap P7).

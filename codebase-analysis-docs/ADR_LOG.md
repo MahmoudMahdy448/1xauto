@@ -1,6 +1,6 @@
 # ARCHITECTURE DECISION LOG (ADR)
 
-> **Version**: 1.1 · **Last Updated**: 2026-08-02 · **Status**: Authoritative
+> **Version**: 1.2 · **Last Updated**: 2026-08-02 · **Status**: Authoritative
 >
 > Explains the "why" behind architecture decisions. Append a new ADR for each new decision; mark superseded ones. Full rationale lives in `MIGRATION_AND_DEPLOYMENT_PLAN.md`.
 
@@ -39,6 +39,12 @@
 - **Context**: All logic lived in `tests/login.spec.js` (~360 lines); CSV parsing, phone extraction, and screenshot naming are pure and need unit tests; a full module split adds ceremony without reuse demand yet.
 - **Decision**: Keep `runAccountFlow` and the single `test()` in `tests/login.spec.js`; extract pure helpers verbatim into `lib/{csv,extractor}.js` (plus `lib/state.js`, `lib/retry.js`, `lib/proxy.js`, `lib/runSummary.js` stubs for P3–P5) and add `node:test` unit tests under `tests/unit/`.
 - **Consequences**: Default-path behavior unchanged (helpers moved verbatim); reverts cleanly via `git revert`; revisit Option B only if `tests/login.spec.js` exceeds ~600 lines after extraction, a second automation flow appears, or multi-file reuse emerges.
+
+## ADR-007 — Scheduler-agnostic runner + Telegram notify (GitHub Actions suspended)
+- **Status**: Accepted (implemented in roadmap P6)
+- **Context**: The GitHub billing lock (§0.4 external blocker) blocks all workflow dispatches on `MahmoudMahdy448`, so GitHub Actions can no longer serve as the scheduler. A 30–60 min cadence is still required.
+- **Decision**: Make the batch a run-once cron-style process: `scripts/scheduled-run.mjs` (`npm run scheduled`) runs `login` → `excel` → `notify` in one process and exits (no sleep-loop). `scripts/notify.js` + `lib/telegram.js` post the run summary to Telegram via `fetch`, skipping silently when `TELEGRAM_*` is unset. Scheduling is pluggable: Windows Task Scheduler (`scripts/register-scheduled-task.ps1`) now, Linux cron (`scripts/crontab.example`) or GitLab free CI later — no GitHub dependency.
+- **Consequences**: ADR-001's GitHub Actions schedule is superseded (the workflow file stays as a reusable definition). Requires the local machine or a free VM to be up at run time. Telegram becomes the reporting surface (summary text; Excel/screenshots remain as local artifacts). The `fetch`-based notifier needs no new dependencies.
 
 ## Future ADR template
 

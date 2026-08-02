@@ -6,6 +6,8 @@
   "scripts": {
     "login": "playwright test",
     "loop": "node run-loop.js",
+    "scheduled": "node scripts/scheduled-run.mjs",
+    "notify": "node scripts/notify.js",
     "excel": "node scripts/generate-excel.js",
     "test": "node --test \"tests/unit/*.test.js\""
   },

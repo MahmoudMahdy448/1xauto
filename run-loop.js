@@ -4,9 +4,11 @@ const COOLDOWN_MINUTES = parseInt(process.env.COOLDOWN_MINUTES, 10) || 10;
 const COOLDOWN_MS = COOLDOWN_MINUTES * 60 * 1000;
 const START_INDEX = process.env.START_INDEX || '1';
 const HEADLESS = 'true';
+const ALLOW_LIVE_RUN = 'true';
 
 process.env.START_INDEX = START_INDEX;
 process.env.HEADLESS = HEADLESS;
+process.env.ALLOW_LIVE_RUN = ALLOW_LIVE_RUN;
 
 let run = 0;
 

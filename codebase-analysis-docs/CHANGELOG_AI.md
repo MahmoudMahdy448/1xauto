@@ -2,6 +2,18 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.8 — 2026-08-02
+
+P6 (scheduler + Telegram notify) implemented; GitHub Actions **suspended** as the scheduler (billing lock, §0.4). The batch is now a run-once cron-style process, deployable to a local scheduler or any free VM — no GitHub dependency.
+
+- **New code**: `lib/telegram.js` (31) — `buildTelegramMessage` (run-summary → text), `buildTelegramUrl`, `sendTelegramMessage` (global `fetch`, no new deps). `scripts/notify.js` (26) — reads `run-summary.json`, posts to Telegram, silent exit 0 when `TELEGRAM_*` unset, exit 1 on API error. `scripts/scheduled-run.mjs` (32) — run-once entry: loads `.env`, forces `HEADLESS=true` + `ALLOW_LIVE_RUN=true`, runs `login` → `excel` → `notify`, exits non-zero on any step failure; `--dry-run` sets `DRY_RUN=true`. `scripts/register-scheduled-task.ps1` (12) — Windows Task Scheduler every 60 min. `scripts/crontab.example` — Linux cron line for a later VM.
+- `run-loop.js` 26 → 28: now also sets `ALLOW_LIVE_RUN=true` (P5 guard blocked the operator loop; fixes local runs after the P5 commit).
+- `package.json` → 21 lines: added `scheduled` (`node scripts/scheduled-run.mjs`) + `notify` scripts. `.env.example` → 8 lines: added `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
+- Tests: new `tests/unit/telegram.test.js` (5 tests: message build, OK/partial, null batchId, URL, fetch POST + non-OK throw) → 65 unit tests total. `npm test` 65/65 green.
+- C6 verified locally: `node scripts/notify.js` skips silently without tokens; real API round-trip returns 401 (network works); `node scripts/scheduled-run.mjs --dry-run` produced `run-summary.json` and ran login → excel → notify end-to-end without navigation.
+- Docs: `CODEBASE_KNOWLEDGE.md` → v1.5 (File Index: telegram + runner/notify/scheduler scripts; §2.4 GitHub Actions status → suspended; new §2.5 Scheduled Runner; function-table coverage), `PHASES_TRACKER.md` → v1.6 (P6 Completed, C6 PASS, P5 commit filled in, stale duplicate P5 row removed), `ADR_LOG.md` → v1.2 (ADR-007: scheduler-agnostic runner + Telegram, supersedes ADR-001's GitHub Actions schedule), `README_AI.md` → v1.8, `AI_MANIFEST.yaml` `docs_version` → 1.8.
+- C1 remains blocked by the GitHub billing lock (external blocker, §0.4) — the workflow file is kept as a reusable definition for when billing resolves or the repo moves to GitLab free CI.
+
 ## v1.7 — 2026-08-02
 
 P5 (observability) implemented; C5 verified locally. Includes the reviewer-recommended `ALLOW_LIVE_RUN` safeguard.

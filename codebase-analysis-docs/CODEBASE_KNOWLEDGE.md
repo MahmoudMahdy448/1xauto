@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.4
+> **Version**: 1.5
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -165,7 +165,16 @@ accounts.csv  ----+
 - **Secrets**: `ONEXBET_USERNAME`, `ONEXBET_PASSWORD`, `ONEXBET_SURNAME`, `PROXY_URL`
 - **Vars**: `MAX_RETRIES` (retry ladder tunable)
 - **Run env**: `HEADLESS: 'true'`, `ALLOW_LIVE_RUN: 'true'` (the spec refuses live execution unless set; `DRY_RUN` bypasses navigation without it)
-- **Limitation (broken as analyzed)**: no `HEADLESS: 'true'` was a prior state — fixed in P1; `playwright install` now includes `--with-deps`. Cannot handle manual CAPTCHAs in CI. C1 verification remains blocked by the GitHub billing lock (§0.4 external blocker).
+- **Limitation (broken as analyzed)**: no `HEADLESS: 'true'` was a prior state — fixed in P1; `playwright install` now includes `--with-deps`. Cannot handle manual CAPTCHAs in CI.
+- **Status (P6)**: GitHub Actions is **suspended** as the scheduler — the GitHub billing lock blocks all workflow runs (§0.4 external blocker). The live path is now `scripts/scheduled-run.mjs` driven by a local scheduler (Windows Task Scheduler via `scripts/register-scheduled-task.ps1`, or cron on a Linux VM via `scripts/crontab.example`). The workflow file remains as a reusable definition; re-enable once billing is resolved or the repo moves to GitLab free CI.
+
+### 2.5 Scheduled Runner (P6)
+
+- **Entry**: `scripts/scheduled-run.mjs` (`npm run scheduled`) — run-once, cron-style; no sleep-loop.
+- **Flow**: load `.env` → force `HEADLESS=true` + `ALLOW_LIVE_RUN=true` → `npm run login` (writes `state.json` + `run-summary.json`) → `npm run excel` (`extracted_numbers.xlsx`) → `node scripts/notify.js` (Telegram) → exit 0/1.
+- **Dry run**: `node scripts/scheduled-run.mjs --dry-run` sets `DRY_RUN=true` (no navigation, still writes summary).
+- **Notify**: `scripts/notify.js` reads `run-summary.json`, formats via `lib/telegram.js` `buildTelegramMessage`, posts with `sendTelegramMessage` (fetch). Silent exit 0 if `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` unset; exit 1 on API error.
+- **Schedulers**: Windows Task Scheduler (`scripts/register-scheduled-task.ps1`, every 60 min) and Linux cron (`scripts/crontab.example`, `*/60 * * * *`). No GitHub dependency; deployable to any free VM unchanged.
 
 ---
 
@@ -181,12 +190,17 @@ accounts.csv  ----+
 | **+ (core)** | `lib/proxy.js` | 47 | Full proxy parsing: `parseProxyUrl` (throws on malformed), `maskProxyPassword` (P3) |
 | **+ (core)** | `lib/logger.js` | 33 | Structured logger (P5): `formatLogLine` (ISO timestamp + padded level + `[k=v]` fields) + `createLogger` (console + optional file) |
 | **+ (core)** | `lib/runSummary.js` | 96 | Run summary (P5): `buildSummary` (all §5.2 fields + operational extras) + `formatSummary` (human line) + `FAILURE_CATEGORIES` |
-| **+ (tests)** | `tests/unit/*.test.js` | 8 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy/state/logger/summary suites, 60 tests P5) |
+| **+ (core)** | `lib/telegram.js` | 31 | Telegram notify (P6): `buildTelegramMessage` (run-summary → text), `buildTelegramUrl`, `sendTelegramMessage` (fetch POST) |
+| **+ (tests)** | `tests/unit/*.test.js` | 9 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy/state/logger/summary/telegram suites, 65 tests P6) |
 | **+ (config)** | `playwright.config.js` | 23 | Playwright runner config: test dir, timeout=0, headless toggle (CI must set `HEADLESS=true`), viewport 1440x960, Chromium disk-cache launch args (`.browser-cache`) |
-| **+ (config)** | `package.json` | 19 | Project metadata, npm scripts (`login`, `loop`, `excel`, `test`) |
-| **+ (runner)** | `run-loop.js` | 26 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` (state-driven resume supersedes it after P4 — use plain `npm run login`) |
-| **+ (template)** | `.env.example` | 6 | Template for required env vars + optional `PROXY_URL`, `MAX_RETRIES`, `ALLOW_LIVE_RUN` |
+| **+ (config)** | `package.json` | 21 | Project metadata, npm scripts (`login`, `loop`, `scheduled`, `notify`, `excel`, `test`) |
+| **+ (runner)** | `run-loop.js` | 28 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` + `ALLOW_LIVE_RUN=true` (state-driven resume supersedes it after P4 — use plain `npm run login`) |
+| **+ (template)** | `.env.example` | 8 | Template for required env vars + optional `PROXY_URL`, `MAX_RETRIES`, `ALLOW_LIVE_RUN`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` |
 | **+ (utility)** | `scripts/generate-excel.js` | 30 | Standalone utility: scans `screenshots/` dir for phone-number filenames, generates `extracted_numbers.xlsx` |
+| **+ (runner)** | `scripts/scheduled-run.mjs` | 32 | Run-once scheduler entry (P6): loads `.env`, forces `HEADLESS=true` + `ALLOW_LIVE_RUN=true`, runs `login` → `excel` → `notify`, exits non-zero on any step failure (dry-run via `--dry-run`) |
+| **+ (utility)** | `scripts/notify.js` | 26 | Telegram notifier (P6): reads `run-summary.json`, posts summary via `lib/telegram.js`; skips silently when `TELEGRAM_*` unset |
+| **+ (config)** | `scripts/register-scheduled-task.ps1` | 12 | Windows Task Scheduler registration: runs `scheduled-run.mjs` every 60 min (no admin needed) |
+| **+ (docs)** | `scripts/crontab.example` | 9 | Example cron line for a Linux VM (Oracle Always Free / friend VPS / WSL) |
 | **+ (CI)** | `.github/workflows/playwright.yml` | 71 | GitHub Actions workflow: installs Chromium `--with-deps`, state cache restore/save (`batch-state`), runs headless with `ALLOW_LIVE_RUN=true`, uploads `run-summary.json` artifact, renders `$GITHUB_STEP_SUMMARY` |
 | **+ (CI)** | `.github/workflows/docs-validation.yml` | 28 | Validates the AI doc set on push/PR (runs `.github/scripts/validate-docs.mjs`) |
 | **+ (docs)** | `README.md` | 74 | Setup instructions, usage, output files |
