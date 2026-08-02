@@ -1,0 +1,67 @@
+# AI Project Manifest — machine-readable entry point for coding agents
+# Human entry point: codebase-analysis-docs/README_AI.md
+# Schema version 1.0
+
+schema_version: 1.0
+
+project:
+  name: 1xauto
+  package_name: 1xbet-login-flow
+  app_version: 0.1.0
+  docs_version: 1.1
+  repository: https://github.com/MahmoudMahdy448/1xauto
+  analyzed_commit: dfa181b
+  budget: "$0/month (no paid cloud dependencies)"
+
+entry_document: codebase-analysis-docs/README_AI.md
+
+documents:
+  knowledge:
+    path: codebase-analysis-docs/CODEBASE_KNOWLEDGE.md
+    authoritative: true
+  migration:
+    path: codebase-analysis-docs/MIGRATION_AND_DEPLOYMENT_PLAN.md
+    authoritative: true
+  roadmap:
+    path: codebase-analysis-docs/IMPLEMENTATION_ROADMAP.md
+    authoritative: true
+  constitution:
+    path: codebase-analysis-docs/PROJECT_CONSTITUTION.md
+    authoritative: true
+  adr_log:
+    path: codebase-analysis-docs/ADR_LOG.md
+    authoritative: true
+  phases_tracker:
+    path: codebase-analysis-docs/PHASES_TRACKER.md
+    authoritative: true
+  changelog:
+    path: codebase-analysis-docs/CHANGELOG_AI.md
+    authoritative: true
+
+ignore:
+  - codebase-analysis-docs/archive/
+
+workflow:
+  reading_order:
+    - codebase-analysis-docs/README_AI.md
+    - codebase-analysis-docs/CODEBASE_KNOWLEDGE.md
+    - codebase-analysis-docs/MIGRATION_AND_DEPLOYMENT_PLAN.md
+    - codebase-analysis-docs/IMPLEMENTATION_ROADMAP.md
+  implementation_order:
+    - challenge_assumptions
+    - plan
+    - implement_one_phase
+    - validate
+    - commit
+    - stop_for_approval
+
+context_budget:
+  fast_under_20k_tokens:
+    - codebase-analysis-docs/README_AI.md
+    - codebase-analysis-docs/IMPLEMENTATION_ROADMAP.md
+  medium:
+    - codebase-analysis-docs/README_AI.md
+    - codebase-analysis-docs/IMPLEMENTATION_ROADMAP.md
+    - codebase-analysis-docs/CODEBASE_KNOWLEDGE.md
+  full:
+    - all documents in codebase-analysis-docs/ (excluding archive/)

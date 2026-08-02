@@ -1,5 +1,8 @@
 # Master Knowledge Document
 
+> **ARCHIVED — superseded by `CODEBASE_KNOWLEDGE.md` (v1.0, 2026-08-02).**
+> This file is kept for history only. Do not treat it as current. See `README_AI.md` for the current reading order.
+
 ## 1. System Overview
 
 ### Purpose
