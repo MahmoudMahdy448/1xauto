@@ -6,7 +6,8 @@
   "scripts": {
     "login": "playwright test",
     "loop": "node run-loop.js",
-    "excel": "node scripts/generate-excel.js"
+    "excel": "node scripts/generate-excel.js",
+    "test": "node --test \"tests/unit/*.test.js\""
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

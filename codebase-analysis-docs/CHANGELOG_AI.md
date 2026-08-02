@@ -2,6 +2,17 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.4 — 2026-08-02
+
+P2 (extract pure helpers + unit tests) implemented; C2 verified locally.
+
+- **P2 code**: new `lib/{csv,extractor}.js` — verbatim extraction of `parseCsvLine`, `parseCsv`, `loadAccounts`, `getAccountsToProcess`, `extractPhoneNumber`, `buildScreenshotPath`, `fallbackScreenshotPath`. New `lib/{state,retry,proxy,runSummary}.js` stubs (state has `resolveStartIndex` implemented; retry/proxy/runSummary return defaults, filled in P3/P5).
+- New `tests/unit/*.test.js` (6 files, 26 tests) run via `npm test` (`node --test "tests/unit/*.test.js"`).
+- `tests/login.spec.js` refactored to import from `lib/`; shrank 360 → 274 lines; added `DRY_RUN=true` mode (validates accounts parse + summary without navigating to the site; the Playwright browser fixture still spins up but no navigation occurs).
+- Logged ADR-006 (Option A); `package.json` gained the `test` script.
+- Docs: `CODEBASE_KNOWLEDGE.md` → v1.1 (File Index updated for P2/P1 state; function table + constant locations refreshed; §4–§5 line-number detail stays the `dfa181b` snapshot per the added note); `ADR_LOG.md` → v1.1 (ADR-006); `PHASES_TRACKER.md` → v1.2 (P2 Completed, C2 PASS); `README_AI.md` → v1.4 and `AI_MANIFEST.yaml` `docs_version` → 1.4.
+- C2 verified locally; C1 remains blocked by the GitHub billing lock (§0.4 external blocker — P1 stays In Progress).
+
 ## v1.3 — 2026-08-02
 
 - Added §0.4 "External blockers" to `IMPLEMENTATION_ROADMAP.md` (→ v1.1): an external blocker (billing lock, GitHub outage, cloud verification, domain outage) pauses checkpoint completion but keeps the phase In Progress; completed work is never invalidated. Triggered by C1 being blocked by a GitHub account billing lock (run 30753919330).

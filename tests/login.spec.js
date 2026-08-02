@@ -1,7 +1,10 @@
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { appendFileSync, existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { test, expect } from '@playwright/test';
 import * as XLSX from 'xlsx';
+import { getAccountsToProcess } from '../lib/csv.js';
+import { buildScreenshotPath, extractPhoneNumber, fallbackScreenshotPath } from '../lib/extractor.js';
+import { buildSummary } from '../lib/runSummary.js';
 
 const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
@@ -10,90 +13,6 @@ const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
 const failuresLogPath = path.resolve(process.cwd(), 'logs', 'failed-accounts.log');
 const screenshotCounts = new Map();
 const uniqueNumbers = new Set();
-
-function parseCsvLine(line) {
-  const values = [];
-  let current = '';
-  let inQuotes = false;
-
-  for (let index = 0; index < line.length; index += 1) {
-    const character = line[index];
-
-    if (character === '"') {
-      const nextCharacter = line[index + 1];
-
-      if (inQuotes && nextCharacter === '"') {
-        current += '"';
-        index += 1;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (character === ',' && !inQuotes) {
-      values.push(current.trim());
-      current = '';
-    } else {
-      current += character;
-    }
-  }
-
-  values.push(current.trim());
-  return values;
-}
-
-function parseCsv(text) {
-  const lines = text
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  if (!lines.length) {
-    return [];
-  }
-
-  const headers = parseCsvLine(lines[0]).map((header) => header.toLowerCase());
-
-  return lines.slice(1).map((line) => {
-    const values = parseCsvLine(line);
-
-    return headers.reduce((row, header, index) => {
-      row[header] = values[index] || '';
-      return row;
-    }, {});
-  });
-}
-
-function loadAccounts() {
-  if (!existsSync(accountsFilePath)) {
-    return [];
-  }
-
-  const csvText = readFileSync(accountsFilePath, 'utf8');
-  const rows = parseCsv(csvText);
-
-  return rows
-    .map((row) => ({
-      username: row.username || row.email || '',
-      password: row.password || '',
-      surname: row.surname || ''
-    }))
-    .filter((account) => account.username && account.password);
-}
-
-function getAccountsToProcess() {
-  const accountsFromCsv = loadAccounts();
-
-  if (accountsFromCsv.length > 0) {
-    return accountsFromCsv;
-  }
-
-  return [
-    {
-      username: process.env.ONEXBET_USERNAME || '',
-      password: process.env.ONEXBET_PASSWORD || '',
-      surname: process.env.ONEXBET_SURNAME || ''
-    }
-  ];
-}
 
 function logFailure(account, error) {
   const timestamp = new Date().toISOString();
@@ -220,33 +139,29 @@ async function runAccountFlow(page, account, index, total) {
 
     // Try to get data-clipboard-text attribute
     const clipboardText = await btn.getAttribute('data-clipboard-text').catch(() => null);
-    let match = clipboardText ? clipboardText.match(/01\d{9}/) : null;
-    if (match) {
-      extractedNumber = match[0];
+    extractedNumber = extractPhoneNumber(clipboardText);
+    if (extractedNumber) {
       break;
     }
 
     // Try to get data-text attribute
     const dataText = await btn.getAttribute('data-text').catch(() => null);
-    match = dataText ? dataText.match(/01\d{9}/) : null;
-    if (match) {
-      extractedNumber = match[0];
+    extractedNumber = extractPhoneNumber(dataText);
+    if (extractedNumber) {
       break;
     }
 
     // Try to get text content of the button itself
     const btnText = await btn.textContent().catch(() => '');
-    match = btnText ? btnText.match(/01\d{9}/) : null;
-    if (match) {
-      extractedNumber = match[0];
+    extractedNumber = extractPhoneNumber(btnText);
+    if (extractedNumber) {
       break;
     }
 
     // Try to get text content of parent
     const parentText = await btn.evaluate(node => node.parentElement ? node.parentElement.textContent : '').catch(() => '');
-    match = parentText ? parentText.match(/01\d{9}/) : null;
-    if (match) {
-      extractedNumber = match[0];
+    extractedNumber = extractPhoneNumber(parentText);
+    if (extractedNumber) {
       break;
     }
   }
@@ -254,10 +169,7 @@ async function runAccountFlow(page, account, index, total) {
   // Fallback to the whole modal container text if still not found
   if (!extractedNumber) {
     const modalText = await paymentModal.textContent().catch(() => '');
-    const match = modalText ? modalText.match(/01\d{9}/) : null;
-    if (match) {
-      extractedNumber = match[0];
-    }
+    extractedNumber = extractPhoneNumber(modalText);
   }
 
   let finalScreenshotPath;
@@ -270,16 +182,11 @@ async function runAccountFlow(page, account, index, total) {
     count += 1;
     screenshotCounts.set(extractedNumber, count);
 
-    let currentCount = count;
-    do {
-      const filename = currentCount === 1 ? `${extractedNumber}.png` : `${extractedNumber}(${currentCount}).png`;
-      finalScreenshotPath = path.join('screenshots', filename);
-      currentCount++;
-    } while (existsSync(finalScreenshotPath));
+    finalScreenshotPath = buildScreenshotPath(extractedNumber, count, (candidatePath) => existsSync(candidatePath));
   } else {
     console.warn('Warning: Egyptian mobile number matching (01\\d{9}) not found in the payment modal.');
     const screenshotTimestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    finalScreenshotPath = path.join('screenshots', `vodafone-deposit-${screenshotTimestamp}.png`);
+    finalScreenshotPath = fallbackScreenshotPath(screenshotTimestamp);
   }
 
   // Ensure the directory exists
@@ -302,11 +209,18 @@ test('sign in to 1xBet', async ({ browser }) => {
   screenshotCounts.clear();
   uniqueNumbers.clear();
 
-  const accounts = getAccountsToProcess();
+  const accounts = getAccountsToProcess(accountsFilePath);
   console.log(`Loaded ${accounts.length} account(s) from accounts.csv`);
 
   if (!accounts.length) {
     throw new Error('No accounts available. Add rows to accounts.csv or set environment variables.');
+  }
+
+  if (process.env.DRY_RUN === 'true') {
+    console.log(
+      `[dry-run] ${accounts.length} account(s) parsed; summary=${JSON.stringify(buildSummary())}`
+    );
+    return;
   }
 
   const startIndexEnv = process.env.START_INDEX;

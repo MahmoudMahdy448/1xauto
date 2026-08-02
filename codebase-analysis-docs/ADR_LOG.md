@@ -1,6 +1,6 @@
 # ARCHITECTURE DECISION LOG (ADR)
 
-> **Version**: 1.0 · **Last Updated**: 2026-08-02 · **Status**: Authoritative
+> **Version**: 1.1 · **Last Updated**: 2026-08-02 · **Status**: Authoritative
 >
 > Explains the "why" behind architecture decisions. Append a new ADR for each new decision; mark superseded ones. Full rationale lives in `MIGRATION_AND_DEPLOYMENT_PLAN.md`.
 
@@ -33,6 +33,12 @@
 - **Context**: Private repos get a 2,000-minute/month free budget — too small for daily batches.
 - **Decision**: Keep the repository public so the scheduled workflow is unlimited and $0.
 - **Consequences**: Everything is public-facing; credentials must never enter the repo (Invariant #2). Account list stays in `accounts.csv` (gitignored) or fetched from a secure source (roadmap P8).
+
+## ADR-006 — Refactoring decision: Option A (orchestration stays single-file, pure helpers move to `lib/`)
+- **Status**: Accepted (implemented in roadmap P2)
+- **Context**: All logic lived in `tests/login.spec.js` (~360 lines); CSV parsing, phone extraction, and screenshot naming are pure and need unit tests; a full module split adds ceremony without reuse demand yet.
+- **Decision**: Keep `runAccountFlow` and the single `test()` in `tests/login.spec.js`; extract pure helpers verbatim into `lib/{csv,extractor}.js` (plus `lib/state.js`, `lib/retry.js`, `lib/proxy.js`, `lib/runSummary.js` stubs for P3–P5) and add `node:test` unit tests under `tests/unit/`.
+- **Consequences**: Default-path behavior unchanged (helpers moved verbatim); reverts cleanly via `git revert`; revisit Option B only if `tests/login.spec.js` exceeds ~600 lines after extraction, a second automation flow appears, or multi-file reuse emerges.
 
 ## Future ADR template
 

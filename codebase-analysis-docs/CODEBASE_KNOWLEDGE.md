@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.0
+> **Version**: 1.1
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -171,17 +171,27 @@ accounts.csv  ----+
 
 | Priority | Path | Lines | Purpose |
 |----------|------|-------|---------|
-| **+ (core)** | `tests/login.spec.js` | 360 | **Entire application logic**: CSV parsing, account loading, login flow, verification handling, payment iframe interaction, phone number extraction, screenshot capture, Excel generation |
-| **+ (config)** | `playwright.config.js` | 22 | Playwright runner config: test dir, timeout=0, headless toggle, viewport 1440x960, Chromium disk-cache launch args (`.browser-cache`) |
-| **+ (config)** | `package.json` | 18 | Project metadata, npm scripts (`login`, `loop`, `excel`), dependencies |
+| **+ (core)** | `tests/login.spec.js` | 274 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop, Excel generation (pure helpers live in `lib/`) |
+| **+ (core)** | `lib/csv.js` | 85 | Pure CSV parsing + account loading: `parseCsvLine`, `parseCsv`, `loadAccounts`, `getAccountsToProcess` |
+| **+ (core)** | `lib/extractor.js` | 26 | Pure helpers: `extractPhoneNumber`, `buildScreenshotPath`, `fallbackScreenshotPath` |
+| **+ (stub)** | `lib/state.js` | 17 | `readState`/`writeState` no-op stubs; `resolveStartIndex` implemented (P4 wires `state.json`) |
+| **+ (stub)** | `lib/retry.js` | 11 | Stubs: `classifyError`, `isRetryable`, `backoffDelay` return defaults (P3 fills) |
+| **+ (stub)** | `lib/proxy.js` | 7 | Stub: `parseProxyUrl` returns `{ server }` (P3 fills) |
+| **+ (stub)** | `lib/runSummary.js` | 8 | Stub: `buildSummary` returns default counters (P5 fills) |
+| **+ (tests)** | `tests/unit/*.test.js` | 6 | `node:test` unit tests for `lib/*` (run via `npm test`) |
+| **+ (config)** | `playwright.config.js` | 23 | Playwright runner config: test dir, timeout=0, headless toggle (CI must set `HEADLESS=true`), viewport 1440x960, Chromium disk-cache launch args (`.browser-cache`) |
+| **+ (config)** | `package.json` | 19 | Project metadata, npm scripts (`login`, `loop`, `excel`, `test`) |
 | **+ (runner)** | `run-loop.js` | 26 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` |
-| **+ (template)** | `.env.example` | 3 | Template for required environment variables |
+| **+ (template)** | `.env.example` | 4 | Template for required env vars + optional `PROXY_URL` |
 | **+ (utility)** | `scripts/generate-excel.js` | 30 | Standalone utility: scans `screenshots/` dir for phone-number filenames, generates `extracted_numbers.xlsx` |
-| **+ (CI)** | `.github/workflows/playwright.yml` | 31 | GitHub Actions workflow for manual CI runs |
+| **+ (CI)** | `.github/workflows/playwright.yml` | 32 | GitHub Actions workflow: installs Chromium `--with-deps`, runs headless |
+| **+ (CI)** | `.github/workflows/docs-validation.yml` | 28 | Validates the AI doc set on push/PR (runs `.github/scripts/validate-docs.mjs`) |
 | **+ (docs)** | `README.md` | 74 | Setup instructions, usage, output files |
 | **- (log)** | `logs/failed-accounts.log` | 1300+ | Append-only failure log with timestamps and error details |
 | **- (meta)** | `deleting clones.txt` | 5 | PowerShell snippets for finding/deleting duplicate directories |
 | **- (config)** | `.gitignore` | 8 | Ignores node_modules, .env, accounts.csv, screenshots, test-results, extracted_numbers.xlsx, .browser-cache |
+
+*File Index is the live structural map, maintained per phase. Granular line-number references in §4–§5 describe the `dfa181b` analyzed snapshot; re-verify them when the analysis is next refreshed.*
 
 ---
 
@@ -193,12 +203,12 @@ accounts.csv  ----+
 
 **Technical Details**:
 
-- **Entry**: `getAccountsToProcess()` at `tests/login.spec.js:82`
-- **CSV Path**: `path.resolve(process.cwd(), 'accounts.csv')` -- resolved at runtime relative to CWD
-- **CSV Parser**: Custom implementation at `tests/login.spec.js:14-63` -- not using a library. Handles quoted fields with escaped double-quotes.
+- **Entry**: `getAccountsToProcess()` at `lib/csv.js`
+- **CSV Path**: `path.resolve(process.cwd(), 'accounts.csv')` -- resolved at runtime relative to CWD (`tests/login.spec.js:12`)
+- **CSV Parser**: Custom implementation in `lib/csv.js` (`parseCsvLine` / `parseCsv`) -- not using a library. Handles quoted fields with escaped double-quotes.
 - **Fallback**: If `accounts.csv` does not exist or is empty, falls back to a single account from env vars `ONEXBET_USERNAME`, `ONEXBET_PASSWORD`, `ONEXBET_SURNAME`.
-- **Filtering**: Accounts without both `username` AND `password` are filtered out (line 79).
-- **Headers**: Case-insensitive (`header.toLowerCase()` at line 53). Expected columns: `username` (optional), `email` (used as the login when `username` is absent — the shipped CSV has no `username` column, only `Email`), `password`, `surname`. Current CSV header: `Region,City,Email,First_name,surname,Password,re-enter_password`.
+- **Filtering**: Accounts without both `username` AND `password` are filtered out (in `lib/csv.js` `loadAccounts`).
+- **Headers**: Case-insensitive (`header.toLowerCase()`). Expected columns: `username` (optional), `email` (used as the login when `username` is absent — the shipped CSV has no `username` column, only `Email`), `password`, `surname`. Current CSV header: `Region,City,Email,First_name,surname,Password,re-enter_password`.
 
 **Interactions**: Feeds into the main batch loop in the test body (line 325). The `START_INDEX` env var controls which account to resume from.
 
@@ -469,13 +479,21 @@ accounts.csv  ----+
 
 | Function | File | Lines | Purpose |
 |----------|------|-------|---------|
-| `parseCsvLine(line)` | `tests/login.spec.js` | 14-41 | Parse a single CSV line with quote handling |
-| `parseCsv(text)` | `tests/login.spec.js` | 43-63 | Parse full CSV text into array of objects |
-| `loadAccounts()` | `tests/login.spec.js` | 65-80 | Load accounts from `accounts.csv` file |
-| `getAccountsToProcess()` | `tests/login.spec.js` | 82-96 | Get accounts from CSV or fall back to env vars |
-| `logFailure(account, error)` | `tests/login.spec.js` | 98-104 | Append failure entry to log file |
-| `runAccountFlow(page, account, index, total)` | `tests/login.spec.js` | 106-298 | **Main flow**: login, verify, recharge, extract, screenshot |
-| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 300-359 | **Test entry point**: loads accounts, runs batch loop, generates Excel |
+| `parseCsvLine(line)` | `lib/csv.js` | 1-17 | Parse a single CSV line with quote handling |
+| `parseCsv(text)` | `lib/csv.js` | 19-35 | Parse full CSV text into array of objects |
+| `loadAccounts(csvFilePath)` | `lib/csv.js` | 37-56 | Load accounts from `accounts.csv` file (email-as-username fallback, filtering) |
+| `getAccountsToProcess(csvFilePath)` | `lib/csv.js` | 58-85 | Get accounts from CSV or fall back to env vars |
+| `extractPhoneNumber(text)` | `lib/extractor.js` | 5-8 | First `/01\d{9}/` match or `''` |
+| `buildScreenshotPath(number, count, existing)` | `lib/extractor.js` | 10-23 | `01xxxxxxxxx.png`, then `01xxxxxxxxx(n).png`, skipping existing files |
+| `fallbackScreenshotPath(timestamp)` | `lib/extractor.js` | 25-26 | Timestamped fallback path when no number found |
+| `readState() / writeState()` | `lib/state.js` | 1-4 | P4 stubs (no-op) |
+| `resolveStartIndex(state, explicit)` | `lib/state.js` | 6-15 | Explicit wins; else `lastProcessedIndex + 1`; else `1` |
+| `classifyError / isRetryable / backoffDelay` | `lib/retry.js` | 1-11 | P3 stubs returning defaults |
+| `parseProxyUrl(url)` | `lib/proxy.js` | 1-7 | P3 stub: `{ server }` or `null` |
+| `buildSummary()` | `lib/runSummary.js` | 1-8 | P5 stub returning default counters |
+| `logFailure(account, error)` | `tests/login.spec.js` | 17-23 | Append failure entry to log file |
+| `runAccountFlow(page, account, index, total)` | `tests/login.spec.js` | 25-204 | **Main flow**: login, verify, recharge, extract, screenshot |
+| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 207-274 | **Test entry point**: loads accounts, runs batch loop, generates Excel (DRY_RUN short-circuit) |
 | main logic | `scripts/generate-excel.js` | 1-30 | Standalone Excel generator from screenshot filenames |
 | top-level loop | `run-loop.js` | 13-25 | Infinite re-run of `npm run login` with cooldown (see Feature 9) |
 
@@ -483,11 +501,11 @@ accounts.csv  ----+
 
 | Constant | Value | Location |
 |----------|-------|----------|
-| `loginUrl` | `https://eg1xbet.com/en/user/login` | `tests/login.spec.js:6` |
-| `rechargeUrl` | `https://eg1xbet.com/en/office/recharge` | `tests/login.spec.js:7` |
-| `accountVerificationUrl` | `/\/en\/user\/accountverify(?:[/?#]\|$)/` | `tests/login.spec.js:8` |
-| `accountsFilePath` | `path.resolve(process.cwd(), 'accounts.csv')` | `tests/login.spec.js:9` |
-| `failuresLogPath` | `path.resolve(process.cwd(), 'logs', 'failed-accounts.log')` | `tests/login.spec.js:10` |
+| `loginUrl` | `https://eg1xbet.com/en/user/login` | `tests/login.spec.js:9` |
+| `rechargeUrl` | `https://eg1xbet.com/en/office/recharge` | `tests/login.spec.js:10` |
+| `accountVerificationUrl` | `/\/en\/user\/accountverify(?:[/?#]\|$)/` | `tests/login.spec.js:11` |
+| `accountsFilePath` | `path.resolve(process.cwd(), 'accounts.csv')` | `tests/login.spec.js:12` |
+| `failuresLogPath` | `path.resolve(process.cwd(), 'logs', 'failed-accounts.log')` | `tests/login.spec.js:13` |
 
 ### 7.4 CSS/DOM Selectors Used
 
