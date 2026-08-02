@@ -2,6 +2,16 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.12 — 2026-08-03
+
+Parallel sharding runtime shipped for the paid-month VM: **two systemd loop services** each running a shard of the batch with per-shard state/screenshots/summary/excel files, plus **Telegram screenshots**.
+
+- **New code**: `scripts/register-shards.sh` (systemd units `1xauto-shard-N` running `run-loop.js`, env per shard: `START_INDEX`/`END_INDEX`/`STATE_FILE`/`SCREENSHOTS_DIR`/`RUN_SUMMARY_FILE`/`EXCEL_FILE`/`COOLDOWN_MINUTES` default 60). `lib/telegram.js` + 8 → `sendTelegramPhoto` (`sendPhoto`, multipart via global `fetch`), `buildTelegramPhotoUrl`, `extractNumberFromScreenshotName`, `dedupeScreenshotPaths` (one screenshot per phone number). `scripts/notify.js` now sends summary **plus** deduped screenshots; skips missing files; still silent when `TELEGRAM_*` unset.
+- **Isolation**: `SCREENSHOTS_DIR`, `RUN_SUMMARY_FILE`, `EXCEL_FILE` env vars plumbed through `lib/extractor.js`, `tests/login.spec.js`, `scripts/generate-excel.js`, `scripts/notify.js` so parallel shards never clobber each other. `run-loop.js` now loops `scripts/scheduled-run.mjs` (login → excel → notify) instead of bare `npm run login`.
+- **Tests**: 3 new telegram tests (photo URL, number extraction, dedup) → 72/72 unit tests green. Dry-run with shard envs verified locally.
+- Docs: `README_AI.md` → v1.12, `AI_MANIFEST.yaml` `docs_version` → 1.12, `CODEBASE_KNOWLEDGE.md` → v1.9 (env table + §2.5), `PHASES_TRACKER.md` → v1.10 (P7: sharding services + Telegram screenshots).
+- Next action for the operator: set `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` in `.env`, then `SHARDS="1:149,150:276" sudo bash scripts/register-shards.sh` on the VM; confirm both `1xauto-shard-*` services run and Telegram receives deduped screenshots each loop.
+
 ## v1.11 — 2026-08-03
 
 Two-phase Azure plan locked in: **Phase A (paid month, $200 credit)** runs the full 276-account batch on a single `Standard_B2ms` (8 GiB, ~$79/mo) with no `LOW_MEMORY` and no sharding; **Phase B (after month)** deallocates the paid VM and falls back to free-tier `B2ats_v2` (1 GiB) VMs with `LOW_MEMORY=true` + 2 GiB swap + `END_INDEX` sharding.

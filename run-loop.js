@@ -17,7 +17,7 @@ while (true) {
   console.log(`[Run #${run}] Starting from index ${START_INDEX}...`);
 
   try {
-    execSync('npm run login', { stdio: 'inherit', env: process.env });
+    execSync('node scripts/scheduled-run.mjs', { stdio: 'inherit', env: process.env });
     console.log(`[Run #${run}] Done`);
   } catch {
     console.log(`[Run #${run}] Finished with errors`);

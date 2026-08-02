@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'fs';
 import path from 'path';
 import * as XLSX from 'xlsx';
 
-const screenshotsDir = path.resolve(process.cwd(), 'screenshots');
+const screenshotsDir = path.resolve(process.cwd(), process.env.SCREENSHOTS_DIR || 'screenshots');
 
 const files = existsSync(screenshotsDir)
   ? readdirSync(screenshotsDir).filter((f) => f.endsWith('.png'))
@@ -27,6 +27,6 @@ const workbook = XLSX.utils.book_new();
 const worksheet = XLSX.utils.json_to_sheet(excelData);
 XLSX.utils.book_append_sheet(workbook, worksheet, 'Numbers');
 
-const excelPath = path.resolve(process.cwd(), 'extracted_numbers.xlsx');
+const excelPath = process.env.EXCEL_FILE || path.resolve(process.cwd(), 'extracted_numbers.xlsx');
 XLSX.writeFile(workbook, excelPath);
 console.log(`Excel saved: ${excelPath} (${unique.length} unique numbers)`);

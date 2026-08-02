@@ -9,3 +9,8 @@ extracted_numbers.xlsx
 state.json
 run-summary.json
 logs/run-*.log
+logs/loop*.log
+state-shard-*.json
+run-summary-shard-*.json
+screenshots-shard-*/
+extracted_numbers-shard-*.xlsx

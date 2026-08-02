@@ -2,7 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   buildTelegramMessage,
+  buildTelegramPhotoUrl,
   buildTelegramUrl,
+  dedupeScreenshotPaths,
+  extractNumberFromScreenshotName,
   sendTelegramMessage
 } from '../../lib/telegram.js';
 
@@ -77,4 +80,32 @@ test('sendTelegramMessage posts JSON and throws on non-OK response', async () =>
   );
 
   globalThis.fetch = originalFetch;
+});
+
+test('buildTelegramPhotoUrl assembles the sendPhoto endpoint', () => {
+  assert.equal(
+    buildTelegramPhotoUrl('123:ABC'),
+    'https://api.telegram.org/bot123:ABC/sendPhoto'
+  );
+});
+
+test('extractNumberFromScreenshotName pulls the phone number from a filename', () => {
+  assert.equal(extractNumberFromScreenshotName('01234567890.png'), '01234567890');
+  assert.equal(extractNumberFromScreenshotName('01234567890(2).png'), '01234567890');
+  assert.equal(extractNumberFromScreenshotName('vodafone-deposit-2026-08-02T00-00-00-000Z.png'), null);
+});
+
+test('dedupeScreenshotPaths keeps one screenshot per phone number', () => {
+  const paths = [
+    'screenshots/01234567890.png',
+    'screenshots/01234567890(2).png',
+    'screenshots/01987654321.png',
+    'screenshots/vodafone-deposit-fallback.png'
+  ];
+  const deduped = dedupeScreenshotPaths(paths);
+  assert.equal(deduped.length, 2);
+  assert.deepEqual(deduped, [
+    'screenshots/01234567890.png',
+    'screenshots/01987654321.png'
+  ]);
 });

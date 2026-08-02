@@ -16,7 +16,7 @@ const accountVerificationUrl = /\/en\/user\/accountverify(?:[/?#]|$)/;
 const accountsFilePath = path.resolve(process.cwd(), 'accounts.csv');
 const failuresLogPath = path.resolve(process.cwd(), 'logs', 'failed-accounts.log');
 const stateFilePath = process.env.STATE_FILE || path.resolve(process.cwd(), 'state.json');
-const runSummaryPath = path.resolve(process.cwd(), 'run-summary.json');
+const runSummaryPath = process.env.RUN_SUMMARY_FILE || path.resolve(process.cwd(), 'run-summary.json');
 const screenshotCounts = new Map();
 const uniqueNumbers = new Set();
 
@@ -441,7 +441,7 @@ test('sign in to 1xBet', async ({ browser }) => {
     const workbook = XLSX.utils.book_new();
     const worksheet = XLSX.utils.json_to_sheet(excelData);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Numbers');
-    const excelPath = path.resolve(process.cwd(), 'extracted_numbers.xlsx');
+    const excelPath = process.env.EXCEL_FILE || path.resolve(process.cwd(), 'extracted_numbers.xlsx');
     XLSX.writeFile(workbook, excelPath);
     logger.info(`excel file saved to: ${excelPath} (${uniqueNumbers.size} unique numbers)`);
   } else {

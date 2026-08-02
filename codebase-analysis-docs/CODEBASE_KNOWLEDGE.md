@@ -1,7 +1,7 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.8
-> **Last Updated**: 2026-08-02
+> **Version**: 1.9
+> **Last Updated**: 2026-08-03
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
 >
@@ -173,9 +173,10 @@ accounts.csv  ----+
 - **Entry**: `scripts/scheduled-run.mjs` (`npm run scheduled`) — run-once, cron-style; no sleep-loop.
 - **Flow**: load `.env` → force `HEADLESS=true` + `ALLOW_LIVE_RUN=true` → `npm run login` (writes `state.json` + `run-summary.json`) → `npm run excel` (`extracted_numbers.xlsx`) → `node scripts/notify.js` (Telegram) → exit 0/1.
 - **Dry run**: `node scripts/scheduled-run.mjs --dry-run` sets `DRY_RUN=true` (no navigation, still writes summary).
-- **Notify**: `scripts/notify.js` reads `run-summary.json`, formats via `lib/telegram.js` `buildTelegramMessage`, posts with `sendTelegramMessage` (fetch). Silent exit 0 if `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` unset; exit 1 on API error.
-- **Schedulers**: Windows Task Scheduler (`scripts/register-scheduled-task.ps1`, every 60 min) and Linux cron (`scripts/crontab.example`, `*/60 * * * *`). No GitHub dependency; deployable to any free VM unchanged.
+- **Notify**: `scripts/notify.js` reads `run-summary.json` (or `RUN_SUMMARY_FILE`), sends the text summary via `sendTelegramMessage`, then sends **deduped screenshots** via `sendTelegramPhoto` (one per phone number, using `dedupeScreenshotPaths`); skips missing files; still silent exit 0 if `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` unset; exit 1 on API error.
+- **Schedulers**: Windows Task Scheduler (`scripts/register-scheduled-task.ps1`, every 60 min) and Linux cron (`scripts/crontab.example`, `*/60 * * * *`). For long-running loops use `scripts/register-shards.sh` (systemd).
 - **Cloud VM (P7, primary target)**: run `scripts/vm-setup.sh` on a fresh Ubuntu instance (Azure `B2ms` 8 GiB for the paid month, or free-tier `B2ats_v2` 1 GiB afterwards). Auto-detects RAM: `< 2 GiB` → adds 2 GiB swap + `LOW_MEMORY=true`; otherwise full-memory run. Installs Node 22, clones the repo, `npm install`, Chromium `--with-deps`, installs the 60-min cron for `scheduled-run.mjs` (honoring `SHARD_START`/`SHARD_END`/`SHARD_STATE`). Upload `.env` + `accounts.csv` after provisioning. GitHub Actions is suspended (billing lock); the VM is the primary runtime.
+- **Parallel shards**: `scripts/register-shards.sh` creates N systemd units (`1xauto-shard-N`) running `run-loop.js` with per-shard env: `START_INDEX`/`END_INDEX`/`STATE_FILE`/`SCREENSHOTS_DIR`/`RUN_SUMMARY_FILE`/`EXCEL_FILE`/`COOLDOWN_MINUTES` (default 60). Example: `SHARDS="1:149,150:276" sudo bash scripts/register-shards.sh`. Each loop runs `scripts/scheduled-run.mjs` (login → excel → notify) then sleeps the cooldown. Isolation env vars (`SCREENSHOTS_DIR`, `RUN_SUMMARY_FILE`, `EXCEL_FILE`) are honored by `lib/extractor.js`, `tests/login.spec.js`, `scripts/generate-excel.js`, and `scripts/notify.js`.
 
 ---
 
@@ -503,6 +504,10 @@ accounts.csv  ----+
 | **START_INDEX** | Environment variable to resume batch processing from a specific 1-based record number. Overrides the state file when set. |
 | **END_INDEX** | Optional 1-based inclusive upper bound for the processed range (sharding). Defaults to the total account count; clamps above total; throws when < 1. |
 | **STATE_FILE** | Environment variable for the state file path (default `./state.json`). Written atomically after each account. Use one per shard. |
+| **RUN_SUMMARY_FILE** | Environment variable for the run summary JSON path (default `./run-summary.json`). Per-shard to avoid clobbering. |
+| **SCREENSHOTS_DIR** | Environment variable for the screenshots output dir (default `./screenshots`). Per-shard to avoid clobbering. |
+| **EXCEL_FILE** | Environment variable for the extracted-numbers Excel path (default `./extracted_numbers.xlsx`). Per-shard to avoid clobbering. |
+| **COOLDOWN_MINUTES** | Loop pause between runs in `run-loop.js` (default 10; shards default 60). |
 | **BATCH_ID** | Optional batch identifier. When it differs from the state file's `batchId`, the run restarts fresh at index 1. |
 | **Browser context** | Playwright's isolated browser session -- each account gets a fresh one to prevent session leakage. |
 
