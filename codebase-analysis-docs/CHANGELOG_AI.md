@@ -2,6 +2,16 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.10 — 2026-08-03
+
+Sharding landed: `END_INDEX` bounds the batch per run so the 276-account batch can be split across multiple low-RAM VMs (Azure `Standard_B2ats_v2`, 1 GiB). OCI signup is blocked on card verification; Azure work account free tier is now the target runtime.
+
+- **New code**: `lib/state.js` gained `resolveEndIndex(explicitEndIndex, totalAccounts)` — defaults to total, clamps above total, throws on <1. `tests/login.spec.js` parses `END_INDEX` (invalid → throw; > total → warn + clamp), logs the processing range, and breaks the loop past `endIndex`. `scripts/vm-setup.sh` accepts `SHARD_START`/`SHARD_END`/`SHARD_STATE` to bake `START_INDEX`/`END_INDEX`/`STATE_FILE` into the cron line.
+- **Config**: `.env.example` documents `END_INDEX`, per-shard `STATE_FILE`, `COOLDOWN_MINUTES`.
+- **Tests**: 5 new `resolveEndIndex` cases in `tests/unit/state.test.js` (default, clamp, explicit, invalid x2) → 69/69 unit tests green. Dry-run verified with `START_INDEX=1 END_INDEX=5`.
+- Docs: `CODEBASE_KNOWLEDGE.md` → v1.7 (env table: `END_INDEX`, `STATE_FILE`; §2.3.2 sharding note), `PHASES_TRACKER.md` → v1.8 (P7: Azure pivot + sharding tooling added), `README_AI.md` → v1.10, `AI_MANIFEST.yaml` `docs_version` → 1.10.
+- Next action for the operator: pick the shard count / index ranges (e.g. 3 × 92), provision the Azure VMs with `SHARD_START`/`SHARD_END`/`SHARD_STATE`, upload secrets, and let cron run `scheduled-run.mjs` per VM.
+
 ## v1.9 — 2026-08-02
 
 P7 pivoted: Oracle Always Free VM is now the **primary runtime** (cron + Telegram), not a GitHub self-hosted runner — GitHub Actions remains suspended (billing lock, §0.4). Provisioning tooling added; implementation blocked on OCI signup card verification.

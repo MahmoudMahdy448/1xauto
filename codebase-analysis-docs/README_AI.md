@@ -1,7 +1,7 @@
 # AI Context — Reading Order for Coding Agents
 
-> **Version**: 1.9
-> **Last Updated**: 2026-08-02
+> **Version**: 1.10
+> **Last Updated**: 2026-08-03
 > **Applies to**: `1xauto` @ commit `dfa181b`
 > **Status**: Authoritative
 

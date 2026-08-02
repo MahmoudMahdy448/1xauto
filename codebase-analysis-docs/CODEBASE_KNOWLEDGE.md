@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.6
+> **Version**: 1.7
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -361,6 +361,7 @@ accounts.csv  ----+
 - **Browser isolation**: Each account gets a fresh `browser.newContext()` + `page` -- no session leakage
 - **State file (`state.json`)**: Written **after each account's final outcome** (success or exhausted retries) via the `onSuccess`/`onFailure` hooks. Format: `{ "batchId", "lastProcessedIndex", "totalAccounts", "updatedAt" }`. `lastProcessedIndex` is 1-based (the number of accounts fully processed). A crash loses only the in-flight account.
 - **Resume precedence**: `START_INDEX` env (explicit) > `state.lastProcessedIndex + 1` (from state file) > `1` (fresh). See `resolveStartIndex()` (`lib/state.js:42-52`).
+- **Sharding (`END_INDEX`)**: `END_INDEX` (env, 1-based, inclusive) bounds the processed range so the batch can be split across VMs. `resolveEndIndex()` (`lib/state.js:53-62`) defaults to the total, clamps values above the total (with a warning), and throws on values < 1. The loop skips indices `< START_INDEX` and breaks past `END_INDEX`, logging `processing range [start, end]`. Combine with a per-shard `STATE_FILE` so VMs never clobber each other's state.
 - **BATCH_ID**: When `BATCH_ID` is provided and differs from the state file's `batchId`, the run starts fresh at index 1 (new batch). When unset, the current run's timestamp becomes the batch ID.
 - **STATE_FILE**: Env var to relocate the state file (default `./state.json`). Atomic writes (tmp -> fsync -> rename) prevent partial/corrupt state on crash.
 - **START_INDEX**: Env var (1-based) to skip accounts before that index; overrides state when present.
@@ -500,7 +501,8 @@ accounts.csv  ----+
 | **Egyptian mobile number** | An 11-digit number starting with `01` (regex: `01\d{9}`). |
 | **Copy button** | UI element in the payment modal that contains the phone number for copying. |
 | **START_INDEX** | Environment variable to resume batch processing from a specific 1-based record number. Overrides the state file when set. |
-| **STATE_FILE** | Environment variable for the state file path (default `./state.json`). Written atomically after each account. |
+| **END_INDEX** | Optional 1-based inclusive upper bound for the processed range (sharding). Defaults to the total account count; clamps above total; throws when < 1. |
+| **STATE_FILE** | Environment variable for the state file path (default `./state.json`). Written atomically after each account. Use one per shard. |
 | **BATCH_ID** | Optional batch identifier. When it differs from the state file's `batchId`, the run restarts fresh at index 1. |
 | **Browser context** | Playwright's isolated browser session -- each account gets a fresh one to prevent session leakage. |
 

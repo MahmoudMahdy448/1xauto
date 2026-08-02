@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
-# Provision an Oracle Cloud Always Free Ubuntu VM (VM.Standard.A1.Flex, 2 OCPU/12 GB)
+# Provision a low-RAM Ubuntu VM (Oracle Always Free A1 or Azure Standard_B2ats_v2, 1 GiB)
 # to run the 1xauto batch via cron. Idempotent — safe to re-run.
+#
+# Sharding: set SHARD_START, SHARD_END and SHARD_STATE before running so this VM
+# only processes its slice of the batch and keeps its own state file:
+#   SHARD_START=1 SHARD_END=92 SHARD_STATE=/opt/1xauto/state-shard-1.json sudo bash vm-setup.sh
 #
 # Usage (on the VM, as a sudo user):
 #   sudo bash -c 'curl -fsSL https://raw.githubusercontent.com/MahmoudMahdy448/1xauto/main/scripts/vm-setup.sh -o /tmp/vm-setup.sh && bash /tmp/vm-setup.sh'
 # Or copy the script up and run it.
 #
-# After this script: upload secrets and start the service:
+# After this script: upload secrets:
 #   scp .env accounts.csv ubuntu@<vm-ip>:~
-#   ssh ubuntu@<vm-ip> 'sudo mv ~/.env ~/accounts.csv /opt/1xauto/ && sudo systemctl enable --now 1xauto-batch'
+#   ssh ubuntu@<vm-ip> 'sudo mv ~/.env ~/accounts.csv /opt/1xauto/'
 set -euo pipefail
 
 APP_DIR="/opt/1xauto"
@@ -56,7 +60,11 @@ log "Installing Chromium + OS deps for Playwright..."
 npx playwright install --with-deps chromium
 
 log "Adding cron job (every 60 min)..."
-CRON_LINE="0 * * * * cd $APP_DIR && LOW_MEMORY=true $(command -v node) $APP_DIR/scripts/scheduled-run.mjs >> $APP_DIR/logs/cron.log 2>&1"
+SHARD_ENV=""
+if [[ -n "${SHARD_START:-}" ]]; then SHARD_ENV="$SHARD_ENV START_INDEX=$SHARD_START"; fi
+if [[ -n "${SHARD_END:-}" ]]; then SHARD_ENV="$SHARD_ENV END_INDEX=$SHARD_END"; fi
+if [[ -n "${SHARD_STATE:-}" ]]; then SHARD_ENV="$SHARD_ENV STATE_FILE=$SHARD_STATE"; fi
+CRON_LINE="0 * * * * cd $APP_DIR && LOW_MEMORY=true$SHARD_ENV $(command -v node) $APP_DIR/scripts/scheduled-run.mjs >> $APP_DIR/logs/cron.log 2>&1"
 ( crontab -u "$RUN_USER" -l 2>/dev/null || true; echo "$CRON_LINE" ) | crontab -u "$RUN_USER" -
 log "Cron installed for $RUN_USER: $CRON_LINE"
 
