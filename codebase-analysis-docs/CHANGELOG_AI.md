@@ -2,6 +2,12 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.3 — 2026-08-02
+
+- Added §0.4 "External blockers" to `IMPLEMENTATION_ROADMAP.md` (→ v1.1): an external blocker (billing lock, GitHub outage, cloud verification, domain outage) pauses checkpoint completion but keeps the phase In Progress; completed work is never invalidated. Triggered by C1 being blocked by a GitHub account billing lock (run 30753919330).
+- `README_AI.md` (→ v1.3) and `AI_MANIFEST.yaml` `docs_version` (→ 1.3) bumped per docs-sync rules (a current doc's content changed).
+- `PHASES_TRACKER.md` P1 note already recorded the C1 blocker in `1bec703` (tracker bookkeeping — no version bump).
+
 ## v1.2 — 2026-08-02
 
 P1 implemented + docs-guard scaffolding.

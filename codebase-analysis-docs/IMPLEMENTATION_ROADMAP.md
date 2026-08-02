@@ -1,6 +1,6 @@
 # IMPLEMENTATION ROADMAP — 1xauto (1xbet-login-flow)
 
-> **Version**: 1.0
+> **Version**: 1.1
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -71,6 +71,10 @@ P6  Schedule + shard + artifacts + notify                 → CHECKPOINT 6
 P7  (Conditional) Oracle self-hosted runner               → CHECKPOINT 7
 P8  (Optional) Move account list off repo                 → CHECKPOINT 8
 ```
+
+### 0.4 External blockers
+
+A checkpoint may depend on an external system (GitHub billing lock, GitHub outage, cloud account verification, domain outage). Such a blocker **pauses checkpoint completion but never invalidates completed implementation work**. The phase stays **In Progress** until the external dependency is resolved and the checkpoint actually executes. Record the blocker and its evidence (e.g., workflow run ID) in `PHASES_TRACKER.md`. Completed work is never rolled back because of an external blocker.
 
 ---
 
