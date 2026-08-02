@@ -2,6 +2,14 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.9 — 2026-08-02
+
+P7 pivoted: Oracle Always Free VM is now the **primary runtime** (cron + Telegram), not a GitHub self-hosted runner — GitHub Actions remains suspended (billing lock, §0.4). Provisioning tooling added; implementation blocked on OCI signup card verification.
+
+- **New code**: `scripts/vm-setup.sh` (63) — idempotent Oracle VM provisioning: apt prereqs, Node 22 (NodeSource), clone repo to `/opt/1xauto`, `npm install`, `npx playwright install --with-deps chromium`, installs 60-min cron for `scheduled-run.mjs`, prints a secrets-upload reminder (`scp .env accounts.csv`).
+- Docs: `IMPLEMENTATION_ROADMAP.md` → v1.2 (P7 retitled "Oracle Always Free VM as primary runtime"; P6 row updated to run-once runner; roadmap phase list updated), `MIGRATION_AND_DEPLOYMENT_PLAN.md` → Step 6 (Active) + Phase 10 recommendation inverted to "Oracle VM primary, GitHub suspended", `CODEBASE_KNOWLEDGE.md` → v1.6 (File Index: `scripts/vm-setup.sh`; §2.5 Oracle VM primary target), `PHASES_TRACKER.md` → v1.7 (P7 In Progress, blocked on OCI signup card verification), `README_AI.md` → v1.9, `AI_MANIFEST.yaml` `docs_version` → 1.9.
+- Next action for the operator: complete OCI signup (credit-card verification — region must match card country; online/international payments must be enabled on the card). Once the VM exists, run `scripts/vm-setup.sh`, upload secrets, and C7 verifies cron fires + Telegram notifies.
+
 ## v1.8 — 2026-08-02
 
 P6 (scheduler + Telegram notify) implemented; GitHub Actions **suspended** as the scheduler (billing lock, §0.4). The batch is now a run-once cron-style process, deployable to a local scheduler or any free VM — no GitHub dependency.

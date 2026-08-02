@@ -3,6 +3,6 @@
 # resumes from state.json, and posts the run-summary to Telegram via scripts/notify.js.
 #
 # Install: copy this line into `crontab -e` and adjust the path.
-#   */60 * * * * cd /opt/1xauto && /usr/bin/node /opt/1xauto/scripts/scheduled-run.mjs >> /var/log/1xauto-cron.log 2>&1
+#   0 * * * * cd /opt/1xauto && /usr/bin/node /opt/1xauto/scripts/scheduled-run.mjs >> /var/log/1xauto-cron.log 2>&1
 #
 # Also install a systemd timer if you prefer that over cron (see roadmap P7).

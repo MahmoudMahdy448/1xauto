@@ -1,6 +1,6 @@
 # PHASES TRACKER — Implementation Status
 
-> **Version**: 1.6 · **Last Updated**: 2026-08-02 · **Status**: Authoritative
+> **Version**: 1.7 · **Last Updated**: 2026-08-02 · **Status**: Authoritative
 >
 > Purpose: resume work across sessions. A new session reads this + `CHANGELOG_AI.md` instead of re-reading history.
 >
@@ -21,7 +21,7 @@ Legend: `Pending` · `In Progress` · `Completed` · `Skipped`
 | P4 — Resume state | Completed | 10f5ada | C4 | `lib/state.js` full impl (atomic tmp→fsync→rename); `runWithRetry` gained `onSuccess`/`onFailure` hooks (once per final outcome); spec persists `state.json` after every account; `BATCH_ID` reset + `START_INDEX` override + `STATE_FILE` env; Actions state cache. 52/52 unit tests green. C4 verified manually: state `lastProcessedIndex=3` → resume at 4; `START_INDEX=7` overrides; `BATCH_ID` change restarts at 1 |
 | P5 — Observability | Completed | 747d215 | C5 | `lib/logger.js` (structured lines, `logs/run-*.log`) + `lib/runSummary.js` full (`run-summary.json` all §5.2 fields + `formatSummary` human line); spec writes summary every run (incl. DRY_RUN), console + `$GITHUB_STEP_SUMMARY`; CI uploads artifact; `ALLOW_LIVE_RUN` guard added (reviewer rec). 60/60 unit tests green. C5 verified locally: DRY_RUN produced `run-summary.json` + rendered step summary line; live run blocked without `ALLOW_LIVE_RUN` |
 | P6 — Schedule + notify (local scheduler) | Completed | pending commit | C6 | GitHub Actions **suspended** (billing lock, §0.4) → scheduler-agnostic path: `lib/telegram.js` + `scripts/notify.js` (Telegram, silent-skip) + `scripts/scheduled-run.mjs` (run-once: login → excel → notify) + Windows Task Scheduler registration (`scripts/register-scheduled-task.ps1`, 60 min) + `scripts/crontab.example` (Linux VM). 65/65 unit tests green; dry-run pipeline verified (summary produced, notify network round-trip OK). C6: run `npm run scheduled -- --dry-run`; register task; confirm Telegram alert on a real/fake run |
-| P7 — (Conditional) Oracle self-hosted runner | Pending | — | C7 | `runs-on` label |
+| P7 — Oracle Always Free VM as primary runtime | In Progress | — | C7 | Provisioning script `scripts/vm-setup.sh` (Node 22, clone, `npm install`, `playwright install --with-deps chromium`, 60-min cron) ready + docs updated. Blocked by OCI signup: requires credit-card verification (same card issue as GitHub) |
 | P8 — (Optional) Accounts off repo | Pending | — | C8 | OCI / git-crypt |
 
 Open questions and known risks: `IMPLEMENTATION_ROADMAP.md` Stage 13.

@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.5
+> **Version**: 1.6
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -175,6 +175,7 @@ accounts.csv  ----+
 - **Dry run**: `node scripts/scheduled-run.mjs --dry-run` sets `DRY_RUN=true` (no navigation, still writes summary).
 - **Notify**: `scripts/notify.js` reads `run-summary.json`, formats via `lib/telegram.js` `buildTelegramMessage`, posts with `sendTelegramMessage` (fetch). Silent exit 0 if `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` unset; exit 1 on API error.
 - **Schedulers**: Windows Task Scheduler (`scripts/register-scheduled-task.ps1`, every 60 min) and Linux cron (`scripts/crontab.example`, `*/60 * * * *`). No GitHub dependency; deployable to any free VM unchanged.
+- **Oracle VM (P7, primary target)**: run `scripts/vm-setup.sh` on a fresh `VM.Standard.A1.Flex` Ubuntu 24.04 instance — installs Node 22, clones the repo, `npm install`, Chromium `--with-deps`, and installs the 60-min cron for `scheduled-run.mjs`. Upload `.env` + `accounts.csv` after provisioning. GitHub Actions is suspended (billing lock); the VM is the primary runtime.
 
 ---
 
@@ -201,6 +202,7 @@ accounts.csv  ----+
 | **+ (utility)** | `scripts/notify.js` | 26 | Telegram notifier (P6): reads `run-summary.json`, posts summary via `lib/telegram.js`; skips silently when `TELEGRAM_*` unset |
 | **+ (config)** | `scripts/register-scheduled-task.ps1` | 12 | Windows Task Scheduler registration: runs `scheduled-run.mjs` every 60 min (no admin needed) |
 | **+ (docs)** | `scripts/crontab.example` | 9 | Example cron line for a Linux VM (Oracle Always Free / friend VPS / WSL) |
+| **+ (deploy)** | `scripts/vm-setup.sh` | 63 | Oracle VM provisioning (P7): apt prereqs, Node 22 via NodeSource, clone repo to `/opt/1xauto`, `npm install`, `playwright install --with-deps chromium`, 60-min cron for `scheduled-run.mjs`, secret-upload reminder |
 | **+ (CI)** | `.github/workflows/playwright.yml` | 71 | GitHub Actions workflow: installs Chromium `--with-deps`, state cache restore/save (`batch-state`), runs headless with `ALLOW_LIVE_RUN=true`, uploads `run-summary.json` artifact, renders `$GITHUB_STEP_SUMMARY` |
 | **+ (CI)** | `.github/workflows/docs-validation.yml` | 28 | Validates the AI doc set on push/PR (runs `.github/scripts/validate-docs.mjs`) |
 | **+ (docs)** | `README.md` | 74 | Setup instructions, usage, output files |

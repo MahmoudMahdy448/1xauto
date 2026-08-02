@@ -289,11 +289,11 @@ Legend: Risk = L/M/H · Time = engineering-hours.
 - **Files affected:** workflow + a small `scripts/notify.js` (POST to `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` or Discord webhook on failure/zero-success).
 - **Risk:** L. **Rollback:** don't set tokens. **Time:** 1–2 h. **Deps:** Step 4.
 
-### Step 6 — (Conditional) Provision Oracle Always Free VM as self-hosted runner
-- **Purpose:** Escape the 6-hour job cap; add persistent disk; choose a region (Jeddah) nearer to Egypt; run longer batches or even 24/7.
-- **Files affected:** new `.github/workflows/runner-setup.md` + runner registration docs; `Dockerfile` optional.
-- **Steps (summary, no code):** sign up OCI → create VCN + `VM.Standard.A1.Flex` (1–2 OCPU/6–12 GB, Ubuntu 24.04, 47 GB boot) → install Docker/Node → register as a GitHub self-hosted runner at org/repo level with a runner label → point the scheduled workflow's `runs-on` at that label.
-- **Risk:** M (account setup; capacity ("out of capacity for A1") is common → retry or use `E2.1.Micro`). **Rollback:** keep `runs-on: ubuntu-latest` fallback. **Time:** 4–8 h. **Deps:** Steps 1–5. **Prereq:** credit card for OCI signup (never charged while using only Always Free resources; set a $1 budget alert).
+### Step 6 — (Active) Provision Oracle Always Free VM as primary runtime
+- **Purpose:** Replace GitHub Actions (suspended by the billing lock, §0.4) as the scheduled executor. Oracle is now the **primary runtime**, not a self-hosted runner: the VM runs `scripts/scheduled-run.mjs` (run-once: login → excel → notify) via cron every 60 min, resuming from `state.json`. Telegram is the reporting surface.
+- **Files affected:** `scripts/vm-setup.sh` (turnkey provisioning: Node 22, clone, `npm install`, `playwright install --with-deps chromium`, 60-min cron), `scripts/crontab.example`, this doc.
+- **Steps:** sign up OCI → create VCN + `VM.Standard.A1.Flex` (1–2 OCPU/6–12 GB, Ubuntu 24.04, 47 GB boot) → open port 22 → run `scripts/vm-setup.sh` → upload `.env` + `accounts.csv` → cron fires → Telegram notifies.
+- **Risk:** M (account setup; card verification — must be a real credit card with online/international payments enabled, region must match card country; "out of capacity for A1" is common → retry or use `E2.1.Micro`). **Rollback:** revert to local runs; nothing on the VM is required. **Time:** 2–3 h + card-verification wait. **Deps:** Steps 1–5. **Prereq:** credit card for OCI signup (never charged while using only Always Free resources; set a $1 budget alert).
 
 ### Step 7 — Optional: move account list off the repo
 - **Purpose:** Handle 100s of accounts without committing credentials to a public repo.
@@ -351,9 +351,9 @@ Legend: Risk = L/M/H · Time = engineering-hours.
 
 ## PHASE 10 — Final Recommendation
 
-### Recommended architecture: **GitHub Actions scheduled workflow (primary) + Oracle Cloud Always Free VM as self-hosted runner (resilience tier)**
+### Recommended architecture: **Oracle Cloud Always Free VM as primary runtime (cron + Telegram) — GitHub Actions suspended**
 
-Rationale in one line: *GitHub Actions is the only $0 platform with unlimited compute for this public repo, scheduling, secrets, and artifacts built in; Oracle's Always Free VM removes GitHub's only real limit (6 h/job + datacenter-only egress) for the same $0.*
+Rationale in one line: *The GitHub billing lock (§0.4) blocks all Actions dispatches, so the batch runs on an Oracle Always Free VM via cron — same $0, no GitHub dependency. The workflow file stays as a reusable definition for when billing resolves or the repo moves to GitLab free CI.*
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────┐

@@ -1,6 +1,6 @@
 # IMPLEMENTATION ROADMAP — 1xauto (1xbet-login-flow)
 
-> **Version**: 1.1
+> **Version**: 1.2
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -67,8 +67,8 @@ P2  Extract pure helpers + add unit tests                  → CHECKPOINT 2
 P3  Proxy support + retry ladder                          → CHECKPOINT 3
 P4  Resume state (state.json)                             → CHECKPOINT 4
 P5  Observability (run summary, structured logs)          → CHECKPOINT 5
-P6  Schedule + shard + artifacts + notify                 → CHECKPOINT 6
-P7  (Conditional) Oracle self-hosted runner               → CHECKPOINT 7
+P6  Schedule + run-once runner + notify (Telegram)        → CHECKPOINT 6
+P7  Oracle Always Free VM as primary runtime (cron)       → CHECKPOINT 7
 P8  (Optional) Move account list off repo                 → CHECKPOINT 8
 ```
 
@@ -351,11 +351,12 @@ Run the listed commands; **do not proceed** to the next phase if any gate is red
 - **Notify:** `scripts/notify.js` posts `run-summary.json` summary to Telegram (`TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID`) if set; skip silently otherwise.
 - **Validation:** C6. **Time:** 3–4 h.
 
-### P7 — (Conditional) Oracle self-hosted runner
-- **Files:** `.github/workflows/playwright.yml` (runs-on label), new `.github/workflows/runner-setup.md`.
-- **Steps:** provision `VM.Standard.A1.Flex` (1 OCPU/6 GB or 2 OCPU/12 GB, Ubuntu 24.04, 47 GB boot) → install Docker + Node 20 → register runner with label `self-hosted-linux-arm64` → set `runs-on: [self-hosted, linux, arm64]` via workflow input so hosted remains default.
-- **Gate:** only when 6-h job cap or persistent-state needs arise. **Rollback:** flip `runs-on`.
-- **Validation:** C7. **Time:** 4–8 h.
+### P7 — (Active) Oracle Always Free VM as primary runtime
+- **Files:** `scripts/vm-setup.sh` (turnkey provisioning), `scripts/crontab.example`, `MIGRATION_AND_DEPLOYMENT_PLAN.md`.
+- **Background (ADR-007):** GitHub Actions is suspended by the billing lock (§0.4), so Oracle is no longer a "resilience tier" — it becomes the **primary runtime**, running `scripts/scheduled-run.mjs` via cron. No `runs-on` label, no workflow dependency.
+- **Steps:** sign up OCI Always Free (needs a credit card for verification; region must match card country; card must have online/international payments enabled — same requirement that blocked GitHub) → provision `VM.Standard.A1.Flex` (1 OCPU/6 GB or 2 OCPU/12 GB, Ubuntu 24.04, 47 GB boot) → open port 22 → run `scripts/vm-setup.sh` (installs Node 22, clones repo, `npm install`, `npx playwright install --with-deps chromium`, installs 60-min cron) → upload `.env` + `accounts.csv` → verify `systemctl`/cron fires.
+- **Gate:** Oracle account signup succeeds despite card verification. **Rollback:** revert to local runs (`npm run login` / `npm run loop`); nothing on the VM is required.
+- **Validation:** C7. **Time:** 2–3 h (provisioning) + wait for card verification.
 
 ### P8 — (Optional) Account list off repo
 - **Files:** workflow + `scripts/fetch-accounts.js` downloading `accounts.csv` from OCI Object Storage (public-read object, signed URL in a secret) or via `git-crypt` decryption.
