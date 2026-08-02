@@ -1,6 +1,6 @@
 # CODEBASE_KNOWLEDGE.md - Complete Brain Dump
 
-> **Version**: 1.3
+> **Version**: 1.4
 > **Last Updated**: 2026-08-02
 > **Status**: Authoritative
 > **Repository Commit**: `dfa181b` (1xauto HEAD)
@@ -158,13 +158,14 @@ accounts.csv  ----+
 
 ### 2.4 GitHub Actions Workflow
 
-- **File**: `.github/workflows/playwright.yml` (48 lines)
+- **File**: `.github/workflows/playwright.yml` (71 lines)
 - **Trigger**: `workflow_dispatch` (manual only)
 - **Runner**: `ubuntu-latest`
-- **Steps**: Checkout -> Node 20 (`npm install`) -> restore state cache (`actions/cache` key `batch-state-${{ github.run_id }}`, restore-keys `batch-state-`) -> `npx playwright install chromium` -> `npm run login` -> save state cache (`path: state.json`)
+- **Steps**: Checkout -> Node 20 (`npm install`) -> `npx playwright install --with-deps chromium` -> restore state cache (`actions/cache` key `batch-state-${{ github.run_id }}`, restore-keys `batch-state-`) -> `npm run login` -> save state cache (`path: state.json`) -> upload `run-summary.json` artifact -> render `## Run summary` into `$GITHUB_STEP_SUMMARY`
 - **Secrets**: `ONEXBET_USERNAME`, `ONEXBET_PASSWORD`, `ONEXBET_SURNAME`, `PROXY_URL`
 - **Vars**: `MAX_RETRIES` (retry ladder tunable)
-- **Limitation (broken as analyzed)**: no `HEADLESS: 'true'` in the run step, so Playwright launches **headed** on the headless `ubuntu-latest` runner; and `playwright install` omits `--with-deps`, so Chromium's OS libraries are missing. The job cannot launch Chromium today. It also cannot handle manual CAPTCHAs in CI. (Both will be fixed in P1/P2 CI env work.)
+- **Run env**: `HEADLESS: 'true'`, `ALLOW_LIVE_RUN: 'true'` (the spec refuses live execution unless set; `DRY_RUN` bypasses navigation without it)
+- **Limitation (broken as analyzed)**: no `HEADLESS: 'true'` was a prior state — fixed in P1; `playwright install` now includes `--with-deps`. Cannot handle manual CAPTCHAs in CI. C1 verification remains blocked by the GitHub billing lock (§0.4 external blocker).
 
 ---
 
@@ -172,25 +173,26 @@ accounts.csv  ----+
 
 | Priority | Path | Lines | Purpose |
 |----------|------|-------|---------|
-| **+ (core)** | `tests/login.spec.js` | 381 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop with retry ladder, proxy wiring, state persistence (resume), run stats, Excel generation (pure helpers live in `lib/`) |
+| **+ (core)** | `tests/login.spec.js` | 431 | **Orchestration**: login flow, verification handling, payment iframe interaction, screenshot capture, batch loop with retry ladder, proxy wiring, state persistence (resume), structured logging, run summary, run stats, Excel generation (pure helpers live in `lib/`) |
 | **+ (core)** | `lib/csv.js` | 85 | Pure CSV parsing + account loading: `parseCsvLine`, `parseCsv`, `loadAccounts`, `getAccountsToProcess` |
 | **+ (core)** | `lib/extractor.js` | 26 | Pure helpers: `extractPhoneNumber`, `buildScreenshotPath`, `fallbackScreenshotPath` |
 | **+ (core)** | `lib/state.js` | 52 | State persistence (P4): `readState`, atomic `writeState` (tmp→fsync→rename), `resolveStartIndex` |
 | **+ (core)** | `lib/retry.js` | 99 | Full retry ladder: `classifyError`, `isRetryable`, `readMaxRetries`, `backoffDelay`, `runWithRetry` (P3 + onSuccess/onFailure hooks P4) |
 | **+ (core)** | `lib/proxy.js` | 47 | Full proxy parsing: `parseProxyUrl` (throws on malformed), `maskProxyPassword` (P3) |
-| **+ (stub)** | `lib/runSummary.js` | 8 | Stub: `buildSummary` returns default counters (P5 fills) |
-| **+ (tests)** | `tests/unit/*.test.js` | 6 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy/state suites expanded P3–P4) |
+| **+ (core)** | `lib/logger.js` | 33 | Structured logger (P5): `formatLogLine` (ISO timestamp + padded level + `[k=v]` fields) + `createLogger` (console + optional file) |
+| **+ (core)** | `lib/runSummary.js` | 96 | Run summary (P5): `buildSummary` (all §5.2 fields + operational extras) + `formatSummary` (human line) + `FAILURE_CATEGORIES` |
+| **+ (tests)** | `tests/unit/*.test.js` | 8 | `node:test` unit tests for `lib/*` (run via `npm test`; retry/proxy/state/logger/summary suites, 60 tests P5) |
 | **+ (config)** | `playwright.config.js` | 23 | Playwright runner config: test dir, timeout=0, headless toggle (CI must set `HEADLESS=true`), viewport 1440x960, Chromium disk-cache launch args (`.browser-cache`) |
 | **+ (config)** | `package.json` | 19 | Project metadata, npm scripts (`login`, `loop`, `excel`, `test`) |
 | **+ (runner)** | `run-loop.js` | 26 | Local looping wrapper: re-runs `npm run login` in an infinite loop with a cooldown; forces `HEADLESS=true` (state-driven resume supersedes it after P4 — use plain `npm run login`) |
-| **+ (template)** | `.env.example` | 5 | Template for required env vars + optional `PROXY_URL` + optional `MAX_RETRIES` |
+| **+ (template)** | `.env.example` | 6 | Template for required env vars + optional `PROXY_URL`, `MAX_RETRIES`, `ALLOW_LIVE_RUN` |
 | **+ (utility)** | `scripts/generate-excel.js` | 30 | Standalone utility: scans `screenshots/` dir for phone-number filenames, generates `extracted_numbers.xlsx` |
-| **+ (CI)** | `.github/workflows/playwright.yml` | 48 | GitHub Actions workflow: installs Chromium `--with-deps`, state cache restore/save (`batch-state`), runs headless |
+| **+ (CI)** | `.github/workflows/playwright.yml` | 71 | GitHub Actions workflow: installs Chromium `--with-deps`, state cache restore/save (`batch-state`), runs headless with `ALLOW_LIVE_RUN=true`, uploads `run-summary.json` artifact, renders `$GITHUB_STEP_SUMMARY` |
 | **+ (CI)** | `.github/workflows/docs-validation.yml` | 28 | Validates the AI doc set on push/PR (runs `.github/scripts/validate-docs.mjs`) |
 | **+ (docs)** | `README.md` | 74 | Setup instructions, usage, output files |
 | **- (log)** | `logs/failed-accounts.log` | 1300+ | Append-only failure log with timestamps and error details |
 | **- (meta)** | `deleting clones.txt` | 5 | PowerShell snippets for finding/deleting duplicate directories |
-| **- (config)** | `.gitignore` | 9 | Ignores node_modules, .env, accounts.csv, screenshots, test-results, extracted_numbers.xlsx, .browser-cache, state.json |
+| **- (config)** | `.gitignore` | 11 | Ignores node_modules, .env, accounts.csv, screenshots, test-results, extracted_numbers.xlsx, .browser-cache, state.json, run-summary.json, logs/run-*.log |
 
 *File Index is the live structural map, maintained per phase. Granular line-number references in §4–§5 describe the `dfa181b` analyzed snapshot; re-verify them when the analysis is next refreshed.*
 
@@ -438,6 +440,9 @@ accounts.csv  ----+
 - **30-second timeout** on most locator waits -- conservative to account for slow loads.
 - **Retry ladder (P3)**: each account runs via `runAccountFlowWithRetry`; retryable errors (`network`, `browserClosed`, `disk`, `domTimeout`) retry with exponential backoff up to `MAX_RETRIES` (default 2 = 1 initial + 1 retry); non-retryable errors (`loginRejected`, `validation`, `other`) fail immediately. `logFailure()` runs only after the final attempt.
 - **State persistence (P4)**: `state.json` is written atomically after every account's final outcome via the `onSuccess`/`onFailure` hooks. Crash resilience means the next run resumes at `lastProcessedIndex + 1`, losing only the in-flight account. State file is gitignored.
+- **Structured logging (P5)**: all run output goes through `lib/logger.js` — lines like `[ts] [info]  [account=x] [phase=login] message`. `logs/failed-accounts.log` keeps its original byte format (append-only). A per-run log file `logs/run-<ISO>.log` is also written (gitignored).
+- **Run summary (P5)**: `run-summary.json` is written at the end of every run (including DRY_RUN) via `writeRunSummary()`; the human one-liner (`Success rate: 87.5% (70/80) · unique numbers: 42 · slowest: x@y (90s) · network: 6, domTimeout: 4`) is printed to console and rendered into `$GITHUB_STEP_SUMMARY` in CI.
+- **Live-run guard (P5)**: the spec throws unless `ALLOW_LIVE_RUN=true` (CI sets it) or `DRY_RUN=true` (validates without navigation). Prevents accidental live-site interaction during local development.
 - **Disk usage**: Each run generates screenshots (PNG files). The `ENOSPC` errors in the log show this can fill disk on long runs.
 
 ### 5.4 Platform Notes
@@ -504,11 +509,16 @@ accounts.csv  ----+
 | `runWithRetry(attemptFn, opts)` | `lib/retry.js` | 64-99 | Generic retry engine: runs `attemptFn` up to `maxRetries`; calls `onRetry` (per retry), `onSuccess` (final success), `onFailure` (final failure); returns `{ outcome, retries, error, category, value }` |
 | `parseProxyUrl(url)` | `lib/proxy.js` | 2-38 | `null` if unset; `{ server, username?, password? }`; throws on malformed URL/protocol/missing host |
 | `maskProxyPassword(url)` | `lib/proxy.js` | 40-46 | Redact `:pass@` -> `:***@` for safe logging |
-| `buildSummary()` | `lib/runSummary.js` | 1-8 | P5 stub returning default counters |
-| `logFailure(account, error)` | `tests/login.spec.js` | 21-27 | Append failure entry to log file |
-| `runAccountFlow(page, account, index, total)` | `tests/login.spec.js` | 29-208 | **Main flow**: login, verify, recharge, extract, screenshot |
-| `runAccountFlowWithRetry(createContext, account, index, total, opts)` | `tests/login.spec.js` | 211-243 | **Retry controller**: fresh context per attempt, backoff, retry logging, forwards `onSuccess`/`onFailure` hooks for state persistence, cleanup (P3/P4) |
-| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 257-381 | **Test entry point**: loads accounts, resolves proxy, resolves start index from state (BATCH_ID/START_INDEX), runs batch loop with retry + run stats, writes state after each account, generates Excel (DRY_RUN short-circuit) |
+| `buildSummary(input)` | `lib/runSummary.js` | 11-84 | Computes all §5.2 run-summary fields (`batchId`, timestamps, `durationMs`, counters, `successRate`, `uniqueNumbers`, `avgRuntimePerAccountMs`, `slowestAccount`, `failureCategories`, `screenshotsRetained`, `artifactNames`, `retryCount`) plus operational extras (`accountsRetried`, `startIndex`, `lastProcessedIndex`, `proxyEnabled`, `maxRetries`) |
+| `formatSummary(summary)` | `lib/runSummary.js` | 86-105 | Human one-liner per §5.3: `Success rate: X% (s/t) · unique numbers: N · slowest: u (Ns) · cat: n, ...` |
+| `FAILURE_CATEGORIES` | `lib/runSummary.js` | 1-10 | Canonical category keys used to zero-fill `failureCategories` |
+| `formatLogLine({level, message, fields, ts})` | `lib/logger.js` | 8-18 | `[ISO] [level]  [k=v] ... message` (level padded to align `info`/`warn` with `error`) |
+| `createLogger({stream, errorStream, logFile})` | `lib/logger.js` | 20-33 | Returns `{ info, warn, error }`; writes console + optional file (error→stderr) |
+| `logFailure(account, error)` | `tests/login.spec.js` | 28-34 | Append failure entry to log file (byte-format unchanged) |
+| `writeRunSummary(summary)` | `tests/login.spec.js` | 36-39 | Atomic-ish JSON write of `run-summary.json` (mkdir recursive) |
+| `runAccountFlow(page, account, index, total, logger)` | `tests/login.spec.js` | 36-216 | **Main flow**: login, verify, recharge, extract, screenshot; structured logs; returns screenshot path |
+| `runAccountFlowWithRetry(createContext, account, index, total, opts)` | `tests/login.spec.js` | 219-259 | **Retry controller**: fresh context per attempt, backoff, structured retry logs, forwards `onSuccess`/`onFailure` hooks for state persistence, cleanup (P3/P4) |
+| `test('sign in to 1xBet', ...)` | `tests/login.spec.js` | 264-431 | **Test entry point**: loads accounts, resolves proxy, resolves start index from state (BATCH_ID/START_INDEX), enforces `ALLOW_LIVE_RUN`/`DRY_RUN`, runs batch loop with retry, writes `run-summary.json`, prints human summary, generates Excel |
 | main logic | `scripts/generate-excel.js` | 1-30 | Standalone Excel generator from screenshot filenames |
 | top-level loop | `run-loop.js` | 13-25 | Infinite re-run of `npm run login` with cooldown (see Feature 9) |
 
@@ -588,14 +598,21 @@ The current architecture processes accounts **sequentially**. To add parallelism
 
 ### 8.3 Adding Retry Logic
 
-Implemented in P3 (see §5.3 and §7.2). State persistence for resume was added in P4 via the retry outcome hooks.
+Implemented in P3 (see §5.3 and §7.2). State persistence for resume was added in P4 via the retry outcome hooks; structured logging and run-summary integration were added in P5.
 
 - Per-account retry is handled by `runAccountFlowWithRetry()` (`tests/login.spec.js`), which delegates the attempt/backoff/classification loop to `runWithRetry()` (`lib/retry.js`).
 - Tune `MAX_RETRIES` (default 2) and the backoff constants (`RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`) in `lib/retry.js`.
 - Extend classification by adding a new pattern entry to `CATEGORY_RULES` in `lib/retry.js`.
 - The `onSuccess`/`onFailure` hooks (`lib/retry.js:68-69`) fire exactly once per account on the final outcome. They are the designated extension points for telemetry, run summaries, and notifications (see reviewer deferral note).
 
-### 8.4 Modifying the CSV Format
+### 8.4 Adding Observability (P5)
+
+- **Logger**: `createLogger()` from `lib/logger.js` writes structured lines (`[ts] [level] [account=..] [phase=..] msg`) to console and an optional per-run file (`logs/run-*.log`). Route new diagnostics through it instead of `console.log`.
+- **Run summary**: `buildSummary()` from `lib/runSummary.js` turns per-account `results` (from the batch loop) plus run metadata into `run-summary.json`. The spec calls `writeRunSummary()` at the end of every run; `formatSummary()` produces the human line rendered to console and `$GITHUB_STEP_SUMMARY`.
+- **Canonical output**: `run-summary.json` is the deterministic machine-readable artifact (uploaded in CI). Human-readable summaries are derived from it, not duplicated.
+- **Live-run guard**: the spec refuses navigation unless `ALLOW_LIVE_RUN=true` or `DRY_RUN=true`. Any new local execution path must respect this gate.
+
+### 8.5 Modifying the CSV Format
 
 The CSV parser in `parseCsvLine()` (line 14-41) handles standard CSV with double-quote escaping. To support new columns:
 
@@ -603,7 +620,7 @@ The CSV parser in `parseCsvLine()` (line 14-41) handles standard CSV with double
 - Access it via `row.newcolumn` in the `loadAccounts()` map (line 73-78).
 - Pass it through to `runAccountFlow()` if needed.
 
-### 8.5 Cross-Cutting Concerns
+### 8.6 Cross-Cutting Concerns
 
 | Concern | Current Implementation | Improvement Opportunity |
 |---------|----------------------|----------------------|
@@ -615,7 +632,7 @@ The CSV parser in `parseCsvLine()` (line 14-41) handles standard CSV with double
 | **Monitoring** | None | Progress bar, completion stats |
 | **Testing** | `node:test` unit tests for `lib/*` (`npm test`; retry/proxy/state suites) | E2E coverage, edge-case fixtures |
 
-### 8.6 Things You Must Know Before Changing Code
+### 8.7 Things You Must Know Before Changing Code
 
 1. **The CSV parser is custom** -- do not assume it behaves like a library. Test edge cases.
 2. **The regex `/01\d{9}/` is Egyptian-specific** -- changing the target country requires updating this in multiple places (lines 223, 231, 239, 247, 257, and `scripts/generate-excel.js:11`).
@@ -628,6 +645,8 @@ The CSV parser in `parseCsvLine()` (line 14-41) handles standard CSV with double
 9. **The `logs/failed-accounts.log` accumulates across runs** -- never automatically cleaned. Consider rotation.
 10. **The GitHub Actions workflow runs headless** -- it cannot handle manual CAPTCHA/OTP. It only works for accounts that do not trigger security challenges.
 11. **`state.json` is gitignored** and written atomically (tmp -> fsync -> rename) so a crash never leaves corrupt state. `BATCH_ID` mismatch and `START_INDEX` both reset the starting point deliberately.
+12. **Live runs are guarded (P5)**: without `ALLOW_LIVE_RUN=true`, the spec throws before any navigation; `DRY_RUN=true` still validates without navigation. CI sets `ALLOW_LIVE_RUN=true`.
+13. **`run-summary.json` and `logs/run-*.log` are gitignored** runtime artifacts (P5); they are produced at the end of every run including DRY_RUN.
 
 ---
 

@@ -2,6 +2,19 @@
 
 Tracks changes to the AI-facing documentation set in `codebase-analysis-docs/`. Read this to know what changed since the last implementation cycle.
 
+## v1.7 — 2026-08-02
+
+P5 (observability) implemented; C5 verified locally. Includes the reviewer-recommended `ALLOW_LIVE_RUN` safeguard.
+
+- **P5 code**: `lib/logger.js` (33) — `formatLogLine` (`[ISO] [level]  [account=x] [phase=y] message`, level padded to align info/warn with error) + `createLogger` (console with error→stderr, optional per-run file). `lib/runSummary.js` stub → full (96): `buildSummary` computes all §5.2 fields (`batchId`, timestamps, `durationMs`, counters, `successRate`, `uniqueNumbers`, `avgRuntimePerAccountMs`, `slowestAccount`, `failureCategories`, `screenshotsRetained`, `artifactNames`, `retryCount`) + operational extras (`accountsRetried`, `startIndex`, `lastProcessedIndex`, `proxyEnabled`, `maxRetries`); `formatSummary` renders the §5.3 human line; `FAILURE_CATEGORIES` zero-fills the breakdown.
+- `tests/login.spec.js` 381 → 431: structured logging through `createLogger` (run log `logs/run-<ISO>.log`); `writeRunSummary()` writes `run-summary.json` at end of every run (including DRY_RUN); batch loop collects per-account `results` + screenshot paths; `ALLOW_LIVE_RUN` guard — spec throws before navigation unless `ALLOW_LIVE_RUN=true` or `DRY_RUN=true`; human summary printed to console; `runAccountFlow` returns the screenshot path.
+- `.github/workflows/playwright.yml` 48 → 71: run step env adds `ALLOW_LIVE_RUN: 'true'`; new `actions/upload-artifact@v4` step for `run-summary.json`; new "Render step summary" step appends `## Run summary` + `formatSummary` line to `$GITHUB_STEP_SUMMARY`.
+- `.gitignore` → 11 lines: added `run-summary.json`, `logs/run-*.log`. `.env.example` → 6 lines: added `# ALLOW_LIVE_RUN=true (required for real runs; DRY_RUN=true bypasses navigation without it)`.
+- Tests: new `tests/unit/logger.test.js` (68) + `tests/unit/runSummary.test.js` rewritten (106) → 60 unit tests total. `npm test` 60/60 green.
+- C5 verified locally: `DRY_RUN=true npm run login` produced `run-summary.json` (all §5.2 fields, zero counts) and printed `Success rate: 0% (0/276) · unique numbers: 0`; the exact workflow step-summary node command rendered correctly; running without `ALLOW_LIVE_RUN`/`DRY_RUN` throws `Live execution blocked` before any navigation.
+- Docs: `CODEBASE_KNOWLEDGE.md` → v1.4 (File Index: logger + full runSummary core; §2.4 workflow; §5.3 logging/summary/guard notes; §7.2 function table; §8.4 observability guide; §8.7 items 12–13); `PHASES_TRACKER.md` → v1.5 (P5 Completed, C5 PASS); `README_AI.md` → v1.7 and `AI_MANIFEST.yaml` `docs_version` → 1.7.
+- C1 remains blocked by the GitHub billing lock (§0.4 external blocker — P1 stays In Progress).
+
 ## v1.6 — 2026-08-02
 
 P4 (resume state) implemented; C4 verified locally.

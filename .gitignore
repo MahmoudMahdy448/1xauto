@@ -7,3 +7,5 @@ screenshots/
 extracted_numbers.xlsx
 .browser-cache/
 state.json
+run-summary.json
+logs/run-*.log

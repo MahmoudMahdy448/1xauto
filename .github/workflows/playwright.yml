@@ -34,6 +34,7 @@ jobs:
       - name: Run login flow
         env:
           HEADLESS: 'true'
+          ALLOW_LIVE_RUN: 'true'
           ONEXBET_USERNAME: ${{ secrets.ONEXBET_USERNAME }}
           ONEXBET_PASSWORD: ${{ secrets.ONEXBET_PASSWORD }}
           ONEXBET_SURNAME: ${{ secrets.ONEXBET_SURNAME }}
@@ -46,3 +47,25 @@ jobs:
         with:
           path: state.json
           key: batch-state-${{ github.run_id }}
+
+      - name: Upload run summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-summary
+          path: run-summary.json
+          if-no-files-found: warn
+
+      - name: Render step summary
+        if: always()
+        run: |
+          if [ -f run-summary.json ]; then
+            node --input-type=module -e "
+              import { readFileSync, appendFileSync } from 'fs';
+              import { formatSummary } from './lib/runSummary.js';
+              const summary = JSON.parse(readFileSync('run-summary.json', 'utf8'));
+              appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Run summary\n\n' + formatSummary(summary) + '\n');
+            "
+          else
+            echo '## Run summary' >> "$GITHUB_STEP_SUMMARY"
+            echo 'No run-summary.json produced.' >> "$GITHUB_STEP_SUMMARY"
+          fi
