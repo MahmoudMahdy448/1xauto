@@ -1,8 +1,12 @@
 import { defineConfig } from '@playwright/test';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Keep the local .env file authoritative over any stale Windows environment variables.
 dotenv.config({ override: true });
+
+const isWindows = process.platform === 'win32';
+const lowMemory = process.env.LOW_MEMORY === 'true';
 
 export default defineConfig({
   testDir: './tests',
@@ -15,9 +19,12 @@ export default defineConfig({
     viewport: { width: 1440, height: 960 },
     launchOptions: {
       args: [
-        `--disk-cache-dir=${process.cwd()}\\.browser-cache`,
+        `--disk-cache-dir=${path.join(process.cwd(), '.browser-cache')}`,
         '--disk-cache-size=1073741824',
-        ...(process.env.LOW_MEMORY === 'true' ? ['--single-process', '--disable-gpu', '--no-sandbox'] : [])
+        ...(lowMemory ? ['--single-process', '--disable-gpu'] : []),
+        // Azure/OCI disable Chromium's user-namespace sandbox for normal users,
+        // so disable it everywhere except Windows local dev.
+        ...(!isWindows ? ['--no-sandbox'] : [])
       ]
     }
   }
