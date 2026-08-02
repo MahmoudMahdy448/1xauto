@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, rmSync, mkdirSync, writeFileSync, existsSync } from 'fs';
 import path from 'path';
 import { tmpdir } from 'os';
-import { readState, writeState, resolveStartIndex } from '../../lib/state.js';
+import { readState, writeState, resolveStartIndex, resolveEndIndex } from '../../lib/state.js';
 
 let dirSeq = 0;
 
@@ -63,4 +63,22 @@ test('resolveStartIndex resumes at state lastProcessedIndex + 1', () => {
 test('resolveStartIndex defaults to 1', () => {
   assert.equal(resolveStartIndex(null, undefined), 1);
   assert.equal(resolveStartIndex({}, undefined), 1);
+});
+
+test('resolveEndIndex defaults to total accounts', () => {
+  assert.equal(resolveEndIndex(undefined, 276), 276);
+  assert.equal(resolveEndIndex(null, 276), 276);
+});
+
+test('resolveEndIndex clamps to total accounts', () => {
+  assert.equal(resolveEndIndex(300, 276), 276);
+});
+
+test('resolveEndIndex returns explicit end', () => {
+  assert.equal(resolveEndIndex(92, 276), 92);
+});
+
+test('resolveEndIndex throws on invalid values', () => {
+  assert.throws(() => resolveEndIndex(0, 276), /Invalid END_INDEX/);
+  assert.throws(() => resolveEndIndex(-5, 276), /Invalid END_INDEX/);
 });

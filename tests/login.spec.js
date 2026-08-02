@@ -8,7 +8,7 @@ import { createLogger } from '../lib/logger.js';
 import { buildSummary, formatSummary } from '../lib/runSummary.js';
 import { parseProxyUrl, maskProxyPassword } from '../lib/proxy.js';
 import { backoffDelay, readMaxRetries, runWithRetry } from '../lib/retry.js';
-import { readState, writeState, resolveStartIndex } from '../lib/state.js';
+import { readState, writeState, resolveStartIndex, resolveEndIndex } from '../lib/state.js';
 
 const loginUrl = 'https://eg1xbet.com/en/user/login';
 const rechargeUrl = 'https://eg1xbet.com/en/office/recharge';
@@ -298,6 +298,19 @@ test('sign in to 1xBet', async ({ browser }) => {
     }
   }
 
+  const endIndexEnv = process.env.END_INDEX;
+  let endIndex = accounts.length;
+  if (endIndexEnv) {
+    const parsedEndIndex = parseInt(endIndexEnv, 10);
+    if (isNaN(parsedEndIndex)) {
+      throw new Error(`Invalid END_INDEX: "${endIndexEnv}". It must be a positive integer.`);
+    }
+    endIndex = resolveEndIndex(parsedEndIndex, accounts.length);
+    if (endIndex !== parsedEndIndex) {
+      logger.warn(`END_INDEX (${parsedEndIndex}) is greater than the total number of accounts (${accounts.length}); clamping to ${endIndex}.`);
+    }
+  }
+
   const startIndex = resolveStartIndex(state, explicitStartIndex);
   logger.info(`start index resolved to ${startIndex} (${state ? `state.lastProcessedIndex=${state.lastProcessedIndex}` : 'no state'}${explicitStartIndex ? `, START_INDEX=${explicitStartIndex}` : ''})`);
 
@@ -353,9 +366,15 @@ test('sign in to 1xBet', async ({ browser }) => {
   const runResults = [];
   const screenshots = [];
 
+  logger.info(`processing range [${startIndex}, ${endIndex}] of ${accounts.length} account(s)`);
+
   for (const [index, account] of accounts.entries()) {
     if (index + 1 < startIndex) {
       continue;
+    }
+    if (index + 1 > endIndex) {
+      logger.info(`end index reached at ${endIndex}; stopping this shard.`);
+      break;
     }
     const startedAt = Date.now();
     const result = await runAccountFlowWithRetry(
