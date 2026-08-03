@@ -3852,3 +3852,31 @@ Call log:
 [2m  - Expect "toBeVisible" with timeout 15000ms[22m
 [2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#amount')[22m
 
+[2026-08-03T00:21:08.789Z] beheiraaccjul755@gmail.com | Login failed: Select a login option
+[2026-08-03T01:07:27.500Z] redseaalbahralahmaraccjul7168@gmail.com | [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+Locator: locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()
+Expected: visible
+Timeout: 20000ms
+Error: element(s) not found
+
+Call log:
+[2m  - Expect "toBeVisible" with timeout 20000ms[22m
+[2m  - waiting for locator('iframe[src*="/paysystems/deposit/"]').contentFrame().locator('#payment_modal_container span.copy_content_btn.modal-message-btn[title="Copy"]').first()[22m
+
+[2026-08-03T01:34:19.334Z] elgizaaccjul7234@gmail.com | page.goto: net::ERR_CONNECTION_TIMED_OUT at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-08-03T01:34:54.536Z] elgizaaccjul7235@gmail.com | page.goto: net::ERR_NETWORK_CHANGED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-08-03T01:34:59.552Z] elgizaaccjul7236@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+
+[2026-08-03T01:35:04.833Z] elgizaaccjul7237@gmail.com | page.goto: net::ERR_NAME_NOT_RESOLVED at https://eg1xbet.com/en/user/login
+Call log:
+[2m  - navigating to "https://eg1xbet.com/en/user/login", waiting until "domcontentloaded"[22m
+

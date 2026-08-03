@@ -67,6 +67,9 @@ Environment=STATE_FILE=$state_file
 Environment=SCREENSHOTS_DIR=$screenshots_dir
 Environment=RUN_SUMMARY_FILE=$summary_file
 Environment=EXCEL_FILE=$excel_file
+Environment=STATUS_FILE=$APP_DIR/loop-status-shard-$shard_index.json
+Environment=SEEN_NUMBERS_FILE=$APP_DIR/seen-numbers.json
+Environment=SEEN_NUMBERS_LOCK=$APP_DIR/seen-numbers.json.lock
 Environment=COOLDOWN_MINUTES=$COOLDOWN_MINUTES
 ExecStart=$NODE_BIN $APP_DIR/run-loop.js
 Restart=on-failure
@@ -81,5 +84,29 @@ EOF
   systemctl restart "1xauto-shard-$shard_index"
   log "Registered 1xauto-shard-$shard_index (accounts $start-$end), cooldown ${COOLDOWN_MINUTES}min"
 done
+
+# Register the Telegram /status bot service (long-polls getUpdates).
+STATUS_BOT_UNIT="/etc/systemd/system/1xauto-status-bot.service"
+cat > "$STATUS_BOT_UNIT" <<EOF
+[Unit]
+Description=1xauto Telegram /status bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=$RUN_USER
+WorkingDirectory=$APP_DIR
+Environment=STATUS_ALLOWED_IDS=${STATUS_ALLOWED_IDS:-}
+ExecStart=$NODE_BIN $APP_DIR/scripts/status-bot.mjs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable 1xauto-status-bot >/dev/null
+systemctl restart 1xauto-status-bot
+log "Registered 1xauto-status-bot (Telegram /status). Set STATUS_ALLOWED_IDS if not TELEGRAM_CHAT_ID."
 
 log "Done. Status: systemctl status '1xauto-shard-*' — logs: journalctl -u 1xauto-shard-1 -f"
