@@ -13,12 +13,14 @@
 #   COOLDOWN_MINUTES           default 60
 #   RUN_USER                   default ${SUDO_USER:-azureuser}
 #   APP_DIR                    default /opt/1xauto
+#   LEASE_FILE                 shared lease for group alternation (default /opt/1xauto/group-lease.json)
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/1xauto}"
 RUN_USER="${RUN_USER:-${SUDO_USER:-azureuser}}"
 COOLDOWN_MINUTES="${COOLDOWN_MINUTES:-60}"
 SHARDS="${SHARDS:-1:149,150:276}"
+LEASE_FILE="${LEASE_FILE:-/opt/1xauto/group-lease.json}"
 NODE_BIN="$(command -v node)"
 
 log() { printf '\033[1;32m[shards]\033[0m %s\n' "$*"; }
@@ -70,6 +72,8 @@ Environment=EXCEL_FILE=$excel_file
 Environment=STATUS_FILE=$APP_DIR/loop-status-shard-$shard_index.json
 Environment=SEEN_NUMBERS_FILE=$APP_DIR/seen-numbers.json
 Environment=SEEN_NUMBERS_LOCK=$APP_DIR/seen-numbers.json.lock
+Environment=RUN_GROUP=A
+Environment=LEASE_FILE=$LEASE_FILE
 Environment=COOLDOWN_MINUTES=$COOLDOWN_MINUTES
 ExecStart=$NODE_BIN $APP_DIR/run-loop.js
 Restart=on-failure

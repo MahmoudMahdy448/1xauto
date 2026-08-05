@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { buildStatusText } from '../lib/status.js';
+import { buildAllStatusText } from '../lib/status.js';
 import { getTelegramUpdates, sendTelegramMessage } from '../lib/telegram.js';
 
 dotenv.config();
@@ -42,18 +42,21 @@ async function handleUpdate(update) {
   const text = msg.text.trim();
   console.log(`Handling "${text}" from chat ${chatId}`);
 
-  if (text === '/status') {
-    if (passcode && text !== `/status ${passcode}`) {
+  if (text === '/status' || text.startsWith('/status ')) {
+    const arg = text.slice('/status'.length).trim();
+    const normalizedArg = arg.replace(/^<|>$/g, '');
+    if (passcode && normalizedArg !== passcode) {
       await sendTelegramMessage({
         botToken,
         chatId,
-        text: 'Access denied. Send `/status <passcode>`.'
+        text: `Access denied. Send \`/status ${passcode}\`.`
       });
       return;
     }
-    const status = buildStatusText({ appDir: process.cwd() });
+    const status = await buildAllStatusText();
     try {
       await sendTelegramMessage({ botToken, chatId, text: status });
+      console.log(`Status reply sent (${status.length} chars).`);
     } catch (error) {
       console.error(`Failed to send status: ${error.message}`);
     }
@@ -61,7 +64,7 @@ async function handleUpdate(update) {
     await sendTelegramMessage({
       botToken,
       chatId,
-      text: `Commands:\n/status${passcode ? ' <passcode>' : ''} — VM health snapshot\n/help — this message`
+      text: `Commands:\n/status${passcode ? ` ${passcode}` : ''} — VM health snapshot\n/help — this message`
     });
   }
 }

@@ -14,3 +14,9 @@ state-shard-*.json
 run-summary-shard-*.json
 screenshots-shard-*/
 extracted_numbers-shard-*.xlsx
+loop-status*.json
+logs/failed-accounts.log
+seen-numbers*.json
+group-lease.json
+extracted_numbers-combined.xlsx
+extracted_numbers-unique.xlsx
