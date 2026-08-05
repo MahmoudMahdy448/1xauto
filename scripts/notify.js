@@ -16,6 +16,13 @@ dotenv.config();
 
 const summaryPath = path.resolve(process.cwd(), process.env.RUN_SUMMARY_FILE || 'run-summary.json');
 const screenshotsDir = path.resolve(process.cwd(), process.env.SCREENSHOTS_DIR || 'screenshots');
+// Combined mode: SCREENSHOTS_DIRS="dir1,dir2,..." scans multiple shard dirs at once.
+// Used by the collector service so one notification covers every shard's run.
+const screenshotsDirs = (process.env.SCREENSHOTS_DIRS || '')
+  .split(',')
+  .map((d) => d.trim())
+  .filter(Boolean)
+  .map((d) => path.resolve(process.cwd(), d));
 const seenNumbersFile = path.resolve(process.cwd(), process.env.SEEN_NUMBERS_FILE || 'seen-numbers.json');
 const seenNumbersLock = path.resolve(process.cwd(), process.env.SEEN_NUMBERS_LOCK || 'seen-numbers.json.lock');
 const combinedExcelPath = path.resolve(process.cwd(), process.env.EXCEL_COMBINED_FILE || 'extracted_numbers-combined.xlsx');
@@ -34,33 +41,41 @@ const recipients = channelId ? [chatId, channelId] : [chatId];
 
 // Build the list of candidate screenshot paths. Prefer run-summary.json (1xauto),
 // otherwise scan the screenshots dir (linebet/melbet which don't write summaries).
+// In combined mode (SCREENSHOTS_DIRS) scan every shard dir.
 // When a run is active, restrict the scan to screenshots created after the run started
 // so the "unique-only" excel reflects the current batch.
+function scanDir(dir) {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((name) => /\.(png|jpe?g)$/i.test(name) && extractNumberFromScreenshotName(name))
+    .sort()
+    .map((name) => path.join(dir, name));
+}
+
 function listCandidateScreenshots() {
+  if (screenshotsDirs.length > 0) {
+    let paths = [];
+    for (const dir of screenshotsDirs) {
+      paths = paths.concat(scanDir(dir));
+    }
+    if (runStartedAt) {
+      paths = paths.filter((p) => {
+        try {
+          return statSync(p).mtimeMs >= runStartedAt;
+        } catch {
+          return false;
+        }
+      });
+    }
+    return { summary: null, paths };
+  }
+
   if (existsSync(summaryPath)) {
     const summary = JSON.parse(readFileSync(summaryPath, 'utf8'));
     return { summary, paths: Array.isArray(summary.artifactNames) ? summary.artifactNames : [] };
   }
 
-  if (!existsSync(screenshotsDir)) {
-    return { summary: null, paths: [] };
-  }
-
-  let paths = readdirSync(screenshotsDir)
-    .filter((name) => /\.(png|jpe?g)$/i.test(name) && extractNumberFromScreenshotName(name))
-    .sort()
-    .map((name) => path.join(screenshotsDir, name));
-
-  if (runStartedAt) {
-    paths = paths.filter((p) => {
-      try {
-        return statSync(p).mtimeMs >= runStartedAt;
-      } catch {
-        return false;
-      }
-    });
-  }
-  return { summary: null, paths };
+  return { summary: null, paths: scanDir(screenshotsDir) };
 }
 
 const { summary, paths: artifactPaths } = listCandidateScreenshots();

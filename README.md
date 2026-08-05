@@ -109,6 +109,39 @@ Each systemd unit gets the `LEASE_FILE`, `RUN_GROUP`, `SEEN_NUMBERS_FILE`,
 `STATUS_FILE`, `STATE_FILE`, `SCREENSHOTS_DIR`, `RUN_SUMMARY_FILE`, and
 `COOLDOWN_MINUTES` env it needs.
 
+## Sharded VM + combined collector (new-VM setup)
+
+A second VM runs **only 1xauto** accounts split across N shards (e.g. 3 shards
+`1:92,93:184,185:276`, or 4 shards with 16 GB RAM), each with a short cooldown
+(e.g. 15 min). Shards must **not** send their own Telegram messages — instead
+`scripts/collector.mjs` waits until **every** shard has finished its run and then
+sends **one combined notification** (unique numbers across all shards + combined
+and batch Excel files) to a **separate bot/channel**.
+
+```bash
+# 1) shards: per-shard notify off, no lease (1xauto-only VM)
+SHARDS="1:92,93:184,185:276" COOLDOWN_MINUTES=15 \
+  SKIP_NOTIFY=true NOTIFY_INTERVAL_MINUTES=0 LEASE_FILE= \
+  sudo bash scripts/register-shards.sh
+
+# 2) collector: derives loop-status-shard-N.json + screenshots/shard-N from SHARD_COUNT
+SHARD_COUNT=3 \
+  TELEGRAM_BOT_TOKEN=<new bot> TELEGRAM_CHAT_ID=<admin chat> \
+  TELEGRAM_CHANNEL_ID=<new channel> \
+  sudo bash scripts/register-collector.sh
+```
+
+- The new VM needs a **fresh** `seen-numbers.json` ledger (a new bot/channel must
+  not reuse the shared SA VM ledger, or everything would already be deduped).
+- The collector polls `COLLECTOR_STATUS_FILES` (default 30 s), records the last
+  collection in `collect-state.json`, and only fires when all shards are in
+  `cooldown` after `lastCollectedAt` (or advanced to a newer run).
+- `SKIP_NOTIFY=true` removes the per-shard notify step in
+  `scripts/scheduled-run.mjs` and disables the periodic notify timer in
+  `run-loop.js`.
+- `APP_DEFS_JSON` on the status bot overrides `APP_DEFS` in `lib/status.js` so
+  `/status` can describe a different service set; `STATUS_BOT=0` skips the bot.
+
 ## Runtime files (gitignored)
 
 State, screenshots, excels, ledgers, lease, and `loop-status*.json` are runtime

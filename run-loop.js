@@ -15,7 +15,7 @@ const HEARTBEAT_MS = 2 * 60 * 1000;
 const PREEMPT_CHECK_MS = 15 * 1000;
 const RELEASE_BUFFER_MS = 5 * 60 * 1000;
 const PRIORITY_GROUP = process.env.PRIORITY_GROUP || 'A';
-const NOTIFY_INTERVAL_MS = (parseInt(process.env.NOTIFY_INTERVAL_MINUTES, 10) || 15) * 60 * 1000;
+const NOTIFY_INTERVAL_MS = (parseInt(process.env.NOTIFY_INTERVAL_MINUTES, 10) || (process.env.SKIP_NOTIFY === 'true' ? 0 : 15)) * 60 * 1000;
 
 process.env.START_INDEX = START_INDEX;
 process.env.HEADLESS = HEADLESS;

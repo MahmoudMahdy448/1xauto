@@ -5,6 +5,7 @@ dotenv.config();
 
 const dryRun = process.argv.includes('--dry-run');
 const lowMemory = process.env.LOW_MEMORY === 'true';
+const skipNotify = process.env.SKIP_NOTIFY === 'true';
 const env = {
   ...process.env,
   HEADLESS: 'true',
@@ -17,9 +18,13 @@ console.log(`[scheduled-run] starting batch ${new Date().toISOString()}`);
 
 const steps = [
   ['login', 'npm run login'],
-  ['excel', 'npm run excel'],
-  ['notify', 'node scripts/notify.js']
+  ['excel', 'npm run excel']
 ];
+if (!skipNotify) {
+  steps.push(['notify', 'node scripts/notify.js']);
+} else {
+  console.log('[scheduled-run] SKIP_NOTIFY=true — per-shard notification skipped (collector handles it).');
+}
 
 let failed = false;
 

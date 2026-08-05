@@ -13,14 +13,17 @@
 #   COOLDOWN_MINUTES           default 60
 #   RUN_USER                   default ${SUDO_USER:-azureuser}
 #   APP_DIR                    default /opt/1xauto
-#   LEASE_FILE                 shared lease for group alternation (default /opt/1xauto/group-lease.json)
+#   LEASE_FILE                 shared lease for group alternation (default /opt/1xauto/group-lease.json; set LEASE_FILE= to disable)
+#   SKIP_NOTIFY                true to disable per-shard Telegram notify (use the collector instead)
+#   NOTIFY_INTERVAL_MINUTES    periodic notify interval during a run (default 15; 0 to disable)
+#   STATUS_BOT=0               skip registering the /status bot service
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/1xauto}"
 RUN_USER="${RUN_USER:-${SUDO_USER:-azureuser}}"
 COOLDOWN_MINUTES="${COOLDOWN_MINUTES:-60}"
 SHARDS="${SHARDS:-1:149,150:276}"
-LEASE_FILE="${LEASE_FILE:-/opt/1xauto/group-lease.json}"
+LEASE_FILE="${LEASE_FILE-/opt/1xauto/group-lease.json}"
 NODE_BIN="$(command -v node)"
 
 log() { printf '\033[1;32m[shards]\033[0m %s\n' "$*"; }
@@ -75,6 +78,8 @@ Environment=SEEN_NUMBERS_LOCK=$APP_DIR/seen-numbers.json.lock
 Environment=RUN_GROUP=A
 Environment=LEASE_FILE=$LEASE_FILE
 Environment=COOLDOWN_MINUTES=$COOLDOWN_MINUTES
+Environment=SKIP_NOTIFY=${SKIP_NOTIFY:-false}
+Environment=NOTIFY_INTERVAL_MINUTES=${NOTIFY_INTERVAL_MINUTES:-15}
 ExecStart=$NODE_BIN $APP_DIR/run-loop.js
 Restart=on-failure
 RestartSec=30
@@ -90,6 +95,8 @@ EOF
 done
 
 # Register the Telegram /status bot service (long-polls getUpdates).
+STATUS_BOT="${STATUS_BOT:-1}"
+if [[ "$STATUS_BOT" == "1" ]]; then
 STATUS_BOT_UNIT="/etc/systemd/system/1xauto-status-bot.service"
 cat > "$STATUS_BOT_UNIT" <<EOF
 [Unit]
@@ -101,6 +108,7 @@ Wants=network-online.target
 User=$RUN_USER
 WorkingDirectory=$APP_DIR
 Environment=STATUS_ALLOWED_IDS=${STATUS_ALLOWED_IDS:-}
+Environment=APP_DEFS_JSON=${APP_DEFS_JSON:-}
 ExecStart=$NODE_BIN $APP_DIR/scripts/status-bot.mjs
 Restart=always
 RestartSec=5
@@ -112,5 +120,8 @@ systemctl daemon-reload
 systemctl enable 1xauto-status-bot >/dev/null
 systemctl restart 1xauto-status-bot
 log "Registered 1xauto-status-bot (Telegram /status). Set STATUS_ALLOWED_IDS if not TELEGRAM_CHAT_ID."
+else
+log "STATUS_BOT=0 — skipping /status bot registration."
+fi
 
 log "Done. Status: systemctl status '1xauto-shard-*' — logs: journalctl -u 1xauto-shard-1 -f"
