@@ -69,10 +69,14 @@ function loadState() {
   if (!st || typeof st.lastCollectedAt !== 'number') {
     // First start: seed so a run already in progress is not counted as done.
     const statuses = statusFiles.map((f) => readJson(f));
-    return {
+    const seeded = {
       lastCollectedAt: Date.now(),
       lastRun: statuses.map((s) => (s && typeof s.run === 'number' ? s.run : 0))
     };
+    // Persist the seed so subsequent polls don't re-seed with a newer
+    // lastCollectedAt (which would make every cooldown look "not yet done").
+    saveState(seeded);
+    return seeded;
   }
   return {
     lastCollectedAt: st.lastCollectedAt,
