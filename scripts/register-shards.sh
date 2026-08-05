@@ -17,12 +17,15 @@
 #   SKIP_NOTIFY                true to disable per-shard Telegram notify (use the collector instead)
 #   NOTIFY_INTERVAL_MINUTES    periodic notify interval during a run (default 15; 0 to disable)
 #   STATUS_BOT=0               skip registering the /status bot service
+#   SHARD_OFFSET               shift service/status/screenshot numbers (e.g. 2 => shard-3, shard-4)
+#                              so multiple VMs can each register a slice with globally unique names
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/1xauto}"
 RUN_USER="${RUN_USER:-${SUDO_USER:-azureuser}}"
 COOLDOWN_MINUTES="${COOLDOWN_MINUTES:-60}"
 SHARDS="${SHARDS:-1:149,150:276}"
+SHARD_OFFSET="${SHARD_OFFSET:-0}"
 LEASE_FILE="${LEASE_FILE-/opt/1xauto/group-lease.json}"
 NODE_BIN="$(command -v node)"
 
@@ -43,6 +46,7 @@ IFS=',' read -ra RANGES <<< "$SHARDS"
 
 for range in "${RANGES[@]}"; do
   shard_index=$((shard_index + 1))
+  shard_num=$((SHARD_OFFSET + shard_index))
   start="${range%%:*}"
   end="${range##*:}"
 
@@ -51,15 +55,15 @@ for range in "${RANGES[@]}"; do
     exit 1
   fi
 
-  unit="/etc/systemd/system/1xauto-shard-$shard_index.service"
-  state_file="$APP_DIR/state-shard-$shard_index.json"
-  screenshots_dir="$APP_DIR/screenshots/shard-$shard_index"
-  summary_file="$APP_DIR/run-summary-shard-$shard_index.json"
-  excel_file="$APP_DIR/extracted_numbers-shard-$shard_index.xlsx"
+  unit="/etc/systemd/system/1xauto-shard-$shard_num.service"
+  state_file="$APP_DIR/state-shard-$shard_num.json"
+  screenshots_dir="$APP_DIR/screenshots/shard-$shard_num"
+  summary_file="$APP_DIR/run-summary-shard-$shard_num.json"
+  excel_file="$APP_DIR/extracted_numbers-shard-$shard_num.xlsx"
 
   cat > "$unit" <<EOF
 [Unit]
-Description=1xauto batch shard $shard_index (accounts $start-$end)
+Description=1xauto batch shard $shard_num (accounts $start-$end)
 After=network-online.target
 Wants=network-online.target
 
@@ -72,7 +76,7 @@ Environment=STATE_FILE=$state_file
 Environment=SCREENSHOTS_DIR=$screenshots_dir
 Environment=RUN_SUMMARY_FILE=$summary_file
 Environment=EXCEL_FILE=$excel_file
-Environment=STATUS_FILE=$APP_DIR/loop-status-shard-$shard_index.json
+Environment=STATUS_FILE=$APP_DIR/loop-status-shard-$shard_num.json
 Environment=SEEN_NUMBERS_FILE=$APP_DIR/seen-numbers.json
 Environment=SEEN_NUMBERS_LOCK=$APP_DIR/seen-numbers.json.lock
 Environment=RUN_GROUP=A
@@ -89,9 +93,9 @@ WantedBy=multi-user.target
 EOF
 
   systemctl daemon-reload
-  systemctl enable "1xauto-shard-$shard_index" >/dev/null
-  systemctl restart "1xauto-shard-$shard_index"
-  log "Registered 1xauto-shard-$shard_index (accounts $start-$end), cooldown ${COOLDOWN_MINUTES}min"
+  systemctl enable "1xauto-shard-$shard_num" >/dev/null
+  systemctl restart "1xauto-shard-$shard_num"
+  log "Registered 1xauto-shard-$shard_num (accounts $start-$end), cooldown ${COOLDOWN_MINUTES}min"
 done
 
 # Register the Telegram /status bot service (long-polls getUpdates).
