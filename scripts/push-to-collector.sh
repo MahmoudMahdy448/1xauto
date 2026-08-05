@@ -15,7 +15,7 @@
 #   COLLECTOR_USER    default ${SUDO_USER:-azureuser}
 #   COLLECTOR_APP_DIR default /opt/1xauto (target dir on the collector)
 #   APP_DIR           default /opt/1xauto (source on this VM)
-#   SHARD_OFFSET      default 2 (first shard number on this VM)
+#   SHARD_OFFSET      default 3 (FIRST shard number on this VM; loop-status-shard-N.json)
 #   SHARD_COUNT       default 2 (shards on this VM)
 set -euo pipefail
 
@@ -23,7 +23,7 @@ COLLECTOR_HOST="${COLLECTOR_HOST:?COLLECTOR_HOST required (ssh alias or host of 
 COLLECTOR_USER="${COLLECTOR_USER:-${SUDO_USER:-azureuser}}"
 COLLECTOR_APP_DIR="${COLLECTOR_APP_DIR:-/opt/1xauto}"
 APP_DIR="${APP_DIR:-/opt/1xauto}"
-SHARD_OFFSET="${SHARD_OFFSET:-2}"
+SHARD_OFFSET="${SHARD_OFFSET:-3}"
 SHARD_COUNT="${SHARD_COUNT:-2}"
 
 log() { printf '\033[1;33m[push]\033[0m %s\n' "$*"; }

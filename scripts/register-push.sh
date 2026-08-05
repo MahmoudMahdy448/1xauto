@@ -9,7 +9,7 @@
 #   COLLECTOR_USER       default ${SUDO_USER:-azureuser}
 #   COLLECTOR_APP_DIR    default /opt/1xauto
 #   APP_DIR              default /opt/1xauto
-#   SHARD_OFFSET         default 2
+#   SHARD_OFFSET         default 3 (FIRST shard number on this VM)
 #   SHARD_COUNT          default 2
 #   PUSH_EVERY           timer interval (default 30s)
 #   RUN_USER             default ${SUDO_USER:-azureuser}
@@ -19,7 +19,7 @@ COLLECTOR_HOST="${COLLECTOR_HOST:?COLLECTOR_HOST required (ssh alias or host of 
 COLLECTOR_USER="${COLLECTOR_USER:-${SUDO_USER:-azureuser}}"
 COLLECTOR_APP_DIR="${COLLECTOR_APP_DIR:-/opt/1xauto}"
 APP_DIR="${APP_DIR:-/opt/1xauto}"
-SHARD_OFFSET="${SHARD_OFFSET:-2}"
+SHARD_OFFSET="${SHARD_OFFSET:-3}"
 SHARD_COUNT="${SHARD_COUNT:-2}"
 PUSH_EVERY="${PUSH_EVERY:-30s}"
 RUN_USER="${RUN_USER:-${SUDO_USER:-azureuser}}"
