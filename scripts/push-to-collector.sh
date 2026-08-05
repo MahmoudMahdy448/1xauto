@@ -32,6 +32,12 @@ log() { printf '\033[1;33m[push]\033[0m %s\n' "$*"; }
 
 DEST="$COLLECTOR_USER@$COLLECTOR_HOST:$COLLECTOR_APP_DIR"
 
+# Push this VM's own system stats (RAM/load/disk/up) for the /status bot.
+node "$APP_DIR/scripts/system-stats.mjs" >/dev/null 2>&1 || true
+if [[ -f "$APP_DIR/system-stats.json" ]]; then
+  rsync -az "$APP_DIR/system-stats.json" "$DEST/system-stats-remote.json"
+fi
+
 for (( i = 0; i < SHARD_COUNT; i++ )); do
   n=$((SHARD_OFFSET + i))
   status_src="$APP_DIR/loop-status-shard-$n.json"
