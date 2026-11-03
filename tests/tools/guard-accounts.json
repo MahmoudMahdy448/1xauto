@@ -1,0 +1,8 @@
+﻿{
+    "reason":  "accounts 101-103 from accounts.csv, already processed in earlier passes",
+    "accounts":  [
+                     "ismailiaaccjul7101@gmail.com",
+                     "cairoaccjul7102@gmail.com",
+                     "cairoaccjul7103@gmail.com"
+                 ]
+}

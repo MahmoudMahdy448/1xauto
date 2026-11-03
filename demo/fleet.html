@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>1xbet Farm · Fleet Control</title>
+<style>
+  :root {
+    --bg: #060a12;
+    --panel: #0c1424;
+    --panel-2: #0a111e;
+    --line: #1b2940;
+    --text: #e6edf7;
+    --muted: #7d8ca6;
+    --dim: #4c5a72;
+    --cyan: #22d3ee;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --violet: #a78bfa;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(34, 211, 238, 0.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(167, 139, 250, 0.09), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(120, 160, 220, 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 160, 220, 0.045) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none;
+  }
+  header {
+    position: sticky; top: 0; z-index: 5;
+    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    padding: 15px 26px;
+    background: rgba(6, 10, 18, 0.84);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .mark {
+    width: 40px; height: 40px; border-radius: 11px;
+    display: grid; place-items: center;
+    background: linear-gradient(145deg, #0e7490, #155e75);
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.25), inset 0 0 0 1px rgba(255,255,255,0.08);
+    font-weight: 800; font-size: 15px; letter-spacing: -0.5px; color: #dffaff;
+  }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: 0.14em; font-weight: 700; }
+  .brand p { margin: 3px 0 0; font-size: 11.5px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+  .head-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 12px; border-radius: 999px;
+    border: 1px solid var(--line); background: rgba(12, 20, 36, 0.9);
+    font-size: 12px; color: var(--muted); font-family: var(--mono);
+  }
+  .chip strong { color: var(--text); font-weight: 600; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); }
+  .dot.live { background: var(--green); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); animation: pulse 1.7s infinite; }
+  .dot.bad { background: var(--red); box-shadow: 0 0 12px rgba(239, 68, 68, 0.7); }
+  .dot.warn { background: var(--amber); box-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+    70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  }
+  .clock { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+  main { padding: 20px 26px 36px; max-width: 1720px; margin: 0 auto; }
+  .banner {
+    display: none; margin-bottom: 14px; padding: 12px 16px; border-radius: 10px;
+    border: 1px solid rgba(239, 68, 68, 0.45); background: rgba(239, 68, 68, 0.12);
+    color: #fecaca; font-size: 13px; font-family: var(--mono);
+  }
+  .banner.show { display: block; }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .kpi {
+    position: relative; overflow: hidden;
+    background: linear-gradient(180deg, rgba(15, 25, 43, 0.95), rgba(10, 17, 30, 0.95));
+    border: 1px solid var(--line); border-radius: 13px; padding: 14px 16px 13px;
+  }
+  .kpi::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--cyan); opacity: 0.55; }
+  .kpi.green::after { background: var(--green); }
+  .kpi.violet::after { background: var(--violet); }
+  .kpi.amber::after { background: var(--amber); }
+  .kpi .label { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .kpi .value { margin-top: 6px; font-family: var(--mono); font-size: 29px; font-weight: 700; line-height: 1; }
+  .kpi .value small { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .kpi .sub { margin-top: 6px; font-size: 11.5px; color: var(--dim); font-family: var(--mono); }
+
+  .top { display: grid; grid-template-columns: 1.45fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .panel {
+    background: linear-gradient(180deg, rgba(13, 22, 39, 0.96), rgba(9, 15, 27, 0.96));
+    border: 1px solid var(--line); border-radius: 13px; padding: 15px 17px;
+    min-width: 0;
+  }
+  .panel h2 {
+    margin: 0 0 12px; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--muted); font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .panel h2 .hint { color: var(--dim); letter-spacing: 0.04em; text-transform: none; font-weight: 400; font-size: 11px; }
+
+  .compare-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .compare-head h2 { margin: 0; }
+  .mult {
+    font-family: var(--mono); font-size: 20px; font-weight: 700; color: #a5f3fc;
+    border: 1px solid rgba(34, 211, 238, 0.35); background: rgba(34, 211, 238, 0.08);
+    padding: 5px 11px; border-radius: 9px; white-space: nowrap;
+  }
+  .cmp-row { display: grid; grid-template-columns: 86px 1fr 110px; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .cmp-row .name { font-size: 12.5px; color: var(--muted); }
+  .cmp-row.fleet .name { color: var(--text); font-weight: 600; }
+  .cmp-track { height: 16px; border-radius: 99px; background: #101c30; overflow: hidden; border: 1px solid var(--line); }
+  .cmp-track > i { display: block; height: 100%; width: 0%; border-radius: 99px; transition: width 0.7s ease; }
+  .cmp-row:not(.fleet) .cmp-track > i { background: linear-gradient(90deg, #475569, #94a3b8); }
+  .cmp-row.fleet .cmp-track > i { background: linear-gradient(90deg, #0891b2, var(--cyan)); box-shadow: 0 0 18px rgba(34, 211, 238, 0.35); }
+  .cmp-row .val { text-align: right; font-family: var(--mono); font-size: 17px; font-weight: 700; white-space: nowrap; }
+  .cmp-row .val small { font-size: 10px; color: var(--dim); font-weight: 400; }
+  .cmp-foot {
+    margin-top: 4px; padding-top: 10px; border-top: 1px solid rgba(27, 41, 64, 0.7);
+    font-size: 11.5px; color: var(--dim); font-family: var(--mono); line-height: 1.55;
+  }
+  .cmp-foot b { color: var(--muted); font-weight: 600; }
+
+  .sys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .meter { padding: 10px 11px; border-radius: 10px; border: 1px solid var(--line); background: rgba(8, 14, 25, 0.8); }
+  .meter .k { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+  .meter .k b { color: var(--text); font-family: var(--mono); letter-spacing: 0; font-size: 12px; }
+  .meter .bar { margin-top: 8px; height: 6px; border-radius: 99px; background: #131f33; overflow: hidden; }
+  .meter .bar > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #0891b2, var(--cyan)); transition: width 0.6s ease; }
+  .meter .bar > i.warn { background: linear-gradient(90deg, #b45309, var(--amber)); }
+  .meter .bar > i.bad { background: linear-gradient(90deg, #b91c1c, var(--red)); }
+  .meter .note { margin-top: 6px; font-size: 10.5px; color: var(--dim); font-family: var(--mono); }
+  .sys-note { margin-top: 10px; font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 1.5; }
+
+  .shards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+  .shard {
+    background: linear-gradient(180deg, rgba(13, 22, 39, 0.96), rgba(9, 15, 27, 0.96));
+    border: 1px solid var(--line); border-radius: 13px; padding: 14px 15px;
+    min-width: 0; position: relative; overflow: hidden;
+  }
+  .shard.active { border-color: rgba(34, 211, 238, 0.4); box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.08); }
+  .shard.idle { opacity: 0.82; }
+  .shard-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .shard-name { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+  .shard-state { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+  .shard-state.live { color: #86efac; }
+  .shard-state.warn { color: #fcd34d; }
+  .shard-state.bad { color: #fca5a5; }
+  .shard-who {
+    margin-top: 10px; font-family: var(--mono); font-size: 14px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .shard-what { margin-top: 7px; display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px;
+    font-size: 10.5px; font-family: var(--mono); border: 1px solid var(--line); color: var(--muted);
+  }
+  .pill.cyan { color: #a5f3fc; border-color: rgba(34, 211, 238, 0.32); background: rgba(34, 211, 238, 0.08); }
+  .pill.green { color: #bbf7d0; border-color: rgba(34, 197, 94, 0.32); background: rgba(34, 197, 94, 0.08); }
+  .pill.red { color: #fecaca; border-color: rgba(239, 68, 68, 0.36); background: rgba(239, 68, 68, 0.10); }
+  .pill.amber { color: #fde68a; border-color: rgba(245, 158, 11, 0.34); background: rgba(245, 158, 11, 0.08); }
+  .shard-progress { margin-top: 12px; }
+  .shard-progress .row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10.5px; color: var(--dim); }
+  .shard-progress .row b { color: var(--text); }
+  .shard-progress .bar { margin-top: 6px; height: 5px; border-radius: 99px; background: #131f33; overflow: hidden; }
+  .shard-progress .bar > i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #0891b2, var(--cyan)); transition: width 0.6s ease; }
+  .shard-stats { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .shard-stats div { padding: 8px 8px 7px; border-radius: 8px; background: rgba(8, 14, 25, 0.65); border: 1px solid var(--line); min-width: 0; }
+  .shard-stats .k { font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); white-space: nowrap; }
+  .shard-stats .v { margin-top: 3px; font-family: var(--mono); font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shard-foot { margin-top: 11px; padding-top: 9px; border-top: 1px solid rgba(27, 41, 64, 0.7); font-family: var(--mono); font-size: 10.5px; color: var(--dim); display: flex; justify-content: space-between; gap: 8px; }
+  .shard-foot b { color: var(--muted); font-weight: 600; }
+
+  .bottom { display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .scroll { height: 250px; overflow: auto; scrollbar-width: thin; }
+  .ev { display: grid; grid-template-columns: 58px 74px 90px 1fr; gap: 8px; padding: 2px 0; border-bottom: 1px solid rgba(27, 41, 64, 0.35); font-family: var(--mono); font-size: 11px; line-height: 1.6; }
+  .ev .ts { color: var(--dim); }
+  .ev .svc { color: var(--violet); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev .kind { color: var(--cyan); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev.ok .kind { color: #86efac; }
+  .ev.fail .kind { color: #fca5a5; }
+  .ev .text { color: #9fb0c8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .numbers { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .num-card {
+    position: relative; display: flex; flex-direction: column; overflow: hidden;
+    border-radius: 10px; border: 1px solid var(--line); background: #081020;
+    color: inherit; text-decoration: none;
+  }
+  .num-card:hover { border-color: #2b3d5c; }
+  .num-card .thumb { width: 100%; height: 66px; object-fit: cover; opacity: 0.94; }
+  .num-card .meta { padding: 7px 9px 8px; border-top: 1px solid var(--line); }
+  .num-card .digits { font-family: var(--mono); font-size: 13.5px; font-weight: 700; }
+  .num-card .where { margin-top: 2px; font-family: var(--mono); font-size: 9.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .empty {
+    border: 1px dashed var(--line); border-radius: 10px; padding: 18px;
+    color: var(--dim); font-family: var(--mono); font-size: 11.5px; text-align: center;
+    background: repeating-linear-gradient(135deg, rgba(18,28,46,0.4) 0 10px, rgba(11,18,31,0.4) 10px 20px);
+    grid-column: 1 / -1;
+  }
+  .num-card.flash { animation: flash 1.4s ease; }
+  @keyframes flash {
+    0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.7); border-color: var(--cyan); }
+    100% { box-shadow: 0 0 0 14px rgba(34, 211, 238, 0); border-color: var(--line); }
+  }
+
+  .safety { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .rail {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line);
+    background: rgba(8, 14, 25, 0.8);
+  }
+  .rail .left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .rail .icon { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; background: #101c30; }
+  .rail .name { font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .rail .detail { margin-top: 2px; font-size: 10.5px; color: var(--dim); font-family: var(--mono); }
+  .rail .state { font-family: var(--mono); font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .rail.ok { border-color: rgba(34, 197, 94, 0.28); }
+  .rail.ok .state { color: #86efac; }
+  .rail.ok .icon { background: rgba(34, 197, 94, 0.12); }
+  .rail.bad { border-color: rgba(239, 68, 68, 0.42); background: rgba(239, 68, 68, 0.06); }
+  .rail.bad .state { color: #fca5a5; }
+  .rail.bad .icon { background: rgba(239, 68, 68, 0.14); }
+  .rail.warn { border-color: rgba(245, 158, 11, 0.36); }
+  .rail.warn .state { color: #fcd34d; }
+  .rail.warn .icon { background: rgba(245, 158, 11, 0.12); }
+
+  footer {
+    display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    padding: 10px 26px 22px; max-width: 1720px; margin: 0 auto;
+    color: var(--dim); font-size: 11px; font-family: var(--mono);
+  }
+
+  @media (max-width: 1180px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .top { grid-template-columns: 1fr; }
+    .shards { grid-template-columns: 1fr; }
+    .bottom { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    main { padding: 14px; }
+    header { padding: 12px 14px; }
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .sys-grid { grid-template-columns: 1fr; }
+    .safety { grid-template-columns: 1fr; }
+    .clock { display: none; }
+    .ev { grid-template-columns: 50px 64px 1fr; }
+    .ev .svc { display: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="mark">1X</div>
+    <div>
+      <h1>FLEET CONTROL</h1>
+      <p>1xbet + melbet · live</p>
+    </div>
+  </div>
+  <div class="head-right">
+    <span class="chip"><span id="liveDot" class="dot"></span><strong id="statusText">connecting</strong></span>
+    <span class="chip">shards <strong id="shardCount">0 / 0</strong></span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</header>
+
+<main>
+  <div class="banner" id="banner">dashboard lost the server — is scripts/demo-watch.mjs still running?</div>
+
+  <section class="kpis">
+    <div class="kpi">
+      <div class="label">Active shards</div>
+      <div class="value" id="kpiShards">0<small id="kpiShardsTotal"> / 0</small></div>
+      <div class="sub" id="kpiShardsSub">no shard reporting</div>
+    </div>
+    <div class="kpi green">
+      <div class="label">Accounts done</div>
+      <div class="value" id="kpiAccounts">0</div>
+      <div class="sub" id="kpiAccountsSub">this window</div>
+    </div>
+    <div class="kpi violet">
+      <div class="label">Numbers extracted</div>
+      <div class="value" id="kpiNumbers">0</div>
+      <div class="sub" id="kpiNumbersSub">0 new · 0 already seen</div>
+    </div>
+    <div class="kpi amber">
+      <div class="label">Fleet throughput</div>
+      <div class="value" id="kpiRate">—<small>/hr</small></div>
+      <div class="sub" id="kpiRateSub">measured · rolling 15 min</div>
+    </div>
+  </section>
+
+  <section class="top">
+    <div class="panel">
+      <div class="compare-head">
+        <h2>1 shard vs 3 shards <span class="hint">measured now, not a projection</span></h2>
+        <span class="mult" id="mult">—</span>
+      </div>
+      <div class="cmp-row">
+        <div class="name" id="nameOne">1 shard</div>
+        <div class="cmp-track"><i id="barOne"></i></div>
+        <div class="val" id="valOne">—<small> /hr</small></div>
+      </div>
+      <div class="cmp-row fleet">
+        <div class="name">3 shards</div>
+        <div class="cmp-track"><i id="barFleet"></i></div>
+        <div class="val" id="valFleet">—<small> /hr</small></div>
+      </div>
+      <div class="cmp-foot" id="cmpFoot">
+        One shard processes one account at a time. Three shards run three logins at once —
+        throughput scales, CPU does not (the browser waits on the site).
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Machine <span class="hint">the same counters as Task Manager</span></h2>
+      <div class="sys-grid">
+        <div class="meter">
+          <div class="k"><span>CPU</span><b id="cpuVal">—</b></div>
+          <div class="bar"><i id="cpuBar"></i></div>
+          <div class="note" id="cpuNote">— cores</div>
+        </div>
+        <div class="meter">
+          <div class="k"><span>RAM</span><b id="ramVal">—</b></div>
+          <div class="bar"><i id="ramBar"></i></div>
+          <div class="note" id="ramNote">— / — MB</div>
+        </div>
+        <div class="meter">
+          <div class="k"><span>Browsers</span><b id="browserVal">—</b></div>
+          <div class="note" id="browserNote">chrome processes</div>
+        </div>
+        <div class="meter">
+          <div class="k"><span>Node</span><b id="nodeVal">—</b></div>
+          <div class="note" id="nodeNote">pipeline processes</div>
+        </div>
+      </div>
+      <div class="sys-note" id="sysNote">
+        Browsers are the visible work. CPU stays low because each login mostly waits on 1xbet.
+      </div>
+    </div>
+  </section>
+
+  <section class="shards" id="shards"></section>
+
+  <section class="bottom">
+    <div class="panel">
+      <h2>Event stream <span class="hint">all shards, merged</span></h2>
+      <div class="scroll" id="events"></div>
+    </div>
+    <div class="panel">
+      <h2>Safety rails <span class="hint">shared across 1xbet shards</span></h2>
+      <div class="safety">
+        <div class="rail ok" id="railBlock">
+          <div class="left">
+            <div class="icon">🛡</div>
+            <div><div class="name">IP breaker</div><div class="detail" id="blockDetail">no block</div></div>
+          </div>
+          <div class="state" id="blockState">CLEAR</div>
+        </div>
+        <div class="rail ok" id="railGate">
+          <div class="left">
+            <div class="icon">💳</div>
+            <div><div class="name">Deposit gate</div><div class="detail" id="gateDetail">wallet open</div></div>
+          </div>
+          <div class="state" id="gateState">OPEN</div>
+        </div>
+      </div>
+      <div class="cmp-foot" id="railFoot" style="margin-top:12px">
+        A block stops the 1xbet shards only. Melbet is a separate site.
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Numbers extracted <span class="hint">newest first · click to open the evidence</span></h2>
+    <div class="numbers" id="numbers">
+      <div class="empty">waiting for the first screenshot…</div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>1xbet + melbet → wallet → Vodafone number → Telegram · guardrails: deposit gate + IP breaker</span>
+  <span id="footerRight">—</span>
+</footer>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const seenNumbers = new Set();
+  let firstPaint = true;
+  let failures = 0;
+
+  const fmtInt = (n) => (Number.isFinite(n) ? n.toLocaleString('en-GB') : '—');
+  const fmtSec = (ms) => {
+    if (!Number.isFinite(ms) || ms <= 0) return '—';
+    const s = Math.round(ms / 1000);
+    if (s < 60) return s + 's';
+    return Math.floor(s / 60) + 'm ' + String(s % 60).padStart(2, '0') + 's';
+  };
+  const fmtTime = (iso) => {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'Africa/Cairo', hour12: false });
+    } catch { return String(iso).slice(11, 19); }
+  };
+  const short = (value, n = 22) => (value && String(value).length > n ? String(value).slice(0, n) + '…' : value || '—');
+  const pct = (value) => (Number.isFinite(value) ? value : 0);
+
+  function toneFor(value, bad, worse) {
+    if (!Number.isFinite(value)) return '';
+    if (value >= worse) return 'bad';
+    if (value >= bad) return 'warn';
+    return '';
+  }
+
+  function setStatus(data) {
+    const dot = $('liveDot');
+    dot.className = 'dot';
+    const block = data.safety.block;
+    const active = data.totals.activeShards;
+    if (block.blocked) {
+      dot.classList.add('bad');
+      $('statusText').textContent = 'IP BLOCKED';
+    } else if (!active) {
+      dot.classList.add('warn');
+      $('statusText').textContent = 'IDLE';
+    } else {
+      dot.classList.add('live');
+      $('statusText').textContent = 'RUNNING';
+    }
+    $('shardCount').textContent = active + ' / ' + data.totals.shardCount;
+  }
+
+  function renderKpis(data) {
+    const totals = data.totals;
+    $('kpiShards').firstChild.nodeValue = totals.activeShards;
+    $('kpiShardsTotal').textContent = ' / ' + totals.shardCount;
+    $('kpiShardsSub').textContent = data.services
+      .map((service) => service.label.replace('1xbet · ', '').replace('melbet · ', 'melbet '))
+      .join(' · ');
+
+    $('kpiAccounts').textContent = fmtInt(totals.processed);
+    const failed = totals.failed || 0;
+    $('kpiAccountsSub').textContent = failed ? failed + ' failed' : 'no failures this window';
+
+    $('kpiNumbers').textContent = fmtInt(totals.numbers);
+    $('kpiNumbersSub').textContent = totals.sent + ' new · ' + totals.skipped + ' already seen';
+
+    $('kpiRate').firstChild.nodeValue = totals.ratePerHour ? fmtInt(totals.ratePerHour) : '—';
+    $('kpiRateSub').textContent = totals.ratePerHour
+      ? 'measured · ~' + Math.round(totals.ratePerHour / Math.max(1, totals.activeShards)) + '/hr per shard'
+      : 'waiting for the first completed account';
+  }
+
+  function renderComparison(data) {
+    const one = data.comparison.oneShardRate;
+    const fleet = data.comparison.fleetRate;
+    const mult = data.comparison.multiplier;
+    const scale = Math.max(fleet || 0, (one || 0) * 3, 1);
+
+    const warming = data.comparison.warming;
+    $('nameOne').textContent = data.comparison.soloMeasured ? '1 shard (alone)' : '1 shard';
+    $('valOne').firstChild.nodeValue = one ? fmtInt(one) : '—';
+    $('valFleet').firstChild.nodeValue = fleet && !warming ? fmtInt(fleet) : '—';
+    $('barOne').style.width = Math.min(100, Math.round(((one || 0) / scale) * 100)) + '%';
+    $('barFleet').style.width = warming ? '0%' : Math.min(100, Math.round(((fleet || 0) / scale) * 100)) + '%';
+    $('mult').textContent =
+      data.totals.activeShards < 2
+        ? '1 running'
+        : warming
+          ? 'warming up'
+          : mult
+            ? '≈ ' + mult.toFixed(1) + '×'
+            : '—';
+
+    const active = data.totals.activeShards;
+    const browsers = data.system.browsers.count;
+    $('cmpFoot').innerHTML = '';
+    const line = document.createElement('span');
+    line.textContent =
+      (data.comparison.soloMeasured
+        ? 'Grey = measured while one shard ran alone. Blue = all shards now. '
+        : '') +
+      (warming ? 'Waiting for each shard to complete its first account. ' : '') +
+      'Live: ' + active + ' shard' + (active === 1 ? '' : 's') + ' · ' +
+      browsers + ' browser process' + (browsers === 1 ? '' : 'es') + ' · ' +
+      data.system.cores + ' cores. ' +
+      (active >= 2
+        ? 'Three shards = three logins at once; the site, not the CPU, is the limit.'
+        : 'Start all three to compare.');
+    $('cmpFoot').appendChild(line);
+  }
+
+  function renderSystem(data) {
+    const system = data.system;
+    const cpu = system.cpuPercent;
+    const ram = system.memPercent;
+    $('cpuVal').textContent = cpu + '%';
+    $('cpuBar').style.width = Math.min(100, cpu) + '%';
+    $('cpuBar').className = toneFor(cpu, 70, 90);
+    $('cpuNote').textContent = system.cores + ' logical cores';
+
+    $('ramVal').textContent = ram + '%';
+    $('ramBar').style.width = Math.min(100, ram) + '%';
+    $('ramBar').className = toneFor(ram, 80, 92);
+    $('ramNote').textContent = fmtInt(system.memUsedMb) + ' / ' + fmtInt(system.memTotalMb) + ' MB';
+
+    $('browserVal').textContent = system.browsers.count;
+    $('browserNote').textContent = system.browsers.count
+      ? fmtInt(system.browsers.mb) + ' MB · chrome'
+      : 'none at this instant';
+
+    $('nodeVal').textContent = system.node.count;
+    $('nodeNote').textContent = system.node.count
+      ? fmtInt(system.node.mb) + ' MB · pipeline'
+      : 'none';
+
+    $('sysNote').textContent = ram > 88
+      ? 'Memory is tight — close extra apps before adding more headed browsers.'
+      : 'Browsers are the visible work: CPU spikes while pages load, then waits on the site.';
+  }
+
+  const STATE_TONE = (service) => {
+    if (!service.running) return { text: (service.status?.state || 'idle').toUpperCase(), cls: 'idle', dot: 'warn' };
+    if (service.status?.state === 'cooldown') return { text: 'COOLDOWN', cls: 'warn', dot: 'warn' };
+    return { text: 'RUNNING', cls: 'active', dot: 'live' };
+  };
+
+  function shardCard(service) {
+    let card = document.querySelector(`[data-shard="${service.id}"]`);
+    if (!card) {
+      card = document.createElement('div');
+      card.dataset.shard = service.id;
+      card.innerHTML = `
+        <div class="shard-head">
+          <div class="shard-name"></div>
+          <div class="shard-state"><span class="dot"></span><span class="txt"></span></div>
+        </div>
+        <div class="shard-who"></div>
+        <div class="shard-what">
+          <span class="pill phase">idle</span>
+          <span class="pill elapsed">—</span>
+        </div>
+        <div class="shard-progress">
+          <div class="row"><span class="p">—</span><b class="pp">—</b></div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="shard-stats">
+          <div><div class="k">Ok</div><div class="v ok">0</div></div>
+          <div><div class="k">Failed</div><div class="v failed">0</div></div>
+          <div><div class="k">Numbers</div><div class="v numbers">0</div></div>
+          <div><div class="k">Rate</div><div class="v rate">—</div></div>
+        </div>
+        <div class="shard-foot"><span class="last">no number yet</span><span class="at">—</span></div>
+      `;
+      $('shards').appendChild(card);
+    }
+
+    const tone = STATE_TONE(service);
+    card.className = 'shard ' + tone.cls;
+    card.querySelector('.shard-name').textContent = service.label;
+    const state = card.querySelector('.shard-state');
+    state.className = 'shard-state ' + (tone.dot === 'live' ? 'live' : tone.dot === 'bad' ? 'bad' : 'warn');
+    state.querySelector('.dot').className = 'dot ' + tone.dot;
+    state.querySelector('.txt').textContent = tone.text;
+
+    card.querySelector('.shard-who').textContent =
+      service.current?.account || (service.running ? 'waiting for the first account…' : 'not running');
+
+    const phase = card.querySelector('.phase');
+    const result = service.current?.result;
+    phase.textContent = service.current?.stepLabel || service.current?.phase || 'idle';
+    phase.className = 'pill ' + (result === 'ok' ? 'green' : result === 'failed' ? 'red' : 'cyan');
+
+    const elapsed = card.querySelector('.elapsed');
+    elapsed.textContent = service.current?.elapsedMs ? fmtSec(service.current.elapsedMs) + ' on account' : 'no timer';
+    elapsed.className = 'pill';
+
+    const progress = service.progress;
+    card.querySelector('.p').textContent = progress.processed + ' / ' + (progress.total || '—') + ' accounts';
+    card.querySelector('.pp').textContent = progress.percent === null ? '—' : progress.percent + '%';
+    card.querySelector('.shard-progress .bar > i').style.width = pct(progress.percent) + '%';
+
+    card.querySelector('.ok').textContent = service.batch.ok;
+    card.querySelector('.failed').textContent = service.batch.failed;
+    card.querySelector('.numbers').textContent = service.batch.numbers;
+    card.querySelector('.rate').textContent = service.ratePerHour ? service.ratePerHour + '/hr' : '—';
+
+    const newest = service.numbers[0];
+    card.querySelector('.last').textContent = newest ? 'last ' + newest.number : 'no number yet';
+    card.querySelector('.at').textContent = newest ? fmtTime(newest.at) : '—';
+
+    if (service.id === 'melbet' && service.running) {
+      card.querySelector('.last').title = 'melbet extract-only in this demo: no Telegram sender is attached';
+    }
+  }
+
+  function renderShards(services) {
+    const host = $('shards');
+    if (!host.querySelector('.shard')) host.replaceChildren();
+    services.forEach(shardCard);
+    const order = new Map(services.map((service, index) => [service.id, index]));
+    [...host.children]
+      .sort((a, b) => (order.get(a.dataset.shard) ?? 99) - (order.get(b.dataset.shard) ?? 99))
+      .forEach((node) => host.appendChild(node));
+  }
+
+  function renderEvents(events) {
+    const box = $('events');
+    const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 40;
+    box.replaceChildren();
+    events.slice(-60).forEach((event) => {
+      const row = document.createElement('div');
+      row.className = 'ev' + (event.kind === 'account.done' ? ' ok' : event.kind === 'account.failed' ? ' fail' : '');
+      const ts = document.createElement('span'); ts.className = 'ts'; ts.textContent = fmtTime(event.ts);
+      const svc = document.createElement('span'); svc.className = 'svc'; svc.textContent = short(event.svc || '—', 10);
+      const kind = document.createElement('span'); kind.className = 'kind';
+      kind.textContent = event.step || event.kind || 'event';
+      kind.title = kind.textContent;
+      const text = document.createElement('span'); text.className = 'text';
+      const bits = [];
+      if (event.account) bits.push(event.account.split('@')[0]);
+      if (event.data?.number) bits.push('→ ' + event.data.number);
+      if (event.data?.ms) bits.push(Math.round(event.data.ms / 1000) + 's');
+      if (event.data?.error) bits.push(String(event.data.error).slice(0, 50));
+      text.textContent = bits.join(' · ') || (event.phase || '');
+      row.append(ts, svc, kind, text);
+      box.appendChild(row);
+    });
+    if (atBottom || firstPaint) box.scrollTop = box.scrollHeight;
+  }
+
+  function renderNumbers(numbers) {
+    const wrap = $('numbers');
+    if (!numbers.length) {
+      if (!wrap.querySelector('.empty')) {
+        wrap.replaceChildren(Object.assign(document.createElement('div'), {
+          className: 'empty', textContent: 'waiting for the first screenshot…'
+        }));
+      }
+      return;
+    }
+    if (wrap.querySelector('.empty')) wrap.replaceChildren();
+
+    numbers.forEach((item) => {
+      let card = wrap.querySelector(`[data-number="${item.number}"]`);
+      const fresh = !seenNumbers.has(item.number);
+      if (!card) {
+        card = document.createElement('a');
+        card.className = 'num-card';
+        card.dataset.number = item.number;
+        card.href = item.url || '#';
+        card.target = '_blank';
+        card.rel = 'noreferrer';
+        if (item.url) {
+          const img = document.createElement('img');
+          img.className = 'thumb';
+          img.loading = 'lazy';
+          img.alt = item.number;
+          img.src = item.url;
+          card.appendChild(img);
+        }
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const digits = document.createElement('div');
+        digits.className = 'digits';
+        const where = document.createElement('div');
+        where.className = 'where';
+        meta.append(digits, where);
+        card.appendChild(meta);
+        wrap.appendChild(card);
+      }
+      card.querySelector('.digits').textContent = item.number;
+      card.querySelector('.where').textContent = item.shard + ' · ' + fmtTime(item.at);
+      if (fresh && !firstPaint) {
+        card.classList.remove('flash');
+        void card.offsetWidth;
+        card.classList.add('flash');
+      }
+      seenNumbers.add(item.number);
+    });
+
+    const order = new Map(numbers.map((item, index) => [item.number, index]));
+    [...wrap.children]
+      .filter((el) => el.dataset.number)
+      .sort((a, b) => (order.get(a.dataset.number) ?? 99) - (order.get(b.dataset.number) ?? 99))
+      .forEach((el) => wrap.appendChild(el));
+  }
+
+  function renderRails(data) {
+    const block = data.safety.block;
+    $('railBlock').className = 'rail ' + (block.blocked ? 'bad' : 'ok');
+    $('blockState').textContent = block.blocked ? 'BLOCKED' : 'CLEAR';
+    $('blockDetail').textContent = block.blocked
+      ? (block.minutesLeft ?? '?') + ' min left · block #' + block.count
+      : (block.recoveredAt ? 'recovered ' + fmtTime(block.recoveredAt) : 'no block detected');
+
+    const gate = data.safety.gate;
+    $('railGate').className = 'rail ' + (gate.disabled ? 'warn' : 'ok');
+    $('gateState').textContent = gate.disabled ? 'DISABLED' : 'OPEN';
+    $('gateDetail').textContent = gate.disabled
+      ? 'probe in ' + (gate.minutesToCheck ?? '?') + ' min · #' + gate.probeCount
+      : 'wallet open';
+
+    $('railFoot').textContent = block.blocked || gate.disabled
+      ? 'A 1xbet stop does not stop melbet. The breaker/gate are shared by the two 1xbet shards only.'
+      : 'A block stops the 1xbet shards only. Melbet is a separate site.';
+  }
+
+  function render(data) {
+    failures = 0;
+    $('banner').classList.remove('show');
+    setStatus(data);
+    renderKpis(data);
+    renderComparison(data);
+    renderSystem(data);
+    renderShards(data.services);
+    renderRails(data);
+    renderEvents(data.events);
+    renderNumbers(data.numbers);
+
+    $('footerRight').textContent =
+      'snapshot ' + fmtTime(data.generatedAt) +
+      ' · ' + data.totals.activeShards + '/' + data.totals.shardCount + ' active' +
+      ' · ledger 1xbet ' + fmtInt(data.services.find((s) => s.id !== 'melbet')?.ledger.total || 0);
+    firstPaint = false;
+  }
+
+  async function poll() {
+    try {
+      const response = await fetch('/api/state', { cache: 'no-store' });
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      render(await response.json());
+    } catch (error) {
+      failures += 1;
+      if (failures >= 2) {
+        $('banner').classList.add('show');
+        $('statusText').textContent = 'DISCONNECTED';
+        $('liveDot').className = 'dot bad';
+      }
+    }
+  }
+
+  function tickClock() {
+    try {
+      $('clock').textContent = new Date().toLocaleTimeString('en-GB', {
+        timeZone: 'Africa/Cairo', hour12: false
+      }) + ' Cairo';
+    } catch { $('clock').textContent = new Date().toLocaleTimeString(); }
+  }
+
+  tickClock();
+  setInterval(tickClock, 1000);
+  poll();
+  setInterval(poll, 1000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "1xauto Runtime Architecture",
+    "locale": "en",
+    "output": ".archify/architecture-1xauto-20261029-234615/1xauto-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "admin",
+      "type": "external",
+      "label": "Admin chat",
+      "sublabel": "699397575",
+      "pos": [
+        1140,
+        60
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "telegram",
+      "type": "cloud",
+      "label": "Telegram Bot API",
+      "sublabel": "sendPhoto · getUpdates",
+      "pos": [
+        920,
+        60
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "channel",
+      "type": "external",
+      "label": "Numbers channel",
+      "sublabel": "-1004357023695",
+      "pos": [
+        700,
+        60
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "launcher",
+      "type": "backend",
+      "label": "Cold launcher",
+      "sublabel": "run-all-shards.ps1",
+      "tag": "host",
+      "pos": [
+        40,
+        300
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "loop",
+      "type": "backend",
+      "label": "Shard loops ×3",
+      "sublabel": "shard-1 · shard-2 · melbet",
+      "tag": "90 min cooldown",
+      "pos": [
+        260,
+        300
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "batch",
+      "type": "backend",
+      "label": "Batch runner",
+      "sublabel": "scheduled-run + Playwright",
+      "tag": "per account",
+      "pos": [
+        480,
+        300
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "shots",
+      "type": "database",
+      "label": "Screenshots",
+      "sublabel": "one PNG per number",
+      "tag": "screenshots/<shard>",
+      "pos": [
+        700,
+        300
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "sender",
+      "type": "backend",
+      "label": "Realtime sender",
+      "sublabel": "watches new PNGs",
+      "tag": "2 s stable",
+      "pos": [
+        920,
+        300
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "ledger",
+      "type": "database",
+      "label": "Seen-numbers ledger",
+      "sublabel": "shared claimed set",
+      "tag": "seen-numbers.json",
+      "pos": [
+        1140,
+        300
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "supervisor",
+      "type": "backend",
+      "label": "Monitor supervisor",
+      "sublabel": "keeps agent + bot alive",
+      "tag": "backoff 5s–2m",
+      "pos": [
+        40,
+        520
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "events",
+      "type": "database",
+      "label": "Event log",
+      "sublabel": "JSONL per svc-role-day",
+      "tag": "events/",
+      "pos": [
+        260,
+        520
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "agent",
+      "type": "backend",
+      "label": "Monitor agent",
+      "sublabel": "rules · incidents · outbox",
+      "tag": "15 s tick",
+      "pos": [
+        480,
+        520
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "state",
+      "type": "database",
+      "label": "Monitor state",
+      "sublabel": "offsets · incidents",
+      "tag": "monitor-state.json",
+      "pos": [
+        700,
+        520
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "bot",
+      "type": "backend",
+      "label": "Status bot",
+      "sublabel": "sole getUpdates poller",
+      "tag": "18 commands",
+      "pos": [
+        920,
+        520
+      ],
+      "size": [
+        150,
+        62
+      ]
+    },
+    {
+      "id": "sync",
+      "type": "backend",
+      "label": "Channel audit",
+      "sublabel": "MTProto history → ledger",
+      "tag": "user session",
+      "pos": [
+        1140,
+        520
+      ],
+      "size": [
+        150,
+        62
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Windows host · one shared workspace",
+      "wraps": [
+        "launcher",
+        "loop",
+        "batch",
+        "shots",
+        "sender",
+        "ledger",
+        "supervisor",
+        "events",
+        "agent",
+        "state",
+        "bot",
+        "sync"
+      ],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    {
+      "from": "launcher",
+      "to": "loop",
+      "label": "start",
+      "variant": "emphasis"
+    },
+    {
+      "from": "launcher",
+      "to": "supervisor",
+      "label": "start monitor",
+      "variant": "dashed"
+    },
+    {
+      "from": "loop",
+      "to": "batch",
+      "label": "spawn",
+      "variant": "emphasis"
+    },
+    {
+      "from": "batch",
+      "to": "shots",
+      "label": "PNG",
+      "variant": "emphasis"
+    },
+    {
+      "from": "shots",
+      "to": "sender",
+      "label": "watch",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sender",
+      "to": "ledger",
+      "label": "claim",
+      "variant": "security"
+    },
+    {
+      "from": "sender",
+      "to": "telegram",
+      "label": "sendPhoto",
+      "variant": "emphasis"
+    },
+    {
+      "from": "telegram",
+      "to": "channel",
+      "label": "post",
+      "variant": "emphasis"
+    },
+    {
+      "from": "admin",
+      "to": "telegram",
+      "label": "command"
+    },
+    {
+      "from": "telegram",
+      "to": "admin",
+      "label": "alerts",
+      "variant": "dashed"
+    },
+    {
+      "from": "loop",
+      "to": "events",
+      "label": "batch events",
+      "variant": "dashed"
+    },
+    {
+      "from": "batch",
+      "to": "events",
+      "label": "accounts",
+      "variant": "dashed"
+    },
+    {
+      "from": "sender",
+      "to": "events",
+      "label": "send results",
+      "variant": "dashed"
+    },
+    {
+      "from": "events",
+      "to": "agent",
+      "label": "tail JSONL",
+      "variant": "dashed"
+    },
+    {
+      "from": "agent",
+      "to": "state",
+      "label": "incidents",
+      "variant": "dashed"
+    },
+    {
+      "from": "bot",
+      "to": "state",
+      "label": "read state",
+      "variant": "dashed"
+    },
+    {
+      "from": "agent",
+      "to": "telegram",
+      "label": "admin alerts",
+      "variant": "dashed"
+    },
+    {
+      "from": "bot",
+      "to": "telegram",
+      "label": "getUpdates",
+      "variant": "dashed"
+    },
+    {
+      "from": "sync",
+      "to": "telegram",
+      "label": "MTProto history",
+      "variant": "dashed"
+    },
+    {
+      "from": "sync",
+      "to": "ledger",
+      "label": "reconcile",
+      "variant": "security"
+    },
+    {
+      "from": "supervisor",
+      "to": "agent",
+      "label": "spawn · restart",
+      "variant": "dashed"
+    },
+    {
+      "from": "supervisor",
+      "to": "bot",
+      "label": "keep alive",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Delivery Rules",
+      "items": [
+        "A number is claimed in the shared ledger immediately before its PNG leaves",
+        "A delivery that reaches nobody is released for retry; a partial one is reported",
+        "Each PNG goes to the admin chat and the numbers channel, never the channel alone"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Alerting Rules",
+      "items": [
+        "Silent by default: alerts go to the admin chat only, plus one 09:00 Cairo all-clear",
+        "5 failures in 15 min is a storm; one screenshot per new error, capped at 10 per hour",
+        "Quiet 00:00–08:00 Cairo buffers yellow alerts; red alerts pass through; recovery closes every incident with a green resolution"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Control & Audit",
+      "items": [
+        "Only the status bot calls getUpdates; it restarts shard-1 or shard-2 only when dead, and never melbet",
+        "A user-session channel audit rebuilds the ledger from real messages; an entry is dropped only after two missed syncs",
+        "Liveness is event staleness, not process listing: 5 min is silent, 15 min is stalled"
+      ]
+    }
+  ]
+}

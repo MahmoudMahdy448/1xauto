@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>1xauto · live demo</title>
+<style>
+  :root {
+    --bg: #070b16;
+    --panel: #0f172a;
+    --panel-2: #121d35;
+    --line: #1e2c4a;
+    --text: #e7eefc;
+    --muted: #8294b8;
+    --green: #34d399;
+    --green-dim: #0e3b2e;
+    --red: #f87171;
+    --red-dim: #3d1418;
+    --amber: #fbbf24;
+    --blue: #60a5fa;
+    --cyan: #22d3ee;
+    --violet: #a78bfa;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: radial-gradient(1100px 600px at 20% -10%, #10203f 0%, var(--bg) 55%);
+    color: var(--text);
+    font: 14px/1.4 "Segoe UI", system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 16px 18px 28px; }
+
+  header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; }
+  .brand h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+  .brand .tag { color: var(--muted); font-size: 12px; }
+  .spacer { flex: 1; }
+  .clock {
+    font-variant-numeric: tabular-nums;
+    font-size: 15px;
+    color: var(--cyan);
+    background: #0b2030;
+    border: 1px solid #134e5c;
+    border-radius: 9px;
+    padding: 5px 10px;
+  }
+  .pill {
+    font-size: 12px; padding: 5px 10px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted); background: var(--panel);
+    white-space: nowrap;
+  }
+  .pill.on { color: var(--green); border-color: #145c46; background: var(--green-dim); }
+  .pill.warn { color: var(--amber); border-color: #5c4a12; background: #2a2208; }
+
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  button {
+    font: inherit; color: var(--text); background: var(--panel-2);
+    border: 1px solid var(--line); border-radius: 9px; padding: 8px 13px;
+    cursor: pointer; transition: transform .06s ease, border-color .15s, background .15s;
+    white-space: nowrap;
+  }
+  button:hover { border-color: #2f4670; background: #16233d; }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.go { background: #0f3d2e; border-color: #1c6b4f; color: #b7f7df; }
+  button.go:hover { background: #14513c; }
+  button.stop { background: #3a1418; border-color: #6b2229; color: #ffc9cd; }
+  button.stop:hover { background: #4a1a1f; }
+  button.warn { background: #33290b; border-color: #6b5514; color: #ffe6a6; }
+  button.ghost { background: transparent; }
+
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+  .card {
+    background: linear-gradient(180deg, var(--panel) 0%, #0c1425 100%);
+    border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.22);
+    min-width: 0;
+  }
+  .card h2 {
+    margin: 0 0 10px; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 1.4px; color: var(--muted); font-weight: 600;
+  }
+
+  /* service cards */
+  .services { grid-column: span 12; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .svc { position: relative; overflow: hidden; }
+  .svc::before {
+    content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--line);
+  }
+  .svc.running::before { background: var(--green); box-shadow: 0 0 22px var(--green); }
+  .svc.queued::before { background: var(--amber); }
+  .svc.queued .dot { background: var(--amber); }
+  .svc.queued .svc-state { color: var(--amber); }
+  .svc-top { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #36486b; flex: none; }
+  .svc.running .dot { background: var(--green); box-shadow: 0 0 0 4px rgba(52,211,153,.13); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+  .svc-name { font-size: 15px; font-weight: 650; }
+  .svc-state { margin-left: auto; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .svc.running .svc-state { color: var(--green); }
+  .svc-btn { width: 100%; margin-bottom: 12px; padding: 9px; font-weight: 650; }
+  .svc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat .k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .9px; }
+  .stat .v { font-size: 17px; font-variant-numeric: tabular-nums; margin-top: 1px; }
+  .stat .v small { font-size: 11px; color: var(--muted); margin-left: 2px; }
+  .svc-foot { margin-top: 10px; font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+
+  /* resource */
+  .res { grid-column: span 8; }
+  .res-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .big { font-size: 34px; font-variant-numeric: tabular-nums; letter-spacing: -.5px; }
+  .big small { font-size: 14px; color: var(--muted); margin-left: 2px; }
+  .bar { height: 9px; border-radius: 999px; background: #0a1222; overflow: hidden; margin: 7px 0 6px; border: 1px solid #16213a; }
+  .bar i { display: block; height: 100%; width: 0%; background: var(--green); transition: width .35s ease, background .35s; }
+  .bar i.warn { background: var(--amber); }
+  .bar i.hot { background: var(--red); }
+  .sub { color: var(--muted); font-size: 11.5px; }
+  .peak { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 12px; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+  .peak b { color: var(--text); font-weight: 600; }
+
+  /* comparison */
+  .cmp { grid-column: span 4; }
+  .cmp-row { margin-bottom: 12px; }
+  .cmp-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .cmp-vals { display: flex; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+  .cmp-one { font-size: 20px; color: var(--blue); }
+  .cmp-arrow { color: var(--muted); font-size: 13px; }
+  .cmp-many { font-size: 20px; color: var(--amber); }
+  .delta { font-size: 12px; color: var(--green); margin-left: auto; }
+  .hint { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+
+  /* delivery */
+  .delivery { grid-column: span 8; }
+  .hero { display: flex; align-items: flex-end; gap: 18px; margin-bottom: 12px; flex-wrap: wrap; }
+  .hero .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .hero .value { font-size: 42px; line-height: 1; color: var(--cyan); font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+  .hero .unit { font-size: 14px; color: var(--muted); margin-left: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+  .kpi { background: #0a1222; border: 1px solid #16213a; border-radius: 10px; padding: 8px 10px; }
+  .kpi .k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .9px; }
+  .kpi .v { font-size: 18px; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .feed { display: flex; flex-direction: column; gap: 6px; max-height: 190px; overflow: auto; }
+  .feed-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; font-size: 12.5px; padding: 6px 8px; background: #0a1222; border: 1px solid #16213a; border-radius: 8px; }
+  .feed-row .num { font-variant-numeric: tabular-nums; letter-spacing: .4px; }
+  .feed-row .svc { color: var(--muted); font-size: 11px; }
+  .feed-row .lat { color: var(--green); font-variant-numeric: tabular-nums; }
+  .empty { color: var(--muted); font-size: 12.5px; padding: 8px 0; }
+
+  /* unique */
+  .uniques { grid-column: span 4; }
+  .u-big { font-size: 42px; line-height: 1; color: var(--violet); font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+  .u-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+
+  /* wall */
+  .wall-card { grid-column: span 12; }
+  .wall { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+  .shot { position: relative; border-radius: 9px; overflow: hidden; border: 1px solid #1a2740; background: #0a1222; aspect-ratio: 3 / 4; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .92; }
+  .shot .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 6px 5px; background: linear-gradient(transparent, rgba(3,7,16,.92)); font-size: 10.5px; display: flex; justify-content: space-between; gap: 4px; }
+  .shot .cap b { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .shot .cap span { color: var(--muted); }
+  .shot.new { animation: flash .9s ease; }
+  @keyframes flash { 0% { box-shadow: 0 0 0 3px rgba(34,211,238,.75); } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+  .note { margin-top: 14px; font-size: 11.5px; color: var(--muted); }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px);
+    background: #13203a; border: 1px solid #2b4670; color: var(--text);
+    padding: 10px 16px; border-radius: 10px; font-size: 13px; opacity: 0;
+    transition: opacity .2s, transform .2s; pointer-events: none; max-width: 80vw;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.err { border-color: #7f2b33; background: #2a1216; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>1xauto · live demo</h1>
+      <span class="tag">headed browsers · resource use · delivery time</span>
+    </div>
+    <div class="spacer"></div>
+    <span class="pill" id="farmPill">farm: —</span>
+    <span class="pill" id="queuePill">running: —</span>
+    <span class="clock" id="clock">00:00</span>
+  </header>
+
+  <div class="toolbar">
+    <button class="go" id="btnStartAll">Start all services</button>
+    <button class="go" id="btnStartExternal">Start 5 autologins</button>
+    <button class="stop" id="btnStopAll">Stop all</button>
+    <button class="warn" id="btnPause">Pause farm</button>
+    <button class="ghost" id="btnRestore">Restore farm</button>
+    <button id="btnFocus">Bring browsers to front</button>
+    <button id="btnTaskmgr">Open Task Manager</button>
+    <button id="btnLive">Open screenshots folder</button>
+    <button class="ghost" id="btnReset">Reset session</button>
+    <button class="ghost" id="btnEnd">End demo</button>
+  </div>
+
+  <div class="grid">
+    <section class="services" id="services"></section>
+
+    <section class="card res">
+      <h2>Laptop resources — live</h2>
+      <div class="res-row">
+        <div>
+          <div class="big"><span id="cpuVal">—</span><small>% CPU</small></div>
+          <div class="bar"><i id="cpuBar"></i></div>
+          <div class="sub" id="cpuSub">— logical cores</div>
+        </div>
+        <div>
+          <div class="big"><span id="ramVal">—</span><small>% RAM</small></div>
+          <div class="bar"><i id="ramBar"></i></div>
+          <div class="sub" id="ramSub">— / — GB used · — GB free</div>
+        </div>
+      </div>
+      <div class="peak">
+        <span>Peak CPU <b id="peakCpu">—</b></span>
+        <span>Peak RAM <b id="peakRam">—</b></span>
+        <span>Lowest free RAM <b id="peakFree">—</b></span>
+        <span>Browsers <b id="browserCount">0</b></span>
+      </div>
+    </section>
+
+    <section class="card cmp">
+      <h2>1 service vs fleet</h2>
+      <div class="cmp-row">
+        <div class="cmp-label">CPU peak (sum of shard trees)</div>
+        <div class="cmp-vals">
+          <span class="cmp-one" id="cmpCpuOne">—</span>
+          <span class="cmp-arrow">→</span>
+          <span class="cmp-many" id="cmpCpuMany">—</span>
+          <span class="delta" id="cmpCpuDelta"></span>
+        </div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-label">RAM peak (sum of shard trees)</div>
+        <div class="cmp-vals">
+          <span class="cmp-one" id="cmpRamOne">—</span>
+          <span class="cmp-arrow">→</span>
+          <span class="cmp-many" id="cmpRamMany">—</span>
+          <span class="delta" id="cmpRamDelta"></span>
+        </div>
+      </div>
+      <div class="hint" id="cmpHint">Start one shard, let it run, then start the others.</div>
+    </section>
+
+    <section class="card delivery">
+      <h2>Dial → Telegram</h2>
+      <div class="hero">
+        <div>
+          <div class="label">First dial delivered after</div>
+          <div class="value"><span id="dFirst">—</span><span class="unit">s</span></div>
+        </div>
+        <div class="kpis" style="flex:1; margin:0;">
+          <div class="kpi"><div class="k">Last</div><div class="v" id="dLast">—</div></div>
+          <div class="kpi"><div class="k">Average</div><div class="v" id="dAvg">—</div></div>
+          <div class="kpi"><div class="k">Max</div><div class="v" id="dMax">—</div></div>
+          <div class="kpi"><div class="k">Delivered</div><div class="v" id="dCount">0</div></div>
+        </div>
+      </div>
+      <div class="feed" id="dFeed"><div class="empty">No delivery yet. Start a service — the first dial takes about 30–60 s.</div></div>
+    </section>
+
+    <section class="card uniques">
+      <h2>Unique dials captured</h2>
+      <div class="u-big" id="uCount">0</div>
+      <div class="u-grid">
+        <div class="kpi"><div class="k">Average gap</div><div class="v" id="uAvg">—</div></div>
+        <div class="kpi"><div class="k">Since last</div><div class="v" id="uLast">—</div></div>
+        <div class="kpi"><div class="k">Rate</div><div class="v" id="uRate">—</div></div>
+        <div class="kpi"><div class="k">Time to first</div><div class="v" id="uFirst">—</div></div>
+      </div>
+      <div class="hint" style="margin-top:10px;">Unique = a number not captured earlier in this demo session.</div>
+    </section>
+
+    <section class="card wall-card">
+      <h2>Live screenshots — newest first</h2>
+      <div class="wall" id="wall"><div class="empty">Nothing captured yet.</div></div>
+      <div class="note">Files are also hard-linked into <b>demo\live</b> — one Explorer window fills up while the shards run. Demo ledger only; the public channel is off.</div>
+    </section>
+  </div>
+
+  <div class="note" id="footer">Session idle. Click a Start button to launch a visible browser.</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmtInt = (value) => Number(value || 0).toLocaleString('en-US');
+const fmtGb = (mb) => (Number(mb || 0) / 1024).toFixed(2) + ' GB';
+const fmtClock = (ms) => {
+  if (ms === null || ms === undefined) return '—';
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+};
+const fmtSec = (ms) => (ms === null || ms === undefined ? '—' : (ms / 1000).toFixed(1) + 's');
+const tone = (value, warnAt, hotAt) => (value >= hotAt ? 'hot' : value >= warnAt ? 'warn' : '');
+
+let busy = false;
+let lastShotKey = '';
+let knownShots = new Set();
+
+function toast(message, isError) {
+  const el = $('toast');
+  el.textContent = message;
+  el.className = 'show' + (isError ? ' err' : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = ''; }, 4200);
+}
+
+async function control(action, service) {
+  if (busy) return;
+  busy = true;
+  document.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+  try {
+    const response = await fetch('/api/control', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, service })
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.error || 'action failed');
+    if (data.result && data.result.error) throw new Error(data.result.error);
+    return data.result;
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    busy = false;
+    document.querySelectorAll('button').forEach((b) => { b.disabled = false; });
+  }
+}
+
+function serviceCard(service) {
+  const card = document.createElement('div');
+  card.className = 'card svc';
+  card.id = 'svc-' + service.id;
+  card.innerHTML = `
+    <div class="svc-top">
+      <span class="dot"></span>
+      <span class="svc-name">${service.label}</span>
+      <span class="svc-state">idle</span>
+    </div>
+    <button class="svc-btn go">Start browser</button>
+    <div class="svc-stats">
+      <div class="stat"><div class="k">CPU</div><div class="v"><span data-f="cpu">0</span><small>%</small></div></div>
+      <div class="stat"><div class="k">RAM</div><div class="v"><span data-f="ram">0</span><small>MB</small></div></div>
+      <div class="stat"><div class="k">Browsers</div><div class="v"><span data-f="browsers">0</span></div></div>
+      <div class="stat"><div class="k">Shots</div><div class="v"><span data-f="shots">0</span></div></div>
+      <div class="stat"><div class="k">Unique</div><div class="v"><span data-f="unique">0</span></div></div>
+      <div class="stat"><div class="k">Delivered</div><div class="v"><span data-f="delivered">0</span></div></div>
+    </div>
+    <div class="svc-foot"><span data-f="foot">ready</span><span data-f="accounts"></span></div>`;
+  const button = card.querySelector('button');
+  button.addEventListener('click', () => {
+    const active = card.classList.contains('running') || card.classList.contains('queued');
+    control(active ? 'stop' : 'start', service.id);
+  });
+  return card;
+}
+
+function updateServices(services) {
+  for (const service of services) {
+    let card = $('svc-' + service.id);
+    if (!card) {
+      card = serviceCard(service);
+      $('services').appendChild(card);
+    }
+    card.classList.toggle('running', service.running);
+    card.classList.toggle('queued', !!service.queued);
+    card.querySelector('.svc-state').textContent = service.running
+      ? 'running'
+      : service.queued
+        ? 'queued'
+        : service.state;
+    const button = card.querySelector('button');
+    button.textContent = service.running
+      ? 'Stop browser'
+      : service.queued
+        ? 'Cancel queue'
+        : 'Start browser';
+    button.className = 'svc-btn ' + (service.running || service.queued ? 'stop' : 'go');
+    card.querySelector('[data-f="cpu"]').textContent = service.cpuPercent;
+    card.querySelector('[data-f="ram"]').textContent = fmtInt(service.ramMb);
+    card.querySelector('[data-f="browsers"]').textContent = service.browsers;
+    card.querySelector('[data-f="shots"]').textContent = service.screenshots;
+    card.querySelector('[data-f="unique"]').textContent = service.unique;
+    card.querySelector('[data-f="delivered"]').textContent = service.delivered;
+    card.querySelector('[data-f="foot"]').textContent = service.running
+      ? 'pid ' + service.pid + ' · accounts ' + service.range
+      : service.queued
+        ? 'queued · accounts ' + service.range
+        : (service.state === 'finished'
+            ? 'finished · accounts ' + service.range
+            : 'accounts ' + service.range);
+    card.querySelector('[data-f="accounts"]').textContent = service.accounts
+      ? service.accounts + ' done'
+      : '';
+  }
+}
+
+function updateSystem(system) {
+  $('cpuVal').textContent = system.cpuPercent;
+  $('ramVal').textContent = system.memPercent;
+  const cpuBar = $('cpuBar');
+  cpuBar.style.width = Math.min(100, system.cpuPercent) + '%';
+  cpuBar.className = tone(system.cpuPercent, 70, 90);
+  const ramBar = $('ramBar');
+  ramBar.style.width = Math.min(100, system.memPercent) + '%';
+  ramBar.className = tone(system.memPercent, 80, 92);
+  $('cpuSub').textContent = system.cores + ' logical cores · peak ' + system.peaks.cpu + '%';
+  $('ramSub').textContent = fmtGb(system.memUsedMb) + ' / ' + fmtGb(system.memTotalMb) + ' used · ' + fmtGb(system.freeMb) + ' free';
+  $('peakCpu').textContent = system.peaks.cpu + '%';
+  $('peakRam').textContent = fmtGb(system.peaks.ramMb);
+  $('peakFree').textContent = system.peaks.lowFreeMb === null ? '—' : fmtGb(system.peaks.lowFreeMb);
+  $('browserCount').textContent = system.browsers.count;
+}
+
+function updateComparison(comparison) {
+  const solo = comparison.solo;
+  const fleet = comparison.fleet;
+  const soloCpu = solo ? (solo.peakCpu ?? solo.cpu) : null;
+  const soloRam = solo ? (solo.peakRamMb ?? solo.ramMb) : null;
+  const fleetCpu = fleet ? (fleet.peakCpu ?? fleet.cpu) : null;
+  const fleetRam = fleet ? (fleet.peakRamMb ?? fleet.ramMb) : null;
+  $('cmpCpuOne').textContent = soloCpu === null ? '—' : soloCpu + '%';
+  $('cmpCpuMany').textContent = fleetCpu === null ? '—' : fleetCpu + '%';
+  $('cmpCpuDelta').textContent = soloCpu !== null && fleetCpu !== null ? '+' + Math.max(0, fleetCpu - soloCpu) + '%' : '';
+  $('cmpRamOne').textContent = soloRam === null ? '—' : fmtGb(soloRam);
+  $('cmpRamMany').textContent = fleetRam === null ? '—' : fmtGb(fleetRam);
+  $('cmpRamDelta').textContent = soloRam !== null && fleetRam !== null ? '+' + fmtGb(Math.max(0, fleetRam - soloRam)) : '';
+  $('cmpHint').textContent = solo && fleet
+    ? 'Peak of live samples. Average: one service ' + solo.cpu + '% · ' + fmtGb(solo.ramMb) +
+      ' → ' + fleet.maxRunning + ' up ' + fleet.cpu + '% · ' + fmtGb(fleet.ramMb) + '.'
+    : 'Start one service, let it run, then start the others to fill the comparison.';
+}
+
+function updateQueue(queue, services) {
+  const running = services.filter((service) => service.running).length;
+  const pill = $('queuePill');
+  pill.textContent = 'running ' + running + '/' + services.length +
+    (queue.pending ? ' · queued ' + queue.pending : '');
+  pill.className = 'pill ' + (queue.pending ? 'warn' : running ? 'on' : '');
+  $('btnStartAll').textContent = 'Start all ' + services.length + ' (' + queue.maxConcurrent + ' at a time)';
+}
+
+function updateDelivery(delivery) {
+  $('dFirst').textContent = delivery.firstAfterMs === null ? '—' : (delivery.firstAfterMs / 1000).toFixed(1);
+  $('dLast').textContent = delivery.lastMs === null ? '—' : fmtSec(delivery.lastMs);
+  $('dAvg').textContent = delivery.avgMs === null ? '—' : fmtSec(delivery.avgMs);
+  $('dMax').textContent = delivery.maxMs === null ? '—' : fmtSec(delivery.maxMs);
+  $('dCount').textContent = delivery.total;
+  const feed = $('dFeed');
+  if (!delivery.recent.length) {
+    feed.innerHTML = '<div class="empty">No delivery yet. Start a service — the first dial takes about 30–60 s.</div>';
+    return;
+  }
+  feed.innerHTML = delivery.recent.map((item) => `
+    <div class="feed-row">
+      <span class="num">${item.number}</span>
+      <span class="svc">${item.short || item.service}</span>
+      <span class="lat">${fmtSec(item.latencyMs)}</span>
+    </div>`).join('');
+}
+
+function updateUnique(unique) {
+  $('uCount').textContent = fmtInt(unique.total);
+  $('uAvg').textContent = unique.avgGapMs === null ? '—' : fmtClock(unique.avgGapMs);
+  $('uLast').textContent = unique.lastGapMs === null ? '—' : fmtClock(unique.lastGapMs);
+  $('uRate').textContent = unique.ratePerHour === null ? '—' : unique.ratePerHour + '/hr';
+  $('uFirst').textContent = unique.firstAfterMs === null ? '—' : fmtClock(unique.firstAfterMs);
+}
+
+function updateWall(shots) {
+  const wall = $('wall');
+  if (!shots.length) {
+    wall.innerHTML = '<div class="empty">Nothing captured yet.</div>';
+    return;
+  }
+  wall.innerHTML = shots.map((shot) => `
+    <div class="shot" data-key="${shot.service}/${shot.file}">
+      <img src="${shot.url}" alt="${shot.number}" loading="lazy" />
+      <div class="cap"><b>${shot.number || '—'}</b><span>${shot.short || shot.service}</span></div>
+    </div>`).join('');
+  const fresh = shots.some((shot) => !knownShots.has(shot.service + '/' + shot.file));
+  shots.forEach((shot) => knownShots.add(shot.service + '/' + shot.file));
+  if (fresh) {
+    const first = wall.querySelector('.shot');
+    if (first) first.classList.add('new');
+  }
+}
+
+function updateFarm(farm) {
+  const pill = $('farmPill');
+  pill.textContent = farm.running ? 'farm: running (headless)' : 'farm: stopped';
+  pill.className = 'pill ' + (farm.running ? 'warn' : 'on');
+}
+
+async function tick() {
+  try {
+    const response = await fetch('/api/state', { cache: 'no-store' });
+    const data = await response.json();
+    updateFarm(data.farm);
+    updateServices(data.services);
+    updateQueue(data.queue, data.services);
+    updateSystem(data.system);
+    updateComparison(data.comparison);
+    updateDelivery(data.delivery);
+    updateUnique(data.unique);
+    updateWall(data.shots);
+    $('clock').textContent = fmtClock(data.session.elapsedMs);
+    $('footer').textContent = data.session.startedAt
+      ? 'Session started ' + new Date(data.session.startedAt).toLocaleTimeString() + ' · demo ledger · Telegram admin chat only'
+      : 'Session idle. Click a Start button to launch a visible browser.';
+  } catch (error) {
+    $('footer').textContent = 'Panel lost the server — restart live-demo.bat.';
+  }
+}
+
+$('btnStartAll').addEventListener('click', () => control('start-all'));
+$('btnStartExternal').addEventListener('click', () => control('start-external'));
+$('btnStopAll').addEventListener('click', () => control('stop-all'));
+$('btnPause').addEventListener('click', () => control('pause'));
+$('btnRestore').addEventListener('click', () => control('restore'));
+$('btnFocus').addEventListener('click', () => control('focus'));
+$('btnTaskmgr').addEventListener('click', () => control('taskmgr'));
+$('btnLive').addEventListener('click', () => control('live'));
+$('btnReset').addEventListener('click', () => control('reset'));
+$('btnEnd').addEventListener('click', () => control('end'));
+
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>

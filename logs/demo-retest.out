@@ -1,0 +1,70 @@
+
+== preflight
+now 2026-11-02 02:20:05 Cairo
+[demo] farm running before demo: yes
+[demo] accounts: 245 · delay: 2000 ms · port: 8787
+
+== pausing the real farm
+[pipeline] stopped shard-2 (PID 12436)
+[pipeline] stopped telegram-sync (PID 6288)
+[pipeline] monitor closed cleanly (notice sent to Telegram)
+[pipeline] stopped 3 service(s)
+
+== resetting demo output
+[demo] stopped the previous dashboard (PID 13904).
+[demo] dashboard: http://127.0.0.1:8787/  (opening the default browser)
+
+== running 245 in a visible browser
+[scheduled-run] starting batch 2026-11-02T00:20:11.566Z
+[scheduled-run] step: login
+[scheduled-run] realtime-send started (screenshots sent as captured)
+[realtime-send] Watching C:\Users\Dell\Desktop\workspace\1xauto\screenshots\demo for NEW screenshots (started at 2026-11-02T00:20:11.672Z)
+[realtime-send] Ledger: C:\Users\Dell\Desktop\workspace\1xauto\seen-numbers.json
+
+> 1xbet-login-flow@0.1.0 login
+> playwright test
+
+
+Running 1 test using 1 worker
+
+[2026-11-02T00:20:17.642Z] [info]  loaded 276 account(s) from accounts.csv
+[2026-11-02T00:20:17.644Z] [info]  start index resolved to 1 (no state, START_INDEX=1)
+[2026-11-02T00:20:17.646Z] [info]  proxy disabled (PROXY_URL unset)
+[2026-11-02T00:20:17.647Z] [info]  retry ladder enabled -> maxRetries=2
+[2026-11-02T00:20:17.648Z] [info]  state persistence enabled -> state-demo.json
+[2026-11-02T00:20:17.650Z] [info]  processing range [1, 276] of 276 account(s)
+[2026-11-02T00:20:18.161Z] [info]  [account=elgizaaccjul7245@gmail.com] [phase=login] [245/276] signing in
+[2026-11-02T00:20:46.307Z] [info]  [account=elgizaaccjul7245@gmail.com] [phase=payment] CC check: {"v3CC":"eg","pcExists":true,"pcKeys":["serverRendered","config"],"pcConfigCC":"eg"}
+[2026-11-02T00:20:49.054Z] [info]  [account=elgizaaccjul7245@gmail.com] [phase=payment] extracted mobile number 01019694021
+[2026-11-02T00:20:49.627Z] [info]  [account=elgizaaccjul7245@gmail.com] [phase=payment] screenshot saved screenshots\demo\01019694021.png
+[2026-11-02T00:20:49.833Z] [info]  [account=elgizaaccjul7245@gmail.com] [phase=account] success for elgizaaccjul7245@gmail.com (32178ms, retries=0)
+[realtime-send] SKIP (already seen): 01019694021
+[2026-11-02T00:20:51.862Z] [info]  Success rate: 0.4% (1/276) · unique numbers: 1 · slowest: elgizaaccjul7245@gmail.com (32s)
+[2026-11-02T00:20:51.894Z] [info]  excel file saved to: extracted_numbers-demo.xlsx (1 unique numbers)
+  ok 1 tests\login.spec.js:839:1 › sign in to 1xBet (34.3s)
+
+  1 passed (38.1s)
+[scheduled-run] realtime-send stopped
+[scheduled-run] step: excel
+
+> 1xbet-login-flow@0.1.0 excel
+> node scripts/generate-excel.js
+
+Excel saved: extracted_numbers-demo.xlsx (1 unique numbers)
+Ledger: 0 new number(s) to send (12265 unique total).
+Telegram summary sent to 699397575.
+No new unique numbers — photos skipped.
+[scheduled-run] finished 2026-11-02T00:20:56.470Z
+
+== demo finished
+[demo] accounts ok=1 failed=0 · unique numbers=1
+
+[demo] the dashboard is still live at http://127.0.0.1:8787/ — leave it on screen.
+[demo] Press Enter to close the dashboard and restore the farm.
+ 
+
+== restoring shard-2 (resume, 10 s pacing) plus ledger sync and monitor
+[shard-2] started (PID 6920) -> C:\Users\Dell\Desktop\workspace\1xauto\logs\shard-2.log
+6920
+[demo] live control room restored: http://127.0.0.1:8787/
+[demo] farm restored: shard-2 + sync + monitor.

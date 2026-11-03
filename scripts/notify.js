@@ -1,12 +1,10 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
 import path from 'path';
-import * as XLSX from 'xlsx';
 import dotenv from 'dotenv';
 import {
   buildTelegramMessage,
   dedupeScreenshotPaths,
   extractNumberFromScreenshotName,
-  sendTelegramDocumentWithRetry,
   sendTelegramMessage,
   sendTelegramPhotoWithRetry
 } from '../lib/telegram.js';
@@ -25,11 +23,9 @@ const screenshotsDirs = (process.env.SCREENSHOTS_DIRS || '')
   .map((d) => path.resolve(process.cwd(), d));
 const seenNumbersFile = path.resolve(process.cwd(), process.env.SEEN_NUMBERS_FILE || 'seen-numbers.json');
 const seenNumbersLock = path.resolve(process.cwd(), process.env.SEEN_NUMBERS_LOCK || 'seen-numbers.json.lock');
-const combinedExcelPath = path.resolve(process.cwd(), process.env.EXCEL_COMBINED_FILE || 'extracted_numbers-combined.xlsx');
-const uniqueExcelPath = path.resolve(process.cwd(), process.env.EXCEL_UNIQUE_FILE || 'extracted_numbers-unique.xlsx');
 const botToken = process.env.TELEGRAM_BOT_TOKEN;
 const chatId = process.env.TELEGRAM_CHAT_ID;
-const channelId = process.env.TELEGRAM_CHANNEL_ID;
+const channelId = process.env.TELEGRAM_CHANNEL_ID === 'off' ? null : process.env.TELEGRAM_CHANNEL_ID;
 const runStartedAt = parseInt(process.env.RUN_STARTED_AT, 10) || null;
 
 if (!botToken || !chatId) {
@@ -38,6 +34,9 @@ if (!botToken || !chatId) {
 }
 
 const recipients = channelId ? [chatId, channelId] : [chatId];
+// The channel is for screenshots only. Batch text summaries are operational
+// reporting and stay in the admin chat.
+const summaryRecipients = [chatId];
 
 // Build the list of candidate screenshot paths. Prefer run-summary.json (1xauto),
 // otherwise scan the screenshots dir (linebet/melbet which don't write summaries).
@@ -101,24 +100,27 @@ try {
   process.exit(1);
 }
 
-if (newNumbers.length === 0) {
-  console.log('No new unique numbers — nothing to notify.');
-  process.exit(0);
-}
-
 if (summary) {
   const text = buildTelegramMessage(summary);
   try {
-    await sendTelegramMessage({ botToken, chatId, text });
-    console.log('Telegram notification sent.');
+    for (const recipient of summaryRecipients) {
+      await sendTelegramMessage({ botToken, chatId: recipient, text });
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+    console.log(`Telegram summary sent to ${summaryRecipients.join(', ')}.`);
   } catch (error) {
-    console.error(`Telegram notification failed: ${error.message}`);
-    process.exit(1);
+    console.error(`Telegram summary notification failed: ${error.message}`);
   }
+}
+
+if (newNumbers.length === 0) {
+  console.log('No new unique numbers — photos skipped.');
+  process.exit(0);
 }
 
 const newNumberSet = new Set(newNumbers);
 const toSend = deduped.filter((p) => newNumberSet.has(extractNumberFromScreenshotName(p)));
+console.log(`Sending ${toSend.length} new screenshot(s) to Telegram.`);
 
 let failures = 0;
 for (const relativePath of toSend) {
@@ -130,7 +132,7 @@ for (const relativePath of toSend) {
     continue;
   }
   const number = extractNumberFromScreenshotName(path.basename(photoPath));
-  const caption = number ? `Number: ${number}` : undefined;
+  const caption = number || undefined;
   try {
     for (const recipient of recipients) {
       await sendTelegramPhotoWithRetry({ botToken, chatId: recipient, photoPath, caption });
@@ -156,50 +158,6 @@ for (const relativePath of toSend) {
 }
 
 if (failures > 0) {
-  process.exit(1);
-}
-
-// Combined excel: every unique number ever seen across all runs/shards.
-const allNumbers = [...readSeenNumbers(seenNumbersFile)].sort();
-if (allNumbers.length === 0) {
-  console.log('Ledger empty — skipping excel.');
-  process.exit(0);
-}
-
-const workbook = XLSX.utils.book_new();
-const worksheet = XLSX.utils.json_to_sheet(allNumbers.map((num) => ({ Phone: num })));
-XLSX.utils.book_append_sheet(workbook, worksheet, 'Numbers');
-XLSX.writeFile(workbook, combinedExcelPath);
-console.log(`Combined excel written: ${combinedExcelPath} (${allNumbers.length} unique numbers).`);
-
-// Unique-only excel: just the numbers in the current batch.
-const batchNumbers = [...new Set(toSend.map((p) => extractNumberFromScreenshotName(path.basename(p))).filter(Boolean))].sort();
-const uniqueWorkbook = XLSX.utils.book_new();
-const uniqueWorksheet = XLSX.utils.json_to_sheet(batchNumbers.map((num) => ({ Phone: num })));
-XLSX.utils.book_append_sheet(uniqueWorkbook, uniqueWorksheet, 'Numbers');
-XLSX.writeFile(uniqueWorkbook, uniqueExcelPath);
-console.log(`Unique-only excel written: ${uniqueExcelPath} (${batchNumbers.length} numbers this batch).`);
-
-try {
-  for (const recipient of recipients) {
-    await sendTelegramDocumentWithRetry({
-      botToken,
-      chatId: recipient,
-      documentPath: combinedExcelPath,
-      caption: `Combined unique numbers (all runs): ${allNumbers.length}`
-    });
-    await new Promise((r) => setTimeout(r, 1500));
-    await sendTelegramDocumentWithRetry({
-      botToken,
-      chatId: recipient,
-      documentPath: uniqueExcelPath,
-      caption: `Unique numbers (this batch): ${batchNumbers.length}`
-    });
-    await new Promise((r) => setTimeout(r, 1500));
-  }
-  console.log(`Sent excels to Telegram${channelId ? ` (chat + channel ${channelId})` : ''}.`);
-} catch (error) {
-  console.error(`Failed to send excels: ${error.message}`);
   process.exit(1);
 }
 

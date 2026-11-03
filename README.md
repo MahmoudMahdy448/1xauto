@@ -70,7 +70,9 @@ sites share the same ledger file.
 - Skips entirely when there are no new numbers.
 - On a Telegram send failure the number is **released** from the ledger so it can
   be retried; rate limits (HTTP 429) are handled with backoff retry.
-- Sends to chat + channel when `TELEGRAM_CHANNEL_ID` is set.
+- The batch summary text goes to the admin chat only. Screenshots go to the
+  chat **and** the channel when `TELEGRAM_CHANNEL_ID` is set: the channel is for
+  numbers, not for operational chatter.
 
 ## scripts/force-send.mjs
 
@@ -85,12 +87,28 @@ node scripts/force-send.mjs
 ## Telegram / status bot
 
 - `lib/telegram.js` — photo/document send with 429 rate-limit retry.
-- `scripts/status-bot.mjs` — runs as `1xauto-status-bot.service`; replies to
-  `/status` (and `/status <passcode>`) with RAM/load/disk, each service's loop
-  state (`running now` / `waiting for turn` / `cooldown`), progress, screenshot
-  counts, and unique numbers per ledger. Allowed chat IDs come from
-  `STATUS_ALLOWED_IDS`.
+- `scripts/monitor-agent.mjs` — tails `events/*.jsonl`, keeps
+  `monitor-state.json`, and alerts the admin chat only (`TELEGRAM_CHAT_ID`).
+  Silent by default: new errors (with one screenshot each, capped per hour),
+  storms, stalls, cooldown overruns, sync failures, ledger damage, plus one
+  09:00 Cairo all-clear line.
+- `scripts/monitor-supervisor.mjs` — restarts the agent and the bot with
+  backoff, reports each restart, and gives up after 3 crashes in 10 min.
+- `scripts/status-bot.mjs` — the only process that calls `getUpdates`. Read-only
+  reporting: `/status /shards /batch /numbers /ledger /csv /sync /timeline /errors
+  /alerts /tail /health /report /help`, plus `/restart <shard-1|shard-2>` for a
+  dead shard only (never melbet) and `/mute [30m|2h]` / `/unmute`.
+  `/csv` rebuilds `exports/ledger-<stamp>.csv` from `seen-numbers.json` and sends
+  it as a file on every request. The same export is available from the shell as
+  `npm run ledger:csv` (or `node scripts/export-ledger.mjs --out <file>`).
+  Replies stay under ~38 lines. Allowed chat IDs come from
+  `STATUS_ALLOWED_IDS` (falling back to `TELEGRAM_CHAT_ID`).
 - `scripts/status.mjs` — CLI equivalent.
+
+Tests: `npm test` (unit), `npm run test:integration` (process level, fake
+Telegram Bot API), `npm run test:all`. The handful of checks that need a real
+clock, a real kill or the real Telegram API are listed in
+`tests/monitoring-manual-checklist.md`.
 
 ## Registering services
 

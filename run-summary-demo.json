@@ -1,0 +1,37 @@
+{
+  "batchId": "2026-11-02T00:20:17.644Z",
+  "startedAt": "2026-11-02T00:20:17.650Z",
+  "endedAt": "2026-11-02T00:20:51.859Z",
+  "durationMs": 34209,
+  "totalAccounts": 276,
+  "succeeded": 1,
+  "failed": 0,
+  "accountsRetried": 0,
+  "retryCount": 0,
+  "successRate": 0.0036231884057971015,
+  "uniqueNumbers": 1,
+  "avgRuntimePerAccountMs": 34209,
+  "slowestAccount": {
+    "username": "elgizaaccjul7245@gmail.com",
+    "runtimeMs": 32178
+  },
+  "failureCategories": {
+    "network": 0,
+    "domTimeout": 0,
+    "loginRejected": 0,
+    "siteBlocked": 0,
+    "paymentDisabled": 0,
+    "disk": 0,
+    "browserClosed": 0,
+    "validation": 0,
+    "other": 0
+  },
+  "screenshotsRetained": 1,
+  "artifactNames": [
+    "screenshots\\demo\\01019694021.png"
+  ],
+  "startIndex": 1,
+  "lastProcessedIndex": 1,
+  "proxyEnabled": false,
+  "maxRetries": 2
+}

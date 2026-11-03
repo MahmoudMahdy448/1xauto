@@ -1,0 +1,97 @@
+# run-all-shards.ps1
+# Launches all three scrapers in parallel (hidden PowerShell processes, logs on disk).
+#
+#   shard-1 : 1xauto accounts 1-149
+#   shard-2 : 1xauto accounts 150-276
+#   melbet  : melbet-autologin (own accounts.csv, 1 browser)
+#
+# All three share ONE seen-numbers ledger so a phone number is sent to Telegram
+# exactly once, ever - across shards and across loops.
+#
+# Each loop cools down 90 minutes between batches.
+#
+# Every shard is started through scripts\launch-shard.ps1, the same definition
+# the admin bot uses for /restart. The monitor supervisor then starts the event
+# agent and the status bot.
+#
+# Usage: .\run-all-shards.ps1 [-Resume] [-Headed] [-AccountDelayMs N]
+#   -Resume  continue each shard at the account it last reached (used when
+#            swapping a running pipeline to this launcher) instead of starting
+#            a fresh pass at the shard's range start.
+#   -Headed  show the three browsers (used by start-all-headed.bat).
+
+param(
+    [switch]$Resume,
+
+    # Show the three browsers instead of running them headless. The consoles
+    # stay hidden and the logs are still on disk.
+    [switch]$Headed,
+
+    # Pause between accounts for every shard. 0 keeps each shard's built-in
+    # default; raise it when headed browsers are too heavy for the machine.
+    [int]$AccountDelayMs = 0
+)
+
+$ErrorActionPreference = 'Stop'
+
+$ws         = 'C:\Users\Dell\Desktop\workspace\1xauto'
+$ledger     = Join-Path $ws 'seen-numbers.json'
+$lock       = Join-Path $ws 'seen-numbers.json.lock'
+$eventsDir  = Join-Path $ws 'events'
+$logDir     = Join-Path $ws 'logs'
+$pidDir     = Join-Path $ws 'shards'
+$launch     = Join-Path $ws 'scripts\launch-shard.ps1'
+$pwsh       = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+
+New-Item -ItemType Directory -Force -Path $logDir, $eventsDir, $pidDir | Out-Null
+
+function Start-Loop {
+    param(
+        [string]$Name,
+        [string]$WorkDir,
+        [string]$Command
+    )
+
+    $out = Join-Path $logDir "$Name.log"
+    $err = Join-Path $logDir "$Name.err.log"
+
+    $full = "`$Host.UI.RawUI.WindowTitle = '$Name'; Set-Location '$WorkDir'; $Command"
+
+    $proc = Start-Process -FilePath $pwsh `
+        -ArgumentList '-NoProfile', '-Command', $full `
+        -RedirectStandardOutput $out `
+        -RedirectStandardError $err `
+        -WindowStyle Hidden `
+        -PassThru
+
+    Write-Host ("[{0}] started (PID {1}) -> {2}" -f $Name, $proc.Id, $out) -ForegroundColor Green
+    return $proc
+}
+
+foreach ($shard in @('shard-1', 'shard-2', 'melbet')) {
+    & $launch -Name $shard -Resume:$Resume.IsPresent -Headed:$Headed.IsPresent -AccountDelayMs $AccountDelayMs
+}
+
+$syncCommand = @"
+`$env:SERVICE_NAME='sync';
+`$env:EVENT_ROLE='sync';
+`$env:INSTANCE_ID='1';
+`$env:EVENTS_DIR='$eventsDir';
+`$env:SEEN_NUMBERS_FILE='$ledger';
+`$env:SEEN_NUMBERS_LOCK='$lock';
+node scripts/telegram-sync-loop.mjs
+"@
+
+# Keeps the shared ledger equal to what is really in the Telegram channel.
+$syncProc = Start-Loop -Name 'telegram-sync' -WorkDir $ws -Command $syncCommand
+Set-Content -Path (Join-Path $pidDir 'telegram-sync.pid') -Value $syncProc.Id -Encoding ASCII
+
+# Starts the monitor agent and the status bot, and keeps them alive.
+$supervisorProc = Start-Loop -Name 'monitor-supervisor' -WorkDir $ws -Command "node scripts/monitor-supervisor.mjs"
+Set-Content -Path (Join-Path $pidDir 'monitor-supervisor.pid') -Value $supervisorProc.Id -Encoding ASCII
+
+Write-Host ''
+Write-Host 'All 3 shards launched (plus Telegram ledger sync and the monitor).' -ForegroundColor Cyan
+Write-Host "Shared ledger: $ledger"
+Write-Host 'Monitor with:    .\monitor.ps1'
+Write-Host 'Tail logs with:  Get-Content logs\shard-1.log -Wait'

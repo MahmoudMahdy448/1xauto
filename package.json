@@ -8,14 +8,19 @@
     "loop": "node run-loop.js",
     "scheduled": "node scripts/scheduled-run.mjs",
     "notify": "node scripts/notify.js",
+    "shard-1": "node scripts/run-shard-1.mjs",
     "excel": "node scripts/generate-excel.js",
-    "test": "node --test \"tests/unit/*.test.js\""
+    "ledger:csv": "node scripts/export-ledger.mjs",
+    "test": "node --test \"tests/unit/*.test.js\"",
+    "test:integration": "node --test \"tests/integration/*.test.js\"",
+    "test:all": "npm test && npm run test:integration"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "dotenv": "^16.6.1"
   },
   "dependencies": {
+    "telegram": "^2.26.22",
     "xlsx": "^0.18.5"
   }
 }

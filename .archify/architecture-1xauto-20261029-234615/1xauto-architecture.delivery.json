@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "c4bc9322-f245-4006-a968-9f2acfea0518",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\Dell\\Desktop\\workspace\\1xauto\\.archify\\architecture-1xauto-20261029-234615\\candidate.json",
+  "output": "C:\\Users\\Dell\\Desktop\\workspace\\1xauto\\.archify\\architecture-1xauto-20261029-234615\\1xauto-architecture.html",
+  "specification": {
+    "sha256": "a3827bdfb92be7885579c39fd8033e2be8b313086a756b932ac91feea851dd8e",
+    "bytes": 8209
+  },
+  "artifact": {
+    "sha256": "c34ed09e0a845544dc5c6223c35f7ebb6403099befd00d11563d28aa45b19b32",
+    "bytes": 869667
+  }
+}

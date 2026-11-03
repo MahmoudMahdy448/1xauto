@@ -14,9 +14,40 @@ state-shard-*.json
 run-summary-shard-*.json
 screenshots-shard-*/
 extracted_numbers-shard-*.xlsx
+run-summary-gate-probe.json
 loop-status*.json
 logs/failed-accounts.log
 seen-numbers*.json
 group-lease.json
 extracted_numbers-combined.xlsx
 extracted_numbers-unique.xlsx
+telegram-session.txt
+seen-numbers.backup-*.json
+telegram-sync-state.json
+logs/*.log
+logs/*.err.log
+telegram-login-code.txt
+telegram-login-password.txt
+events/
+exports/
+screenshots/errors/
+monitor-state.json
+alert-control.json
+.pipeline-stop
+*.pid
+shards/
+
+# Deposit gate runtime state (shared by shards, created at runtime)
+deposit-gate.json
+deposit-gate.json.*.tmp
+deposit-gate.probe.lock
+
+# Local verification harness output (never committed)
+evidence-guard/
+metrics/
+
+# IP-block circuit breaker runtime state
+site-block.json
+site-block.json.*.tmp
+site-block.json.lock
+
