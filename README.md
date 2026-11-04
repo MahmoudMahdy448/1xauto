@@ -1,18 +1,25 @@
 # 1xauto - 24/7 Autologin with Group Alternation
 
-This repository runs the **1xBet Egypt** automation (2 parallel shards). Two sibling
-deployments, **linebet** and **melbet**, reuse the same code (see
-[Deploying a site](#deploying-a-site)).
+This repository runs the **1xBet Egypt** automation (one shard covering the whole
+account list). Two sibling deployments, **linebet** and **melbet**, reuse the same
+code (see [Deploying a site](#deploying-a-site)).
 
 All three sites run on one Azure VM and **alternate** so only one group's browsers
 are active at a time (2 vCPU budget).
 
 ```
-1xauto-shard-1  group A  accounts 1-149
-1xauto-shard-2  group A  accounts 150-276
-linebet         group B  its own account list
-melbet          group B  its own account list
+shard-1         group A  accounts 1-276
+linebet         group B  accounts 1-130
+melbet          group B  accounts 1-271
 ```
+
+All three share one dedup ledger, so a number captured on any site is never sent
+again from another site. On Windows, `start-all.bat` runs exactly these three
+scrapers, each with its own realtime sender.
+
+Telegram access is **bot API only** (`TELEGRAM_BOT_TOKEN`). The old user-session
+ledger sync — personal Telegram login, API ID/hash and `telegram-session.txt` —
+has been removed, so a VPS never needs your personal Telegram account or session.
 
 ## Group Alternation (lease)
 
@@ -37,11 +44,11 @@ Relevant env: `RUN_GROUP`, `LEASE_FILE`, `PRIORITY_GROUP` (default A).
 
 Each deployment has its own state, screenshots, run summary, and dedup ledger:
 
-| Site     | service(s)       | state               | screenshots dir    | ledger                    |
-|----------|------------------|---------------------|--------------------|---------------------------|
-| 1xBet    | 1xauto-shard-1/2 | state-shard-1/2.json | screenshots/shard-1/2 | seen-numbers.json (shared) |
-| Linebet  | linebet          | state.json          | screenshots        | seen-numbers.json         |
-| Melbet   | melbet           | state.json          | screenshots        | seen-numbers.json         |
+| Site     | service(s) | state                | screenshots dir    | ledger                    |
+|----------|------------|----------------------|--------------------|---------------------------|
+| 1xBet    | shard-1    | state-shard-1.json   | screenshots/shard-1 | seen-numbers.json (shared) |
+| Linebet  | linebet    | none (range 1-130)   | screenshots         | seen-numbers.json (shared) |
+| Melbet   | melbet     | none (range 1-271)   | screenshots         | seen-numbers.json (shared) |
 
 A number captured on one site is **never re-sent on another site** unless the
 sites share the same ledger file.
@@ -90,14 +97,14 @@ node scripts/force-send.mjs
 - `scripts/monitor-agent.mjs` — tails `events/*.jsonl`, keeps
   `monitor-state.json`, and alerts the admin chat only (`TELEGRAM_CHAT_ID`).
   Silent by default: new errors (with one screenshot each, capped per hour),
-  storms, stalls, cooldown overruns, sync failures, ledger damage, plus one
-  09:00 Cairo all-clear line.
+  storms, stalls, cooldown overruns, ledger damage, plus one 09:00 Cairo
+  all-clear line.
 - `scripts/monitor-supervisor.mjs` — restarts the agent and the bot with
   backoff, reports each restart, and gives up after 3 crashes in 10 min.
 - `scripts/status-bot.mjs` — the only process that calls `getUpdates`. Read-only
-  reporting: `/status /shards /batch /numbers /ledger /csv /sync /timeline /errors
-  /alerts /tail /health /report /help`, plus `/restart <shard-1|shard-2>` for a
-  dead shard only (never melbet) and `/mute [30m|2h]` / `/unmute`.
+  reporting: `/status /shards /batch /numbers /ledger /csv /timeline /errors
+  /alerts /tail /health /report /help`, plus `/restart <shard-1|linebet>` for a
+  dead scraper only (never melbet) and `/mute [30m|2h]` / `/unmute`.
   `/csv` rebuilds `exports/ledger-<stamp>.csv` from `seen-numbers.json` and sends
   it as a file on every request. The same export is available from the shell as
   `npm run ledger:csv` (or `node scripts/export-ledger.mjs --out <file>`).
@@ -113,8 +120,8 @@ clock, a real kill or the real Telegram API are listed in
 ## Registering services
 
 ```bash
-# A group (1xbet shards) — created on the VM as root
-SHARDS="1:149,150:276" COOLDOWN_MINUTES=60 sudo bash scripts/register-shards.sh
+# A group (1xbet) — created on the VM as root
+SHARDS="1:276" COOLDOWN_MINUTES=60 sudo bash scripts/register-shards.sh
 
 # B group (linebet / melbet) — per site
 APP_DIR=/opt/linebet SERVICE_PREFIX=linebet RUN_GROUP=B COOLDOWN_MINUTES=60 \

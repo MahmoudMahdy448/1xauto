@@ -48,9 +48,9 @@ function Stop-Tree([int]$processId, [string]$label) {
 
 $stopped = 0
 
-# 1. Scrapers and the ledger sync. Stopping these first means the monitor sees
-#    no new work while it is closing, so it cannot raise a stale-work alert.
-foreach ($name in @('shard-1', 'shard-2', 'melbet', 'telegram-sync')) {
+# 1. Scrapers. Stopping these first means the monitor sees no new work while it
+#    is closing, so it cannot raise a stale-work alert.
+foreach ($name in @('shard-1', 'shard-2', 'melbet', 'linebet')) {
     if (Stop-Tree (Get-Pid $name) $name) { $stopped++ }
 }
 
@@ -97,7 +97,7 @@ if ($All -and (Test-Alive $wrapper) -and $wrapper -ne $PID) {
 }
 
 Remove-Item $stopFlag -Force -ErrorAction SilentlyContinue
-foreach ($name in @('shard-1', 'shard-2', 'melbet', 'telegram-sync', 'monitor-supervisor', 'pipeline')) {
+foreach ($name in @('shard-1', 'shard-2', 'melbet', 'linebet', 'monitor-supervisor', 'pipeline')) {
     Remove-Item (Join-Path $pidDir "$name.pid") -Force -ErrorAction SilentlyContinue
 }
 

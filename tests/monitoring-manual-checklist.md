@@ -165,7 +165,7 @@ duplicate supervisor (`tests/integration/supervisor.test.js`).
 
 **Why manual:** the live ledger is the one thing that must never be damaged.
 
-1. `/ledger` reports the count, last sync, and pending release numbers.
+1. `/ledger` reports the count and when it last changed.
 2. `/csv` sends `ledger-<stamp>.csv` to the admin chat; the caption count equals
    `/ledger`'s number and the file's row count is that number plus one header row.
 3. With the pipeline stopped, corrupt `seen-numbers.json` → one

@@ -6,9 +6,8 @@ rem   melbet-headed.bat -Resume      continue where the saved state stopped
 rem
 rem Melbet runs ONE browser, matching start-all-headed.bat.
 rem
-rem It refuses while the farm is running (stop-all.bat first). Ledger sync and
-rem the monitor are not started: this is one shard, not the pipeline. Press Q to
-rem stop it.
+rem It refuses while the farm is running (stop-all.bat first). The monitor is
+rem not started: this is one shard, not the pipeline. Press Q to stop it.
 rem
 rem Melbet uses the shared ledger (seen-numbers.json), so a number it captures
 rem is never posted twice by the 1xbet shards.

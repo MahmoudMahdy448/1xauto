@@ -73,7 +73,7 @@ function seedWorkspace(root, { launcher = LAUNCHER_OK, statusShard1 = { state: '
         },
         lastError: { message: 'Login failed: select a login option', at: minutesAgo(6) }
       },
-      'shard-2': {
+      linebet: {
         state: 'cooldown',
         lastEventAt: minutesAgo(30),
         accounts: { ok: 40, failed: 2 },
@@ -84,18 +84,6 @@ function seedWorkspace(root, { launcher = LAUNCHER_OK, statusShard1 = { state: '
         lastEventAt: nowIso(),
         accounts: { ok: 5, failed: 0 },
         numbers: { extracted: 5, sent: 5, skipped: 0 }
-      },
-      sync: {
-        state: 'idle',
-        sync: {
-          lastDoneAt: minutesAgo(120),
-          messages: 28500,
-          delivered: 11980,
-          ledger: 11988,
-          dropped: 0,
-          pending: 1,
-          durationMs: 95_000
-        }
       }
     },
     errors: [
@@ -104,7 +92,7 @@ function seedWorkspace(root, { launcher = LAUNCHER_OK, statusShard1 = { state: '
         count: 3,
         firstAt: minutesAgo(30),
         lastAt: minutesAgo(6),
-        svcs: ['shard-1', 'shard-2']
+        svcs: ['shard-1', 'linebet']
       }
     ],
     incidents: [
@@ -122,9 +110,9 @@ function seedWorkspace(root, { launcher = LAUNCHER_OK, statusShard1 = { state: '
         notifiedResolved: false
       },
       {
-        id: 'stalled:shard-2',
+        id: 'stalled:linebet',
         rule: 'stalled',
-        svc: 'shard-2',
+        svc: 'linebet',
         severity: 'critical',
         openedAt: minutesAgo(300),
         closedAt: minutesAgo(280),
@@ -139,15 +127,13 @@ function seedWorkspace(root, { launcher = LAUNCHER_OK, statusShard1 = { state: '
   });
 
   writeJson(path.join(root, 'loop-status-shard-1.json'), statusShard1);
-  writeJson(path.join(root, 'loop-status-shard-2.json'), {
+  writeJson(path.join(root, 'linebet', 'loop-status.json'), {
     state: 'cooldown',
     nextRunAt: new Date(Date.now() + 45 * 60_000).toISOString()
   });
   writeJson(path.join(root, 'loop-status.json'), { state: 'running' });
   writeJson(path.join(root, 'state-shard-1.json'), { lastProcessedIndex: 90, totalAccounts: 276 });
-  writeJson(path.join(root, 'state-shard-2.json'), { lastProcessedIndex: 210, totalAccounts: 276 });
   writeJson(path.join(root, 'seen-numbers.json'), { updatedAt: nowIso(), numbers: ['01011112222', '01033334444'] });
-  writeJson(path.join(root, 'telegram-sync-state.json'), { missing: ['01099998888'] });
   writeFileSync(path.join(root, 'scripts', 'launch-shard.ps1'), launcher);
 
   eventFile(path.join(root, 'events'), 'shard-1-loop-1.jsonl', [
@@ -164,10 +150,6 @@ function seedWorkspace(root, { launcher = LAUNCHER_OK, statusShard1 = { state: '
   eventFile(path.join(root, 'events'), 'shard-1-sender-1.jsonl', [
     { ts: minutesAgo(15), svc: 'shard-1', role: 'sender', inst: '1', kind: 'send.ok', data: { number: '01011112222' } },
     { ts: minutesAgo(14), svc: 'shard-1', role: 'sender', inst: '1', kind: 'send.skip', data: { number: '01033334444', reason: 'already-seen' } }
-  ]);
-  eventFile(path.join(root, 'events'), 'sync-sync-1.jsonl', [
-    { ts: minutesAgo(120), svc: 'sync', role: 'sync', inst: '1', kind: 'sync.start' },
-    { ts: minutesAgo(118), svc: 'sync', role: 'sync', inst: '1', kind: 'sync.done', data: { messages: 28500, delivered: 11980, ledger: 11988, dropped: 0, pending: 1 } }
   ]);
 }
 
@@ -222,7 +204,7 @@ async function withBot(run, options = {}) {
 test('/help lists the whole command surface', async () => {
   await withBot(async ({ tg }) => {
     const [reply] = await ask(tg, '/help');
-    for (const command of ['/status', '/shards', '/batch', '/numbers', '/ledger', '/csv', '/sync', '/timeline', '/errors', '/alerts', '/tail', '/health', '/report', '/restart', '/mute', '/unmute']) {
+    for (const command of ['/status', '/shards', '/batch', '/numbers', '/ledger', '/csv', '/timeline', '/errors', '/alerts', '/tail', '/health', '/report', '/restart', '/mute', '/unmute']) {
       assert.ok(reply.includes(command), `missing ${command} in /help`);
     }
   });
@@ -233,9 +215,8 @@ test('/status summarises every service with Cairo time and its effective state',
     const [reply] = await ask(tg, '/status');
     assert.match(reply, /status · .* Cairo/);
     assert.match(reply, /🟢 shard-1 · running/);
-    assert.match(reply, /🟡 shard-2 · cooldown/);
+    assert.match(reply, /🟡 linebet · cooldown/);
     assert.match(reply, /melbet/);
-    assert.match(reply, /sync/);
     assert.match(reply, /open incidents: 1/);
   });
 });
@@ -243,10 +224,10 @@ test('/status summarises every service with Cairo time and its effective state',
 test('/shards shows progress, accounts and numbers per shard', async () => {
   await withBot(async ({ tg }) => {
     const [reply] = await ask(tg, '/shards');
-    assert.match(reply, /shard-1 · running · #90 · range 1–149 · 59 to go/);
+    assert.match(reply, /shard-1 · running · #90 · range 1–276 · 186 to go/);
     assert.match(reply, /accounts 12 ok \/ 1 failed/);
     assert.match(reply, /12 read, 11 sent, 1 dup/);
-    assert.match(reply, /shard-2 · cooldown(?: until \d{2}:\d{2})? · #210 · range 150–276 · 66 to go/);
+    assert.match(reply, /linebet · cooldown(?: until \d{2}:\d{2})? · accounts not tracked/);
   });
 });
 
@@ -269,13 +250,11 @@ test('/numbers counts today from the event stream', async () => {
   });
 });
 
-test('/ledger reports the total, the last audit and the pending release', async () => {
+test('/ledger reports the total and when it last changed', async () => {
   await withBot(async ({ tg }) => {
     const [reply] = await ask(tg, '/ledger');
     assert.match(reply, /numbers: 2/);
-    assert.match(reply, /last sync: \d{2}:\d{2}/);
-    assert.match(reply, /pending release \(missing from channel once\):/);
-    assert.match(reply, /01099998888/);
+    assert.match(reply, /updated: \d{2}:\d{2}/);
   });
 });
 
@@ -294,21 +273,12 @@ test('/csv sends the whole ledger as a CSV file', async () => {
   });
 });
 
-test('/sync shows the audit window and the next expected run', async () => {
-  await withBot(async ({ tg }) => {
-    const [reply] = await ask(tg, '/sync');
-    assert.match(reply, /last audit: \d{2}:\d{2}/);
-    assert.match(reply, /next: \d{2}:\d{2} \(in \d/);
-    assert.match(reply, /dropped 0 · pending release 1/);
-  });
-});
-
 test('/timeline lists milestones with the service they belong to', async () => {
   await withBot(async ({ tg }) => {
     const [reply] = await ask(tg, '/timeline 6h');
     assert.match(reply, /timeline · 6h/);
     assert.match(reply, /(?:[A-Z][a-z]{2} \d{2}, )?\d{2}:\d{2} shard-1 batch\.start/);
-    assert.match(reply, /(?:[A-Z][a-z]{2} \d{2}, )?\d{2}:\d{2} sync sync\.done/);
+    assert.match(reply, /(?:[A-Z][a-z]{2} \d{2}, )?\d{2}:\d{2} shard-1 batch\.end/);
     assert.ok(!reply.includes('payment.read_number'), 'steps must not appear in the timeline');
   });
 });
@@ -318,7 +288,7 @@ test('/errors groups by signature with first and last seen', async () => {
     const [reply] = await ask(tg, '/errors');
     assert.match(reply, /3× login failed: select a login option/);
     assert.match(reply, /first (?:[A-Z][a-z]{2} \d{2}, )?\d{2}:\d{2} · last (?:[A-Z][a-z]{2} \d{2}, )?\d{2}:\d{2}/);
-    assert.match(reply, /shard-1, shard-2/);
+    assert.match(reply, /shard-1, linebet/);
   });
 });
 
@@ -326,7 +296,7 @@ test('/alerts shows open and resolved incidents with their duration', async () =
   await withBot(async ({ tg }) => {
     const [reply] = await ask(tg, '/alerts');
     assert.match(reply, /storm · shard-1 · opened .* · still open/);
-    assert.match(reply, /stalled · shard-2 .*closed .* · 20 min/);
+    assert.match(reply, /stalled · linebet .*closed .* · 20 min/);
   });
 });
 
@@ -438,11 +408,18 @@ test('/restart refuses melbet and any shard that is still alive', async () => {
     const [melbet] = await ask(tg, '/restart melbet');
     assert.match(melbet, /off limits/);
 
-    const [cooling] = await ask(tg, '/restart shard-2');
-    assert.match(cooling, /cooling down until/);
-
     const [alive] = await ask(tg, '/restart shard-1');
     assert.match(alive, /is alive/);
+
+    assert.equal(tg.messages().filter((message) => message.text.includes('restarting')).length, 0);
+    assert.ok(!readFileSync(path.join(root, 'launcher-ran.txt'), { encoding: 'utf8', flag: 'a+' }).length);
+  });
+});
+
+test('/restart refuses a shard that is still cooling down', async () => {
+  await withBot(async ({ root, tg }) => {
+    const [cooling] = await ask(tg, '/restart linebet');
+    assert.match(cooling, /cooling down until/);
 
     assert.equal(tg.messages().filter((message) => message.text.includes('restarting')).length, 0);
     assert.ok(!readFileSync(path.join(root, 'launcher-ran.txt'), { encoding: 'utf8', flag: 'a+' }).length);
@@ -452,8 +429,8 @@ test('/restart refuses melbet and any shard that is still alive', async () => {
 test('/restart starts a dead shard and confirms when events resume', async () => {
   const root = tempRoot('bot-restart');
   seedWorkspace(root);
-  // No events and no status file for shard-2: it looks dead.
-  writeFileSync(path.join(root, 'loop-status-shard-2.json'), JSON.stringify({ state: 'unknown' }));
+  // No events and no status file for linebet: it looks dead.
+  writeFileSync(path.join(root, 'linebet', 'loop-status.json'), JSON.stringify({ state: 'unknown' }));
   writeJson(path.join(root, 'monitor-state.json'), { updatedAt: nowIso(), services: {}, errors: [], incidents: [], suppressed: [] });
 
   const tg = await startFakeTelegram();
@@ -461,8 +438,8 @@ test('/restart starts a dead shard and confirms when events resume', async () =>
   // give the shard a wide window to come back before the bot calls it dead.
   const child = await startBot(root, tg, { env: { RESTART_VERIFY_SECONDS: '8' } });
   try {
-    const [started] = await ask(tg, '/restart shard-2');
-    assert.match(started, /restarting shard-2/);
+    const [started] = await ask(tg, '/restart linebet');
+    assert.match(started, /restarting linebet/);
 
     await waitFor(() => {
       try {
@@ -473,7 +450,7 @@ test('/restart starts a dead shard and confirms when events resume', async () =>
     }, { label: 'fake launcher ran' });
 
     const ran = readFileSync(path.join(root, 'launcher-ran.txt'), 'utf8');
-    assert.match(ran, /name=shard-2/);
+    assert.match(ran, /name=linebet/);
     assert.match(ran, /batchId= /, 'BATCH_ID must never be passed to the launcher');
     assert.ok(!ran.includes('batchId=20'), 'BATCH_ID leaked from the bot environment');
 
@@ -492,19 +469,19 @@ test('/restart starts a dead shard and confirms when events resume', async () =>
 test('/restart reports a shard that never comes back', async () => {
   const root = tempRoot('bot-restart-dead');
   seedWorkspace(root, { launcher: LAUNCHER_DEAD });
-  writeFileSync(path.join(root, 'loop-status-shard-2.json'), JSON.stringify({ state: 'unknown' }));
+  writeFileSync(path.join(root, 'linebet', 'loop-status.json'), JSON.stringify({ state: 'unknown' }));
 
   const tg = await startFakeTelegram();
   const child = await startBot(root, tg);
   try {
-    const [started] = await ask(tg, '/restart shard-2');
-    assert.match(started, /restarting shard-2/);
+    const [started] = await ask(tg, '/restart linebet');
+    assert.match(started, /restarting linebet/);
 
     const failed = await waitFor(() => {
       const texts = tg.messages().map((message) => message.text);
       return texts.find((text) => text.includes('still dead'));
     }, { label: 'dead confirmation', timeout: 8000 });
-    assert.match(failed, /check logs\\shard-2\.err\.log/);
+    assert.match(failed, /check logs\\linebet\.err\.log/);
   } finally {
     killTree(child);
     await sleep(150);

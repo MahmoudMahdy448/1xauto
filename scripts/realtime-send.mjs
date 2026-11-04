@@ -7,6 +7,7 @@ import {
 } from '../lib/telegram.js';
 import { claimNewNumbers, releaseNumbers } from '../lib/dedup.js';
 import { emit } from '../lib/events.js';
+import { pruneSentScreenshots, screenshotRetentionMs } from '../lib/screenshot-retention.js';
 
 dotenv.config();
 
@@ -19,6 +20,9 @@ const chatId = process.env.TELEGRAM_CHAT_ID;
 // cannot set an env var to an empty string, and dotenv would reload it).
 const channelId = process.env.TELEGRAM_CHANNEL_ID === 'off' ? null : process.env.TELEGRAM_CHANNEL_ID;
 const pollMs = parseInt(process.env.REALTIME_POLL_MS, 10) || 5000;
+// Delete screenshots that are already delivered (number in the ledger) once
+// they are old enough. 0 / SCREENSHOT_RETENTION=off keeps every file.
+const retentionMs = screenshotRetentionMs();
 
 if (!botToken || !chatId) {
   console.log('[realtime-send] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set — exiting.');
@@ -40,6 +44,33 @@ function isFileStable(filePath) {
     return s.size > 0 && Date.now() - s.mtimeMs > 2000;
   } catch {
     return false;
+  }
+}
+
+// Runs after every scan, including the ones with nothing to send. Files the
+// sender will never look at again (old, already in the ledger) are the ones
+// retention removes; see lib/screenshot-retention.js for the safety rules.
+function pruneSentFiles() {
+  if (retentionMs <= 0) return;
+  try {
+    const result = pruneSentScreenshots({ screenshotsDir, seenNumbersFile, retentionMs });
+    if (result.deleted.length === 0) return;
+
+    const freedMb = (result.freedBytes / (1024 * 1024)).toFixed(1);
+    emit({
+      kind: 'screenshot.pruned',
+      data: {
+        count: result.deleted.length,
+        freedBytes: result.freedBytes,
+        keptUnsent: result.keptUnsent,
+        keptYoung: result.keptYoung
+      }
+    });
+    console.log(
+      `[realtime-send] Retention: deleted ${result.deleted.length} already-sent screenshot(s), freed ${freedMb} MB`
+    );
+  } catch (err) {
+    console.error(`[realtime-send] Retention sweep failed: ${err.message}`);
   }
 }
 
@@ -144,12 +175,18 @@ async function scanAndSend() {
   } catch (err) {
     console.error(`[realtime-send] Scan error: ${err.message}`);
   } finally {
+    pruneSentFiles();
     isSending = false;
   }
 }
 
 console.log(`[realtime-send] Watching ${screenshotsDir} for NEW screenshots (started at ${new Date().toISOString()})`);
 console.log(`[realtime-send] Ledger: ${seenNumbersFile}`);
+console.log(
+  retentionMs > 0
+    ? `[realtime-send] Retention: delete sent screenshots older than ${Math.round(retentionMs / 60000)} min`
+    : '[realtime-send] Retention: off (screenshots are kept)'
+);
 
 await scanAndSend();
 

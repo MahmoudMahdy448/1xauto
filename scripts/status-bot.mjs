@@ -4,7 +4,7 @@
 // It never sends to the channel. Every reply is chat text, capped at ~38 lines,
 // with Cairo times and relative ages.
 //
-// Commands: /status /shards /batch /numbers /ledger /sync /timeline /errors
+// Commands: /status /shards /batch /numbers /ledger /timeline /errors
 //           /alerts /tail /health /report /restart /mute /unmute /help
 
 import { existsSync, readFileSync, writeFileSync, unlinkSync, statfsSync, statSync } from 'fs';
@@ -36,7 +36,6 @@ const adminIds = new Set(
 const STATE_FILE = path.resolve(ROOT, process.env.MONITOR_STATE_FILE || 'monitor-state.json');
 const CONTROL_FILE = path.resolve(ROOT, process.env.ALERT_CONTROL_FILE || 'alert-control.json');
 const LEDGER_FILE = path.resolve(ROOT, process.env.SEEN_NUMBERS_FILE || 'seen-numbers.json');
-const SYNC_STATE_FILE = path.resolve(ROOT, 'telegram-sync-state.json');
 const LOCK_FILE = path.resolve(ROOT, 'status-bot.pid');
 const MAX_LINES = 38;
 const RATE_LIMIT = 20;
@@ -133,9 +132,10 @@ function tWhen(iso) {
 const stripAnsi = (text) => String(text ?? '').replace(/\u001b\[[0-9;]*m/g, '');
 
 // A service can legitimately emit no events while it is still working: melbet
-// only emits when it finds a number. Its stdout log advances once per account,
-// so it is the honest heartbeat for that service. For the shards the log and
-// the events move together, so taking the newer one changes nothing.
+// and linebet only emit when they find a number. Its stdout log advances once
+// per account, so it is the honest heartbeat for that service. For the 1xbet
+// shard the log and the events move together, so taking the newer one changes
+// nothing.
 function serviceActivity(svc) {
   const eventsMs = latestEventMs(svc);
   let logMs = null;
@@ -330,11 +330,6 @@ function ledgerInfo() {
   }
 }
 
-function syncPending() {
-  const state = readJson(SYNC_STATE_FILE);
-  return Array.isArray(state?.missing) ? state.missing : [];
-}
-
 // ---------------------------------------------------------------------------
 // Command implementations
 // ---------------------------------------------------------------------------
@@ -346,17 +341,16 @@ function cmdHelp() {
     '/shards — progress, numbers, failures, silence',
     '/batch — current and last batch per shard',
     '/numbers [today] — extracted, sent, skipped, last 5',
-    '/ledger — total, last sync, pending release',
+    '/ledger — total and last update',
     '/csv — send every ledger number as a CSV file',
-    '/sync — channel audit state and next ETA',
     '/timeline [6h|24h|batch] — milestones',
     '/errors [6h|24h|n] — top error groups',
     '/alerts — incidents with durations',
     '/gate — deposit gate state and next probe',
-    '/tail <shard-1|shard-2|melbet|sync> [n] — last events',
+    '/tail <shard-1|melbet|linebet> [n] — last events',
     '/health — CPU, RAM, disk, uptime',
     '/report [today|24h|batch] — combined summary',
-    '/restart <shard-1|shard-2> — dead shard only',
+    '/restart <shard-1|linebet> — dead shard only',
     '/mute [30m|2h] / /unmute',
     '/help — this list'
   ].join('\n');
@@ -364,7 +358,7 @@ function cmdHelp() {
 
 function cmdStatus() {
   const state = readStateFile();
-  const names = [...SCRAPE_SERVICES, 'sync'];
+  const names = SCRAPE_SERVICES;
   const lines = [`📊 status · ${stamp(new Date().toISOString())} Cairo`];
 
   for (const svc of names) {
@@ -402,8 +396,8 @@ function cmdShards() {
     if (!Number.isFinite(processed)) {
       progress = 'accounts not tracked';
     } else if (range) {
-      // lastProcessedIndex is the absolute account index. shard-1 only owns
-      // 1-149, so "#149/276" looked like an unfinished pass when it was done.
+      // lastProcessedIndex is the absolute account index. The single 1xbet
+      // shard owns 1-276, so a finished pass reads "#276/276", not unfinished.
       const left = Math.max(0, range[1] - processed);
       progress = `#${processed} · range ${range[0]}–${range[1]}${left === 0 ? ' · done' : ` · ${left} to go`}`;
     } else {
@@ -419,8 +413,9 @@ function cmdShards() {
     const numbers = s.numbers || { extracted: 0, sent: 0, skipped: 0 };
     const accounts = s.accounts || { ok: 0, failed: 0 };
     // Monitor counters never reset, so they must be labelled as lifetime;
-    // otherwise 575 successes look like today's work. melbet has no state
-    // file and emits only send events, so its account/read counts are unknown.
+    // otherwise 575 successes look like today's work. melbet and linebet have
+    // no state file and emit only send events, so their account/read counts
+    // are unknown.
     const tracked = Boolean(paths?.state);
     const accountPart = tracked
       ? `accounts ${accounts.ok} ok / ${accounts.failed} failed`
@@ -439,7 +434,7 @@ function cmdShards() {
 // The monitor counts every payment.read_number event, so retries inflate
 // "found" above sent+duplicate. Count distinct numbers inside the batch window
 // from the event stream instead, and fall back to the monitor state only when
-// no events exist (melbet and very old batches).
+// no events exist (melbet, linebet and very old batches).
 function batchEventNumbers(svc, batch) {
   if (!batch?.startedAt) return null;
   const startMs = Date.parse(batch.startedAt);
@@ -508,9 +503,10 @@ function cmdNumbers(arg = 'today') {
   const events = readEvents({ sinceMs: Date.now() - 32 * 3_600_000 });
   const todayEvents = events.filter((event) => localParts(new Date(event.ts)).dateKey === parts.dateKey);
 
-  // Reads are emitted only by the 1xbet shards; melbet sends without a read
-  // event. Counting reads and sends across different services on one line made
-  // the totals impossible to reconcile, so show each service separately.
+  // Reads are emitted only by the 1xbet shard; melbet and linebet send without
+  // a read event. Counting reads and sends across different services on one
+  // line made the totals impossible to reconcile, so show each service
+  // separately.
   const stats = summarizeEvents(todayEvents);
   const delivered = todayEvents.filter((event) => event.kind === 'send.ok');
 
@@ -518,7 +514,9 @@ function cmdNumbers(arg = 'today') {
   for (const svc of SCRAPE_SERVICES) {
     const svcStats = stats.get(svc);
     if (!svcStats) continue;
-    const reads = svc === 'melbet' ? 'reads not tracked' : `${svcStats.reads.size} unique`;
+    const reads = svc === 'melbet' || svc === 'linebet'
+      ? 'reads not tracked'
+      : `${svcStats.reads.size} unique`;
     lines.push(`${svc}: ${reads} · ${svcStats.sent} sent, ${svcStats.skipped} dup`);
   }
   lines.push(`ledger total ${ledgerInfo().count ?? 'unreadable'}`);
@@ -531,20 +529,11 @@ function cmdNumbers(arg = 'today') {
 
 function cmdLedger() {
   const info = ledgerInfo();
-  const state = readStateFile();
-  const sync = serviceState(state, 'sync').sync || {};
-  const pending = syncPending();
   const lines = [
     `📒 ledger · ${stamp(new Date().toISOString())} Cairo`,
     `numbers: ${info.count === null ? '⚠️ unreadable' : info.count}`,
-    `updated: ${info.updatedAt ? `${t(info.updatedAt)} (${relAge(info.updatedAt)})` : 'unknown'}`,
-    `last sync: ${sync.lastDoneAt ? `${t(sync.lastDoneAt)} (${relAge(sync.lastDoneAt)})` : 'never'}`,
-    `last sync delivered ${sync.delivered ?? '—'} · dropped ${sync.dropped ?? '—'} · pending release ${sync.pending ?? pending.length}`
+    `updated: ${info.updatedAt ? `${t(info.updatedAt)} (${relAge(info.updatedAt)})` : 'unknown'}`
   ];
-  if (pending.length > 0) {
-    lines.push('pending release (missing from channel once):');
-    for (const number of pending.slice(0, 10)) lines.push(`· ${number}`);
-  }
   return cap(lines.join('\n'));
 }
 
@@ -584,24 +573,6 @@ async function handleCsv(chatId) {
   }
 }
 
-function cmdSync() {
-  const state = readStateFile();
-  const sync = serviceState(state, 'sync').sync || {};
-  const last = sync.lastDoneAt ? Date.parse(sync.lastDoneAt) : null;
-  const intervalMs = (parseInt(process.env.SYNC_INTERVAL_MINUTES, 10) || 360) * 60_000;
-  const next = last ? new Date(last + intervalMs) : null;
-  return cap(
-    [
-      `🔁 sync · ${stamp(new Date().toISOString())} Cairo`,
-      `last audit: ${sync.lastDoneAt ? `${t(sync.lastDoneAt)} (${relAge(sync.lastDoneAt)})` : 'never'}`,
-      `next: ${next ? `${t(next.toISOString())} (${relAge(next.toISOString())})` : 'unknown'}`,
-      `messages ${sync.messages ?? '—'} · delivered ${sync.delivered ?? '—'} · ledger at sync ${sync.ledger ?? '—'}`,
-      `dropped ${sync.dropped ?? '—'} · pending release ${sync.pending ?? '—'} · duration ${sync.durationMs ? duration(sync.durationMs) : '—'}`,
-      `ledger now ${ledgerInfo().count ?? 'unreadable'}`
-    ].join('\n')
-  );
-}
-
 function rangeMs(arg) {
   if (arg === '24h') return 24 * 3_600_000;
   if (arg === 'batch') return 24 * 3_600_000;
@@ -612,7 +583,7 @@ function cmdTimeline(arg = '6h') {
   const since = Date.now() - rangeMs(arg);
   const events = readEvents({ sinceMs: since });
   const milestones = events.filter((event) =>
-    ['batch.start', 'batch.end', 'cooldown.start', 'cooldown.end', 'sync.start', 'sync.done', 'sync.failed',
+    ['batch.start', 'batch.end', 'cooldown.start', 'cooldown.end',
       'sender.started', 'sender.stopped', 'service.started', 'service.stopped'].includes(event.kind)
   );
   const lines = [`🕒 timeline · ${arg} · ${stamp(new Date().toISOString())} Cairo`];
@@ -708,7 +679,7 @@ function cmdTail(rest) {
   const svc = normalizeServiceName(match?.[1]);
   const count = Math.min(parseInt(match?.[2], 10) || 15, 60);
   if (!SERVICE_DEFS[svc]) {
-    return 'usage: /tail <shard-1|shard-2|melbet|sync> [n]';
+    return 'usage: /tail <shard-1|melbet|linebet> [n]';
   }
   const events = tailFor(svc, count);
   const lines = [`📜 tail ${svc} · last ${events.length} event(s)`];
@@ -777,7 +748,6 @@ function cmdReport(arg = 'today') {
   }
 
   const sends = events.filter((event) => event.kind === 'send.ok');
-  const syncs = events.filter((event) => event.kind === 'sync.done');
   const open = (state.incidents || []).filter((incident) => !incident.closedAt);
   // Top errors must be the ones seen in this report's window, not the
   // lifetime counters; otherwise a "today" report shows yesterday's outages.
@@ -793,7 +763,7 @@ function cmdReport(arg = 'today') {
   const lines = [
     `📊 report · ${arg} · ${stamp(new Date().toISOString())} Cairo`,
     `batches ${batches.length} · ${batchesWithFailures} with failed accounts · ${exitErrors} ended with an error`,
-    `numbers sent ${sends.length} · syncs ${syncs.length} (${syncs.filter((s) => (s.data?.dropped || 0) === 0).length} clean)`,
+    `numbers sent ${sends.length}`,
     `open incidents ${open.length} · ledger ${ledgerInfo().count ?? 'unreadable'}`
   ];
 
@@ -801,7 +771,7 @@ function cmdReport(arg = 'today') {
     const stats = statsBySvc.get(svc) || { ok: 0, failed: 0, reads: new Set(), sent: 0, skipped: 0 };
     const activity = serviceActivity(svc);
     const age = activity ? `${Math.round((Date.now() - activity.ms) / 1000)}s since activity` : 'no activity';
-    const detail = svc === 'melbet'
+    const detail = svc === 'melbet' || svc === 'linebet'
       ? `${stats.sent} sent, ${stats.skipped} dup · accounts not tracked`
       : `${stats.ok} ok / ${stats.failed} failed · ${stats.reads.size} unique · ${stats.sent} sent`;
     lines.push(`${svc}: ${detail} · ${age}`);
@@ -823,8 +793,8 @@ function cmdReport(arg = 'today') {
 const pendingRestarts = new Set();
 
 function restartDecision(svc) {
-  if (!['shard-1', 'shard-2'].includes(svc)) {
-    return { allowed: false, reason: 'only shard-1 and shard-2 can be restarted; melbet is off limits' };
+  if (!['shard-1', 'linebet'].includes(svc)) {
+    return { allowed: false, reason: 'only shard-1 and linebet can be restarted; melbet is off limits' };
   }
   if (pendingRestarts.has(svc)) {
     return { allowed: false, reason: `${svc} restart is already in progress` };
@@ -994,8 +964,6 @@ function route(text) {
     case 'csv':
     case 'export':
       return cmdCsv();
-    case 'sync':
-      return cmdSync();
     case 'timeline':
       return cmdTimeline(rest || '6h');
     case 'errors':

@@ -421,33 +421,10 @@ test('a running batch without a realtime sender is critical', async () => {
 
 test('a cooldown that ends without a new batch is critical', async () => {
   const result = await scenario({
-    files: { 'loop-status-shard-2.json': { state: 'cooldown', nextRunAt: isoMinutesAgo(30) } }
+    files: { 'loop-status-shard-1.json': { state: 'cooldown', nextRunAt: isoMinutesAgo(30) } }
   });
 
   assert.equal(result.texts.filter((text) => text.includes('COOLDOWN OVERRUN')).length, 1);
-});
-
-test('a failed channel audit is critical, and a stale audit is reported', async () => {
-  const failed = await scenario({
-    events: { 'sync-sync-1.jsonl': [ev('sync', 'sync', 'sync.failed', { error: 'AUTH_KEY_UNREGISTERED' })] }
-  });
-  assert.equal(failed.texts.filter((text) => text.includes('SYNC FAILED')).length, 1);
-
-  const stale = await scenario({
-    seed: {
-      offsets: {},
-      services: { sync: { sync: { lastDoneAt: isoMinutesAgo(20 * 60) } } },
-      incidents: [],
-      errors: [],
-      failures: [],
-      suppressed: [],
-      pendingMessages: [],
-      lastAlertByRule: {},
-      alertHour: { key: null, count: 0 },
-      photoHour: { key: null, count: 0 }
-    }
-  });
-  assert.equal(stale.texts.filter((text) => text.includes('SYNC STOPPED')).length, 1);
 });
 
 test('the ledger is watched for corruption and shrinking', async () => {

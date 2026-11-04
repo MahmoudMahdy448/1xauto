@@ -3,13 +3,12 @@ rem start-all-headed.bat - the complete 1xauto pipeline, with VISIBLE browsers.
 rem
 rem Exactly the same services as start-all.bat:
 rem
-rem   scrapers : shard-1 + shard-2 + melbet (each loop starts its own realtime
+rem   scrapers : shard-1 + melbet + linebet (each loop starts its own realtime
 rem              sender for the batch, and stops it when the batch ends)
-rem   sync     : telegram-sync-loop.mjs, keeps the ledger equal to the channel
 rem   monitor  : monitor-supervisor.mjs -> monitor agent + status bot
 rem
 rem The only difference is that the three browsers are shown on screen:
-rem shard-1 (accounts 1-149), shard-2 (accounts 150-276) and melbet, one each.
+rem shard-1 (all 1xbet accounts), melbet (all) and linebet (all), one each.
 rem The consoles stay hidden and the logs still go to logs\<name>.log.
 rem
 rem Headed uses noticeably more RAM: 3 visible Chromium trees on 8 GB is close

@@ -214,21 +214,6 @@
         150,
         62
       ]
-    },
-    {
-      "id": "sync",
-      "type": "backend",
-      "label": "Channel audit",
-      "sublabel": "MTProto history → ledger",
-      "tag": "user session",
-      "pos": [
-        1140,
-        520
-      ],
-      "size": [
-        150,
-        62
-      ]
     }
   ],
   "boundaries": [
@@ -246,8 +231,7 @@
         "events",
         "agent",
         "state",
-        "bot",
-        "sync"
+        "bot"
       ],
       "pad": 18
     }
@@ -361,18 +345,6 @@
       "variant": "dashed"
     },
     {
-      "from": "sync",
-      "to": "telegram",
-      "label": "MTProto history",
-      "variant": "dashed"
-    },
-    {
-      "from": "sync",
-      "to": "ledger",
-      "label": "reconcile",
-      "variant": "security"
-    },
-    {
       "from": "supervisor",
       "to": "agent",
       "label": "spawn · restart",
@@ -408,8 +380,7 @@
       "dot": "emerald",
       "title": "Control & Audit",
       "items": [
-        "Only the status bot calls getUpdates; it restarts shard-1 or shard-2 only when dead, and never melbet",
-        "A user-session channel audit rebuilds the ledger from real messages; an entry is dropped only after two missed syncs",
+        "Only the status bot calls getUpdates; it restarts shard-1 or linebet only when dead, and never melbet",
         "Liveness is event staleness, not process listing: 5 min is silent, 15 min is stalled"
       ]
     }

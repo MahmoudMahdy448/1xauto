@@ -5,9 +5,8 @@ rem   shard-2-headed.bat            fresh pass at the range start (account 150)
 rem   shard-2-headed.bat -Resume    continue where the saved state stopped
 rem   shard-2-headed.bat -AccountDelayMs 15000   slower pacing (lower block risk)
 rem
-rem It refuses while the farm is running (stop-all.bat first). Ledger sync and
-rem the monitor are not started: this is one shard, not the pipeline. Press Q to
-rem stop it.
+rem It refuses while the farm is running (stop-all.bat first). The monitor is
+rem not started: this is one shard, not the pipeline. Press Q to stop it.
 
 setlocal EnableExtensions
 cd /d "%~dp0"

@@ -1,7 +1,7 @@
 # run-pipeline.ps1
 # Owns the whole pipeline for start-all.bat.
 #
-# It starts the 3 scrapers, the ledger sync and the monitor supervisor through
+# It starts the 3 scrapers and the monitor supervisor through
 # run-all-shards.ps1 (which in turn uses scripts\launch-shard.ps1, the same
 # definition /restart uses), then waits. When this process ends - Q, Ctrl+C, or
 # the console window being closed - every descendant is killed.
@@ -47,7 +47,7 @@ Remove-Item (Join-Path $ws '.pipeline-stop') -Force -ErrorAction SilentlyContinu
 # One pipeline at a time
 # ---------------------------------------------------------------------------
 
-$managed = @('shard-1', 'shard-2', 'melbet', 'telegram-sync', 'monitor-supervisor')
+$managed = @('shard-1', 'melbet', 'linebet', 'monitor-supervisor')
 
 function Get-Pid([string]$name) {
     $file = Join-Path $pidDir "$name.pid"
@@ -187,8 +187,8 @@ Set-Content -Path (Join-Path $pidDir 'pipeline.pid') -Value $PID -Encoding ASCII
 
 Write-Host ''
 Write-Host '  1xauto pipeline' -ForegroundColor Cyan
-Write-Host ("  shard-1 + shard-2 + melbet, ledger sync, monitor agent and status bot" + $(if ($Headed) { ' — HEADED' } else { '' }))
-Write-Host '  1xbet: 1 browser per shard (accounts split 1-149 / 150-276) · melbet: 1'
+Write-Host ("  shard-1 + melbet + linebet, monitor agent and status bot" + $(if ($Headed) { ' — HEADED' } else { '' }))
+Write-Host '  1xbet: 1 browser, accounts 1-276 (all) · melbet: all · linebet: all'
 Write-Host ''
 
 try {

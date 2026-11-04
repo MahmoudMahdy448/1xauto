@@ -1,9 +1,9 @@
 @echo off
 rem start-all.bat - start the complete 1xauto pipeline in this one window.
 rem
-rem   scrapers : shard-1 + shard-2 + melbet (each loop starts its own realtime
-rem              sender for the batch, and stops it when the batch ends)
-rem   sync     : telegram-sync-loop.mjs, keeps the ledger equal to the channel
+rem   scrapers : shard-1 (all 1xbet accounts) + melbet (all) + linebet (all)
+rem              (each loop starts its own realtime sender for the batch, and
+rem              stops it when the batch ends; all three share one ledger)
 rem   monitor  : monitor-supervisor.mjs -> monitor agent + status bot
 rem
 rem Press Q (or Ctrl+C, or close this window) to stop everything.

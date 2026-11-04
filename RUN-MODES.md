@@ -13,9 +13,11 @@ start-all.bat -Restart     stop a running pipeline, then start
 stop-all.bat               stop everything
 ```
 
-`start-all.bat` starts shard-1, shard-2 and melbet (each batch starts its own
-realtime sender and stops it afterwards), the Telegram ledger sync, and the
-monitor supervisor that keeps the agent and the status bot alive.
+`start-all.bat` starts shard-1 (all 1xbet accounts), melbet and linebet (each
+batch starts its own realtime sender and stops it afterwards), and the monitor
+supervisor that keeps the agent and the status bot alive. All three scrapers
+claim numbers from the same `seen-numbers.json`, so a number captured on one
+site is never sent from another.
 
 Press **Q** in that window to stop everything. **Ctrl+C** and closing the
 window also stop everything: the children run in a Windows job object with
@@ -29,20 +31,23 @@ found instead of starting a second copy.
 ### Headed variants — same services, browsers on screen
 
 ```
-start-all-headed.bat              whole farm: shard-1 + shard-2 + melbet (one browser each) + sync + monitor
-start-all-headed.bat -Resume      continue where each shard stopped
+start-all-headed.bat              whole farm: shard-1 + melbet + linebet (one browser each) + monitor
+start-all-headed.bat -Resume      continue where each scraper stopped
 start-all-headed.bat -Restart     replace a running pipeline
 start-all-headed.bat -AccountDelayMs 15000    slower pacing when RAM is tight
 
-shard-1-headed.bat                one shard alone, visible browser
-shard-2-headed.bat -Resume        one shard alone, continue where it stopped
+shard-1-headed.bat                one shard alone, visible browser (all 1xbet accounts)
 melbet-headed.bat                 melbet alone, visible browser
+shard-2-headed.bat -Resume        retired demo shard (accounts 150-276), manual use only
 ```
 
 The shard bats refuse while the farm is running (`stop-all.bat` first); a second
 copy of a shard would scrape the same accounts into the same ledger. They start
-no ledger sync and no monitor — that is `start-all-headed.bat`'s job. Press **Q**
+no monitor — that is `start-all-headed.bat`'s job. Press **Q**
 to stop.
+
+There is no `linebet-headed.bat`: start linebet headed with
+`powershell -NoProfile -File scripts\run-shard-headed.ps1 linebet`.
 
 Headed costs RAM: three visible Chromium trees on 8 GB is near the ceiling. Close
 other browsers before starting the farm, or raise `-AccountDelayMs`.
@@ -113,7 +118,7 @@ Override with `-IndicesS1`, `-IndicesS2`,
 Melbet's `extracted_numbers-1.xlsx` is backed up and restored. Its demo
 screenshots are moved to `screenshots\fleet-demo-<timestamp>` so a later melbet
 sender cannot re-post them. Press **Enter** to restore shard-2 (resume, 10 s
-pacing) + sync + monitor. `-NoRestart` leaves the farm stopped.
+pacing) + monitor. `-NoRestart` leaves the farm stopped.
 
 ## 0b. Live demo — control panel, live resources, dial → Telegram time
 
@@ -170,7 +175,8 @@ What the panel shows:
   start, average/max latency, and unique-dial rate
 - a screenshot wall that grows as dials land; the same files are hard-linked into
   `demo\live`, so one Explorer window fills up during the meeting
-  (**Open screenshots folder**)
+  (**Open screenshots folder**). Files leave the wall once the sender's retention
+  sweep deletes them (15 min by default), so the newest dials stay visible.
 
 The demo is production-safe: it uses `demo/seen-numbers-demo.json` (reset at the
 start of each session, so every dial is new for the sender), its own state,
@@ -195,6 +201,49 @@ The farm must be paused first; the panel refuses to start while a production
 shard pid is alive. Close the headed browsers before restoring the farm. Three
 visible Chromium trees on 8 GB is near the ceiling — the panel shows free RAM
 so you can see the spike, but do not leave them running afterwards.
+
+## 0c. Screenshot cleanup (disk space)
+
+Both realtime senders (`1xauto` and `melbet-autologin`) plus Linebet's
+`scripts/realtime-send.mjs` delete a screenshot after it has been delivered, so
+the screenshots folder no longer grows without bound:
+
+- **Sent check first.** A file is deleted only when the phone number in its name
+  is in the ledger, i.e. it was claimed as unique and sent. The ledger write
+  happens immediately before the Telegram call, so cleanup also waits out the
+  retention window before touching a file.
+- **Unsent files are kept.** A failed send is released from the ledger and stays
+  on disk for the retry; a file with no phone number in its name is never
+  deleted because delivery cannot be verified.
+- **Window.** Default is 15 minutes. Delete only after the number has had time to
+  be delivered. Old duplicates of an already-sent number are removed too.
+- **Demo mirror.** The panel removes `demo\live\<service>__<file>` links whose
+  source screenshot was deleted, so the hard links do not keep the bytes alive.
+
+```powershell
+$env:SCREENSHOT_RETENTION_MS = "900000"  # 15 min (default)
+$env:SCREENSHOT_RETENTION = "off"        # kill switch: keep every screenshot
+```
+
+Clear an existing backlog without waiting for the next batch (same safety rules —
+`--dry-run` first if you want to see the count):
+
+```powershell
+npm run prune:shots -- --dir "screenshots\shard-1,screenshots,..\melbet-autologin\screenshots,..\Linebet-autologin\screenshots" --ledger seen-numbers.json
+npm run prune:shots -- --dir "screenshots" --ledger seen-numbers.json --dry-run
+```
+
+`errors\` (failure evidence) and files with no phone number in the name are
+never touched by this command, because delivery cannot be proven for them.
+
+Screenshots are transient now: `npm run excel` builds its list from the
+screenshots folder, so run it before the window empties that folder. The ledger
+(`seen-numbers.json`) and the run summary remain the authoritative record of
+which numbers were delivered.
+
+Linebet writes its dial as lossless PNG (`<number>.png`), matching 1xbet and
+melbet at the same 1440×960 viewport; its `debug-*.jpg` diagnostics stay JPEG.
+Old `.jpg` dials from before this change are still pruned by the command above.
 
 ## 1. Headed (single run) — watch it work
 

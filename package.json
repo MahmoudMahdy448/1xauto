@@ -11,6 +11,7 @@
     "shard-1": "node scripts/run-shard-1.mjs",
     "excel": "node scripts/generate-excel.js",
     "ledger:csv": "node scripts/export-ledger.mjs",
+    "prune:shots": "node scripts/prune-screenshots.mjs",
     "test": "node --test \"tests/unit/*.test.js\"",
     "test:integration": "node --test \"tests/integration/*.test.js\"",
     "test:all": "npm test && npm run test:integration"
@@ -20,7 +21,6 @@
     "dotenv": "^16.6.1"
   },
   "dependencies": {
-    "telegram": "^2.26.22",
     "xlsx": "^0.18.5"
   }
 }

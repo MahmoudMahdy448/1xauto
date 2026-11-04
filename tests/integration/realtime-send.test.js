@@ -11,7 +11,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdirSync, readdirSync, readFileSync, utimesSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, utimesSync, writeFileSync } from 'fs';
 import path from 'path';
 import { startFakeTelegram } from '../helpers/fake-telegram.mjs';
 import { ROOT, baseEnv, killTree, sleep, spawnScript, tempRoot, waitFor } from '../helpers/process.mjs';
@@ -234,6 +234,44 @@ test('when no recipient accepts the photo the number is released for a retry', a
     assert.ok(!run.events().some((event) => event.kind === 'send.ok'));
     // The release happens right after the event is written.
     await waitFor(() => run.ledger().length === 0, { label: 'number released from the ledger' });
+  } finally {
+    await run.finish();
+  }
+});
+
+test('retention deletes old already-sent screenshots and keeps unsent ones', async () => {
+  const run = await runSender({
+    fake: { __ledger: ['01011111111'] },
+    env: { SCREENSHOT_RETENTION_MS: '1000' },
+    after: ({ shots }) => {
+      shot(shots, '01011111111.png', { ageSeconds: 10 }); // sent (in ledger), old
+      shot(shots, '01022222222.png', { ageSeconds: 10 }); // never sent
+    }
+  });
+  try {
+    await waitFor(() => run.events().some((event) => event.kind === 'screenshot.pruned'), {
+      label: 'screenshot.pruned event'
+    });
+    assert.ok(!existsSync(path.join(run.shots, '01011111111.png')), 'sent screenshot was not deleted');
+    assert.ok(existsSync(path.join(run.shots, '01022222222.png')), 'unsent screenshot was deleted');
+    const pruned = run.events().find((event) => event.kind === 'screenshot.pruned');
+    assert.equal(pruned.data.count, 1);
+    assert.equal(pruned.data.keptUnsent, 1);
+  } finally {
+    await run.finish();
+  }
+});
+
+test('retention can be switched off', async () => {
+  const run = await runSender({
+    fake: { __ledger: ['01011111111'] },
+    env: { SCREENSHOT_RETENTION: 'off' },
+    after: ({ shots }) => shot(shots, '01011111111.png', { ageSeconds: 10 })
+  });
+  try {
+    await sleep(2000);
+    assert.ok(existsSync(path.join(run.shots, '01011111111.png')));
+    assert.ok(!run.events().some((event) => event.kind === 'screenshot.pruned'));
   } finally {
     await run.finish();
   }

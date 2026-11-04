@@ -325,6 +325,9 @@ const metrics = {
   uniqueByService: Object.fromEntries(SERVICE_IDS.map((id) => [id, 0])),
   firstSeen: Object.fromEntries(SERVICE_IDS.map((id) => [id, new Map()])),
   shots: Object.fromEntries(SERVICE_IDS.map((id) => [id, 0])),
+  // Files ever seen this session, so the "n done" counter stays cumulative even
+  // after the sender's retention sweep deletes old screenshots from disk.
+  shotNames: Object.fromEntries(SERVICE_IDS.map((id) => [id, new Set()])),
   shotFiles: [],
   // resource baselines
   solo: { samples: 0, cpuSum: 0, ramSum: 0, peakCpu: 0, peakRamMb: 0 },
@@ -334,13 +337,13 @@ const metrics = {
 };
 
 let eventOffsets = new Map();
-let mirrored = new Set();
 
 function resetSessionState() {
   metrics.accounts = Object.fromEntries(SERVICE_IDS.map((id) => [id, 0]));
   metrics.uniqueByService = Object.fromEntries(SERVICE_IDS.map((id) => [id, 0]));
   metrics.firstSeen = Object.fromEntries(SERVICE_IDS.map((id) => [id, new Map()]));
   metrics.shots = Object.fromEntries(SERVICE_IDS.map((id) => [id, 0]));
+  metrics.shotNames = Object.fromEntries(SERVICE_IDS.map((id) => [id, new Set()]));
   metrics.shotFiles = [];
   metrics.solo = { samples: 0, cpuSum: 0, ramSum: 0, peakCpu: 0, peakRamMb: 0 };
   metrics.fleet = { samples: 0, cpuSum: 0, ramSum: 0, peakCpu: 0, peakRamMb: 0, maxRunning: 0 };
@@ -348,7 +351,6 @@ function resetSessionState() {
   delivery.resolved = [];
   delivery.seen = new Set();
   eventOffsets = new Map();
-  mirrored = new Set();
 }
 
 function cleanDemoArtifacts() {
@@ -639,7 +641,7 @@ function scanShots() {
   for (const id of SERVICE_IDS) {
     const dir = SERVICES[id].shots;
     const firstSeen = metrics.firstSeen[id];
-    let files = 0;
+    const seenNames = metrics.shotNames[id];
     if (existsSync(dir)) {
       for (const name of readdirSync(dir)) {
         if (!/\.(png|jpe?g)$/i.test(name)) continue;
@@ -651,7 +653,7 @@ function scanShots() {
           continue;
         }
         if (info.mtimeMs < startAt - 3000) continue;
-        files += 1;
+        seenNames.add(name);
 
         const match = name.match(/(01\d{9})/);
         const number = match ? match[1] : null;
@@ -669,15 +671,13 @@ function scanShots() {
         }
 
         const linkName = `${id}__${name}`;
-        if (!mirrored.has(linkName)) {
-          const target = path.join(LIVE, linkName);
+        const target = path.join(LIVE, linkName);
+        if (!existsSync(target)) {
           try {
-            if (!existsSync(target)) linkSync(full, target);
-            mirrored.add(linkName);
+            linkSync(full, target);
           } catch {
             try {
               copyFileSync(full, target);
-              mirrored.add(linkName);
             } catch {
               // mirror is best-effort
             }
@@ -685,12 +685,40 @@ function scanShots() {
         }
       }
     }
-    metrics.shots[id] = files;
+    metrics.shots[id] = seenNames.size;
     metrics.uniqueByService[id] = firstSeen.size;
   }
 
   wall.sort((a, b) => b.at - a.at);
   metrics.shotFiles = wall;
+  sweepLiveMirror();
+}
+
+// demo/live entries are hard links named "<service>__<file>". Once the sender's
+// retention sweep deletes the original, the link alone still holds the bytes on
+// disk, so remove links whose source is gone. Without this, retention frees
+// nothing and the Explorer window keeps showing deleted dials.
+function sweepLiveMirror() {
+  let names = [];
+  try {
+    names = readdirSync(LIVE);
+  } catch {
+    return;
+  }
+
+  for (const name of names) {
+    const sep = name.indexOf('__');
+    if (sep <= 0) continue;
+    const id = name.slice(0, sep);
+    const file = name.slice(sep + 2);
+    if (!SERVICES[id]) continue;
+    if (existsSync(path.join(SERVICES[id].shots, file))) continue;
+    try {
+      rmSync(path.join(LIVE, name), { force: true });
+    } catch {
+      // next scan retries
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

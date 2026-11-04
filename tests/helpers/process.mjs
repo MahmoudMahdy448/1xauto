@@ -96,6 +96,9 @@ export function baseEnv({ telegramUrl, root, extra = {} }) {
     MONITOR_AGENT_PID: path.join(root, 'monitor-agent.pid'),
     SEEN_NUMBERS_FILE: path.join(root, 'seen-numbers.json'),
     EVENTS_DIR: path.join(root, 'events'),
+    // Keep the sibling scraper definitions inside the throwaway workspace so a
+    // test never reads the real linebet repo next to 1xauto.
+    LINEBET_ROOT: path.join(root, 'linebet'),
     MONITOR_TICK_MS: '150',
     MONITOR_STARTUP_GRACE_MINUTES: '0',
     ALERT_QUIET_START_HOUR: '0',

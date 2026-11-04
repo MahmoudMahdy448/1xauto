@@ -21,13 +21,9 @@ seen-numbers*.json
 group-lease.json
 extracted_numbers-combined.xlsx
 extracted_numbers-unique.xlsx
-telegram-session.txt
 seen-numbers.backup-*.json
-telegram-sync-state.json
 logs/*.log
 logs/*.err.log
-telegram-login-code.txt
-telegram-login-password.txt
 events/
 exports/
 screenshots/errors/

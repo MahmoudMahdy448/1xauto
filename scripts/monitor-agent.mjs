@@ -221,8 +221,7 @@ function svcState(svc) {
       lastError: null,
       lastErrorShot: null,
       lastStep: null,
-      sendFailures: {},
-      sync: null
+      sendFailures: {}
     };
   }
   const s = state.services[svc];
@@ -590,63 +589,6 @@ function handleEvent(event) {
       });
       break;
     }
-    case 'sync.start': {
-      s.sync = { ...(s.sync || {}), lastStartAt: ts };
-      s.state = 'running';
-      break;
-    }
-    case 'sync.done': {
-      s.sync = {
-        ...(s.sync || {}),
-        lastDoneAt: ts,
-        messages: Number(data.messages) || 0,
-        delivered: Number(data.delivered) || 0,
-        ledger: Number(data.ledger) || 0,
-        dropped: Number(data.dropped) || 0,
-        pending: Number(data.pending) || 0,
-        durationMs: Number(data.durationMs) || 0
-      };
-      s.state = 'idle';
-      if (state.daily.date) {
-        state.daily.syncs += 1;
-        if (s.sync.dropped === 0) state.daily.syncClean += 1;
-      }
-      if (s.sync.ledger) state.ledger = { count: s.sync.ledger, checkedAt: ts };
-      if (s.sync.dropped > 0 || s.sync.pending > 10) {
-        raise({
-          rule: 'sync-dropped',
-          svc: 'sync',
-          severity: 'critical',
-          summary: `dropped ${s.sync.dropped}, pending ${s.sync.pending}`,
-          ttlMs: 2 * 60 * 60_000,
-          eventTs: ts,
-          text: [
-            `🔴 SYNC DROPPED · ${t(ts)} Cairo`,
-            `${s.sync.dropped} number(s) confirmed never delivered`,
-            `pending release: ${s.sync.pending} · ledger ${s.sync.ledger}`,
-            'those numbers will be re-sent by the shards'
-          ].join('\n')
-        });
-      }
-      break;
-    }
-    case 'sync.failed': {
-      s.state = 'failed';
-      raise({
-        rule: 'sync',
-        svc: 'sync',
-        severity: 'critical',
-        summary: String(data.error || 'sync failed'),
-        ttlMs: 2 * 60 * 60_000,
-        eventTs: ts,
-        text: [
-          `🔴 SYNC FAILED · ${t(ts)} Cairo`,
-          String(data.error || 'unknown error').slice(0, 300),
-          'the ledger is not being reconciled against the channel'
-        ].join('\n')
-      });
-      break;
-    }
     case 'step.failed': {
       s.lastStep = event.step || 'step';
       s.lastError = {
@@ -973,28 +915,6 @@ function checkLiveness(now) {
       }
     }
   }
-
-  const sync = state.services.sync;
-  const lastSync = sync?.sync?.lastDoneAt;
-  if (lastSync) {
-    const age = now.getTime() - Date.parse(lastSync);
-    if (age > DEFAULT_CONFIG.syncSilentMs) {
-      raise({
-        rule: 'sync-silent',
-        svc: 'sync',
-        severity: 'critical',
-        summary: 'no channel audit',
-        ttlMs: 2 * 60 * 60_000,
-        countEvent: false,
-        eventTs: lastSync,
-        text: [
-          `🔴 SYNC STOPPED · ${t(now.toISOString())} Cairo`,
-          `last channel audit ${relAge(lastSync, now.getTime())} (expected every 6h)`,
-          'the ledger is no longer reconciled against the channel'
-        ].join('\n')
-      });
-    }
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -1052,10 +972,8 @@ function checkLedger(now) {
   }
 
   const previous = state.ledger?.count;
-  const lastSyncMs = state.services.sync?.sync?.lastDoneAt ? Date.parse(state.services.sync.sync.lastDoneAt) : null;
-  const recentSync = lastSyncMs && now.getTime() - lastSyncMs < 10 * 60_000;
 
-  if (typeof previous === 'number' && count < previous - 50 && !recentSync) {
+  if (typeof previous === 'number' && count < previous - 50) {
     raise({
       rule: 'ledger-shrink',
       svc: 'monitor',
@@ -1064,7 +982,7 @@ function checkLedger(now) {
       ttlMs: 30 * 60_000,
       text: [
         `🔴 LEDGER SHRANK · ${t(now.toISOString())} Cairo`,
-        `${previous} → ${count} (${previous - count} removed) with no channel audit`,
+        `${previous} → ${count} (${previous - count} removed)`,
         'numbers may be delivered twice — check with /ledger'
       ].join('\n')
     });
@@ -1081,14 +999,13 @@ function allClearText(now) {
   const d = state.daily || {};
   const buffered = state.suppressed.length;
   const ledger = state.ledger?.count ?? 'unknown';
-  const lastSync = state.services.sync?.sync?.lastDoneAt;
   const openIncidents = state.incidents.filter((incident) => !incident.closedAt).length;
 
   const lines = [
     `✅ all clear · ${day(now.toISOString())} ${t(now.toISOString())}`,
-    `overnight: ${d.batches || 0} batches · ${d.numbersSent || 0} numbers · ${d.cooldowns || 0} cooldowns · ${d.syncs || 0} syncs (${d.syncClean || 0} clean)`,
+    `overnight: ${d.batches || 0} batches · ${d.numbersSent || 0} numbers · ${d.cooldowns || 0} cooldowns`,
     `buffered warnings: ${buffered}`,
-    `ledger ${ledger} · last sync ${lastSync ? `${t(lastSync)} (${relAge(lastSync, now.getTime())})` : 'never'}`,
+    `ledger ${ledger}`,
     `open incidents: ${openIncidents === 0 ? 'none' : openIncidents}`
   ];
   for (const item of state.suppressed.slice(-5)) {
@@ -1184,9 +1101,6 @@ function resolveAfterEvent({ kind, svc, ts, data }) {
   }
   if (kind === 'batch.start') {
     close((incident) => incident.svc === svc && incident.rule === 'cooldown');
-  }
-  if (kind === 'sync.done') {
-    close((incident) => incident.svc === 'sync');
   }
   // Any event at all proves the service is emitting again.
   close((incident) =>

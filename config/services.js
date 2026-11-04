@@ -9,22 +9,13 @@ import path from 'path';
 
 export const SERVICE_DEFS = {
   'shard-1': {
-    label: 'shard-1 (1-149)',
+    label: 'shard-1 (1-276)',
     dir: '.',
     statusFile: 'loop-status-shard-1.json',
     stateFile: 'state-shard-1.json',
     summaryFile: 'run-summary-shard-1.json',
     screenshotsDir: 'screenshots/shard-1',
-    range: [1, 149]
-  },
-  'shard-2': {
-    label: 'shard-2 (150-276)',
-    dir: '.',
-    statusFile: 'loop-status-shard-2.json',
-    stateFile: 'state-shard-2.json',
-    summaryFile: 'run-summary-shard-2.json',
-    screenshotsDir: 'screenshots/shard-2',
-    range: [150, 276]
+    range: [1, 276]
   },
   melbet: {
     label: 'melbet',
@@ -39,21 +30,25 @@ export const SERVICE_DEFS = {
     // were dropped on 2026-10-31, so the list is 271, not 276.
     range: [1, 271]
   },
-  sync: {
-    label: 'sync (channel audit)',
-    dir: '.',
-    statusFile: null,
+  linebet: {
+    label: 'linebet',
+    // Tests pin this to a workspace-local folder so they never read the real
+    // sibling repo. Production leaves it unset and resolves the sibling.
+    dir: process.env.LINEBET_ROOT || '../Linebet-autologin',
+    statusFile: 'loop-status.json',
     stateFile: null,
+    // linebet emits sender events only, like melbet: no account state or
+    // batch summary file is written.
     summaryFile: null,
-    screenshotsDir: null,
-    range: null
+    screenshotsDir: 'screenshots',
+    range: [1, 130]
   }
 };
 
-export const SHARD_NAMES = ['shard-1', 'shard-2', 'melbet'];
+export const SHARD_NAMES = ['shard-1', 'melbet', 'linebet'];
 
 // Services that represent scraping loops (they have a loop-status file).
-export const SCRAPE_SERVICES = ['shard-1', 'shard-2', 'melbet'];
+export const SCRAPE_SERVICES = ['shard-1', 'melbet', 'linebet'];
 
 export function serviceDef(name) {
   return SERVICE_DEFS[name] || null;
@@ -83,6 +78,6 @@ export function normalizeServiceName(value) {
   if (name === 'shard1' || name === 'shard-1') return 'shard-1';
   if (name === 'shard2' || name === 'shard-2') return 'shard-2';
   if (name === 'melbet' || name.startsWith('melbet-')) return 'melbet';
-  if (name === 'sync' || name === 'telegram-sync') return 'sync';
+  if (name === 'linebet' || name.startsWith('linebet-')) return 'linebet';
   return name;
 }

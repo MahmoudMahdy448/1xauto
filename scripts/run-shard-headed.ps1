@@ -5,7 +5,7 @@
 #
 # This starts the real shard through scripts\launch-shard.ps1 - the same
 # definition the farm and the admin bot use - so it keeps its own state, state
-# file, screenshots and log. It does NOT start the ledger sync or the monitor:
+# file, screenshots and log. It does NOT start the monitor:
 # use start-all.bat for the whole farm.
 #
 # It refuses to start while the farm is running, because a second copy of the
@@ -15,7 +15,7 @@
 
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('shard-1', 'shard-2', 'melbet')]
+    [ValidateSet('shard-1', 'shard-2', 'melbet', 'linebet')]
     [string]$Name,
 
     # Continue at the account the saved state reached instead of restarting the
@@ -66,6 +66,7 @@ switch ($Name) {
     'shard-1' { $statusFile = 'loop-status-shard-1.json'; $stateFile = 'state-shard-1.json' }
     'shard-2' { $statusFile = 'loop-status-shard-2.json'; $stateFile = 'state-shard-2.json' }
     'melbet'  { $statusFile = 'loop-status.json';        $stateFile = $null }
+    'linebet' { $statusFile = 'loop-status.json';        $stateFile = $null }
 }
 
 function Show-Status {
@@ -106,10 +107,10 @@ if (Test-Alive $ownPid) {
     exit 1
 }
 
-$others = @('shard-1', 'shard-2', 'melbet') |
+$others = @('shard-1', 'shard-2', 'melbet', 'linebet') |
     Where-Object { $_ -ne $Name -and (Test-Alive (Get-Pid $_)) }
 if ($others.Count -gt 0) {
-    Write-Host ("[shard] note: {0} is also running. You are not alone, and ledger sync is not running." -f ($others -join ', ')) -ForegroundColor DarkYellow
+    Write-Host ("[shard] note: {0} is also running. You are not alone, and the monitor is not running." -f ($others -join ', ')) -ForegroundColor DarkYellow
 }
 
 $freeMb = [math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory / 1KB)

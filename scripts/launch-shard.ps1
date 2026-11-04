@@ -10,7 +10,7 @@
 
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('shard-1', 'shard-2', 'melbet')]
+    [ValidateSet('shard-1', 'shard-2', 'melbet', 'linebet')]
     [string]$Name,
 
     # Continue the first pass at the account the saved state reached instead of
@@ -20,15 +20,16 @@ param(
     # Show the browser window (boss demo). Playwright reads HEADED, not HEADLESS.
     [switch]$Headed,
 
-    # Pause between accounts. 0 keeps the built-in 2 s default; raise it to
-    # lower the login burst that triggers the IP block.
-    [int]$AccountDelayMs = 0
+    # Pause between accounts. Default is 5 s on every scraper; set it explicitly
+    # when you want a different value. 0 is accepted and means "no delay".
+    [int]$AccountDelayMs = 5000
 )
 
 $ErrorActionPreference = 'Stop'
 
 $ws        = 'C:\Users\Dell\Desktop\workspace\1xauto'
 $melbet    = 'C:\Users\Dell\Desktop\workspace\melbet-autologin'
+$linebet   = 'C:\Users\Dell\Desktop\workspace\Linebet-autologin'
 $ledger    = Join-Path $ws 'seen-numbers.json'
 $lock      = Join-Path $ws 'seen-numbers.json.lock'
 $eventsDir = Join-Path $ws 'events'
@@ -46,7 +47,7 @@ switch ($Name) {
     'shard-1' {
         $workDir = $ws
         $start = '1'
-        $end = '149'
+        $end = '276'
         $shots = 'screenshots\shard-1'
         $state = 'state-shard-1.json'
         $summary = 'run-summary-shard-1.json'
@@ -57,6 +58,8 @@ switch ($Name) {
         $probes = '22,98,135'
     }
     'shard-2' {
+        # Retired from start-all.bat. Kept for the manual/demo headed flows so
+        # the second half of the 1xbet list can still be run on its own.
         $workDir = $ws
         $start = '150'
         $end = '276'
@@ -70,6 +73,18 @@ switch ($Name) {
     'melbet' {
         $workDir = $melbet
         $start = '1'
+        $end = ''
+        $shots = 'screenshots'
+        $state = ''
+        $summary = ''
+        $excel = ''
+        $status = 'loop-status.json'
+        $probes = ''
+    }
+    'linebet' {
+        $workDir = $linebet
+        $start = '1'
+        # No END_INDEX: tests/login.spec.js falls back to the whole accounts.csv.
         $end = ''
         $shots = 'screenshots'
         $state = ''
@@ -94,7 +109,7 @@ if ($ledgerBase -ne 'seen-numbers.json' -and $env:FORCE_ALT_LEDGER -ne 'true') {
 }
 
 $shotsBase = Split-Path $shots -Leaf
-$expectedShots = if ($Name -eq 'melbet') { 'screenshots' } else { $Name }
+$expectedShots = if ($Name -eq 'melbet' -or $Name -eq 'linebet') { 'screenshots' } else { $Name }
 if ($shotsBase -ne $expectedShots) {
     throw "SCREENSHOTS_DIR basename '$shotsBase' does not match '$expectedShots'. lib/extractor.js reads it at import time."
 }
@@ -119,6 +134,7 @@ $lines = @(
     "Remove-Item Env:MELBET_HEADLESS -ErrorAction SilentlyContinue;",
     "Remove-Item Env:INSTANCE_COUNT -ErrorAction SilentlyContinue;",
     "Remove-Item Env:ACCOUNT_DELAY_MS -ErrorAction SilentlyContinue;",
+    "Remove-Item Env:ACCOUNT_DELAY_SECONDS -ErrorAction SilentlyContinue;",
     "Remove-Item Env:BATCH_ID -ErrorAction SilentlyContinue;",
     "`$env:SERVICE_NAME='$Name';",
     "`$env:EVENT_ROLE='loop';",
@@ -135,11 +151,31 @@ if ($Name -eq 'melbet') {
     # Melbet's own code defaults to 2 parallel instances. The farm runs ONE
     # browser for melbet, so make that explicit and independent of the default.
     $lines += "`$env:INSTANCE_COUNT='1';"
+    # melbet reads the delay in seconds; the launcher uses milliseconds.
+    $delaySeconds = [math]::Ceiling($AccountDelayMs / 1000)
+    $lines += "`$env:ACCOUNT_DELAY_SECONDS='$delaySeconds';"
     # melbet's own loop reads MELBET_HEADLESS, not HEADED: its repo must stay
     # headless unless this launcher explicitly asks for otherwise.
     if ($Headed) {
         $lines += "`$env:MELBET_HEADLESS='false';"
     }
+} elseif ($Name -eq 'linebet') {
+    # linebet has no state file, no deposit gate and no parallel instances: its
+    # loop always walks the whole accounts.csv (END_INDEX is left unset).
+    $lines += @(
+        "`$env:START_INDEX='$start';",
+        "`$env:END_INDEX='$end';",
+        "`$env:SCREENSHOTS_DIR='$shots';",
+        # One disk cache per shard: Chromium cannot share a cache directory
+        # between processes, so a shared one leaves a shard uncached.
+        "`$env:BROWSER_CACHE_DIR='.browser-cache\$Name';"
+    )
+    if ($Headed) {
+        $lines += "`$env:HEADED='true';"
+    }
+    # linebet reads seconds, not milliseconds.
+    $delaySeconds = [math]::Ceiling($AccountDelayMs / 1000)
+    $lines += "`$env:ACCOUNT_DELAY_SECONDS='$delaySeconds';"
 } else {
     $lines += @(
         "`$env:START_INDEX='$start';",
@@ -159,9 +195,8 @@ if ($Name -eq 'melbet') {
     if ($Headed) {
         $lines += "`$env:HEADED='true';"
     }
-    if ($AccountDelayMs -gt 0) {
-        $lines += "`$env:ACCOUNT_DELAY_MS='$AccountDelayMs';"
-    }
+    # 1xbet reads the delay in milliseconds.
+    $lines += "`$env:ACCOUNT_DELAY_MS='$AccountDelayMs';"
 }
 
 $lines += 'npm run loop'

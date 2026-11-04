@@ -3,7 +3,10 @@ import assert from 'node:assert/strict';
 import {
   buildTelegramMessage,
   dedupeScreenshotPaths,
-  extractNumberFromScreenshotName
+  describeTelegramError,
+  extractNumberFromScreenshotName,
+  isRetryableNetworkError,
+  TelegramRateLimitError
 } from '../../lib/telegram.js';
 
 test('buildTelegramMessage includes status, rates, numbers and duration', () => {
@@ -55,4 +58,18 @@ test('extractNumberFromScreenshotName finds the phone number', () => {
 test('dedupeScreenshotPaths keeps the first path per number', () => {
   const paths = ['a/01011111111.png', 'a/01022222222.png', 'a/01011111111(2).png'];
   assert.deepEqual(dedupeScreenshotPaths(paths), ['a/01011111111.png', 'a/01022222222.png']);
+});
+
+test('describeTelegramError exposes the transport code hidden in error.cause', () => {
+  const error = new TypeError('fetch failed', { cause: { code: 'ETIMEDOUT' } });
+  assert.equal(describeTelegramError(error), 'fetch failed (ETIMEDOUT)');
+  assert.equal(describeTelegramError(new Error('Telegram API error 400: bad')), 'Telegram API error 400: bad');
+});
+
+test('transport failures and timeouts are retryable, API rejections are not', () => {
+  assert.equal(isRetryableNetworkError(new TypeError('fetch failed', { cause: { code: 'ETIMEDOUT' } })), true);
+  assert.equal(isRetryableNetworkError(new TypeError('fetch failed', { cause: { code: 'ECONNRESET' } })), true);
+  assert.equal(isRetryableNetworkError(Object.assign(new Error('timed out'), { name: 'TimeoutError' })), true);
+  assert.equal(isRetryableNetworkError(new Error('Telegram API error 400: chat not found')), false);
+  assert.equal(isRetryableNetworkError(new TelegramRateLimitError(30)), false);
 });

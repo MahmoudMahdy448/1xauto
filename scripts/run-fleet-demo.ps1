@@ -11,7 +11,7 @@
 # duplicate is shown as "already seen". Melbet runs extract-only: its ledger is
 # far behind the shared one, so attaching its sender would re-post ~950 numbers.
 #
-# The farm is restored when the demo ends (shard-2 + ledger sync + monitor),
+# The farm is restored when the demo ends (shard-2 + monitor),
 # unless -NoRestart is passed.
 
 param(
@@ -97,17 +97,9 @@ function Restore-Farm {
         Write-Host '[demo] -NoRestart: leaving everything stopped.' -ForegroundColor Yellow
         return
     }
-    Write-Step 'restoring shard-2 (resume, 10 s pacing) plus ledger sync and monitor'
+    Write-Step 'restoring shard-2 (resume, 10 s pacing) plus monitor'
     Clear-DemoEnvironment
     & powershell -NoProfile -ExecutionPolicy Bypass -File scripts\launch-shard.ps1 -Name shard-2 -Resume -AccountDelayMs 10000
-
-    $eventsDir = Join-Path $ws 'events'
-    $ledger = Join-Path $ws 'seen-numbers.json'
-    $lock = Join-Path $ws 'seen-numbers.json.lock'
-
-    $syncCmd = "Set-Location '$ws'; `$env:SERVICE_NAME='sync'; `$env:EVENT_ROLE='sync'; `$env:INSTANCE_ID='1'; `$env:EVENTS_DIR='$eventsDir'; `$env:SEEN_NUMBERS_FILE='$ledger'; `$env:SEEN_NUMBERS_LOCK='$lock'; node scripts/telegram-sync-loop.mjs"
-    $sync = Start-Process -FilePath $pwsh -ArgumentList '-NoProfile','-Command',$syncCmd -RedirectStandardOutput (Join-Path $ws 'logs\telegram-sync.log') -RedirectStandardError (Join-Path $ws 'logs\telegram-sync.err.log') -WindowStyle Hidden -PassThru
-    Set-Content -Path (Join-Path $ws 'shards\telegram-sync.pid') -Value $sync.Id -Encoding ASCII
 
     $sup = Start-Process -FilePath $pwsh -ArgumentList '-NoProfile','-Command',"Set-Location '$ws'; node scripts/monitor-supervisor.mjs" -RedirectStandardOutput (Join-Path $ws 'logs\monitor-supervisor.log') -RedirectStandardError (Join-Path $ws 'logs\monitor-supervisor.err.log') -WindowStyle Hidden -PassThru
     Set-Content -Path (Join-Path $ws 'shards\monitor-supervisor.pid') -Value $sup.Id -Encoding ASCII
@@ -121,7 +113,7 @@ function Restore-Farm {
         Write-Host "[demo] live control room restored: http://127.0.0.1:$Port/" -ForegroundColor Green
     }
 
-    Write-Host '[demo] farm restored: shard-2 + sync + monitor.' -ForegroundColor Green
+    Write-Host '[demo] farm restored: shard-2 + monitor.' -ForegroundColor Green
 }
 
 # ---------------------------------------------------------------------------

@@ -4,10 +4,10 @@
 
 .DESCRIPTION
   Refreshes every few seconds and shows:
-    - which jobs are alive (loops, realtime senders, ledger sync)
+    - which jobs are alive (loops, realtime senders)
     - per shard: state, batch results, next run countdown, watcher status
     - sending: numbers sent / skipped this batch, failures, last number
-    - ledger: total numbers, last channel sync, numbers pending release
+    - ledger: total numbers and when it last changed
 
 .EXAMPLE
   .\monitor.ps1
@@ -24,6 +24,7 @@ $ErrorActionPreference = 'SilentlyContinue'
 $root = $PSScriptRoot
 $ws = $root
 $melbetDir = Join-Path (Split-Path $root -Parent) 'melbet-autologin'
+$linebetDir = Join-Path (Split-Path $root -Parent) 'Linebet-autologin'
 
 function Get-LogText([string]$path) {
   if (-not (Test-Path $path)) { return '' }
@@ -60,13 +61,12 @@ function Get-WatcherState([string]$raw) {
 
 function Get-Jobs {
   $procs = Get-CimInstance Win32_Process -Filter "Name='node.exe'"
-  $jobs = @{ loops = 0; senders = 0; sync = 0 }
+  $jobs = @{ loops = 0; senders = 0 }
   foreach ($p in $procs) {
     $cmd = $p.CommandLine
     if (-not $cmd) { continue }
     if ($cmd -match 'run-loop\.js' -or $cmd -match 'scheduled-run\.mjs') { $jobs.loops++ }
     elseif ($cmd -match 'realtime-send\.mjs') { $jobs.senders++ }
-    elseif ($cmd -match 'telegram-sync') { $jobs.sync++ }
   }
   return $jobs
 }
@@ -91,12 +91,11 @@ function Show-Dashboard {
   $now = Get-Date
   $jobs = Get-Jobs
   $ledger = Read-Json (Join-Path $ws 'seen-numbers.json')
-  $syncState = Read-Json (Join-Path $ws 'telegram-sync-state.json')
 
   $shards = @(
-    @{ name = 'shard-1 (1-149)';   log = 'logs\shard-1.log'; status = 'loop-status-shard-1.json'; summary = 'run-summary-shard-1.json'; dir = $ws },
-    @{ name = 'shard-2 (150-276)'; log = 'logs\shard-2.log'; status = 'loop-status-shard-2.json'; summary = 'run-summary-shard-2.json'; dir = $ws },
-    @{ name = 'melbet';            log = 'logs\melbet.log';   status = 'loop-status.json';         summary = 'run-summary.json';         dir = $melbetDir }
+    @{ name = 'shard-1 (1-276)';   log = 'logs\shard-1.log'; status = 'loop-status-shard-1.json'; summary = 'run-summary-shard-1.json'; dir = $ws },
+    @{ name = 'melbet';            log = 'logs\melbet.log';  status = 'loop-status.json';         summary = 'run-summary.json';         dir = $melbetDir },
+    @{ name = 'linebet';           log = 'logs\linebet.log'; status = 'loop-status.json';         summary = 'run-summary.json';         dir = $linebetDir }
   )
   foreach ($s in $shards) {
     $s.raw = Get-LogText (Join-Path $ws $s.log)
@@ -125,19 +124,11 @@ function Show-Dashboard {
   } else {
     Job-Line 'realtime senders' $jobs.senders $expectedSenders
   }
-  Job-Line 'ledger sync' $jobs.sync 1
 
   # --- ledger -----------------------------------------------------------
   Write-Host ''
   $ledgerCount = if ($ledger -and $ledger.numbers) { $ledger.numbers.Count } else { 0 }
   Write-Host ("  Ledger            {0:N0} numbers  (updated {1})" -f $ledgerCount, (Format-Age $ledger.updatedAt))
-  if ($syncState) {
-    $pending = if ($syncState.missing) { $syncState.missing.Count } else { 0 }
-    $col = if ($pending -gt 0) { 'Yellow' } else { 'Gray' }
-    Write-Host ("  Channel sync      last {0}   pending release: {1}" -f (Format-Age $syncState.updatedAt), $pending) -ForegroundColor $col
-  } else {
-    Write-Host '  Channel sync      never ran' -ForegroundColor Yellow
-  }
 
   # --- shards -----------------------------------------------------------
   foreach ($s in $shards) {
